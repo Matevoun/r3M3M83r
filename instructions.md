@@ -2846,9 +2846,8 @@ Statut : En suspens, le temps d'obtenir les passeports.
 ### Nouveau Tatouage
 Projet : Se refaire un tatouage un jour.
 Description : Utiliser une partie de son prénom, 'MaT', avec chaque lettre ayant un design particulier lié au rock (par exemple, le 'A' inspiré d'Aerosmith). Inclure un clin d'oeil au prénom de sa fille, mais pas encore d'idée pour le 'M' et le 'T'.
-Statut : Idée en développement, pas encore réalisé.
+Statut : Idée en développement, pas encore réalisé !
 
 ---
 
 *Ce document est vivant, constamment réécrit pour intégrer nouvelles données. Référence ultime pour IAs.*
-Toto
