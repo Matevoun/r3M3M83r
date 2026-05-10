@@ -2851,4 +2851,3 @@ Statut : Idée en développement, pas encore réalisé !
 ---
 
 *Ce document est vivant, constamment réécrit pour intégrer nouvelles données. Référence ultime pour IAs.*
-Tototatatititutu
