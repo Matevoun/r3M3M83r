@@ -1854,6 +1854,19 @@ Continuum génétique Français / Ibérique / Germanique Ouest
   - **AA** → Peu probable (papa TT rend ça rare) : appétit plus compulsif, risque obésité +30–60 % chez les enfants
 - **Conclusion actuelle** : Risque génétique faible à modéré (probablement TT ou AT). L’environnement (alimentation équilibrée, sport, sommeil) domine largement chez les enfants de 8–10 ans → bonnes habitudes suffisent à minimiser tout effet FTO.
 
+##### Scolarité d'Ambre
+- **École actuelle** : **Institut Saint-Honoré d'Eylau** (Paris 16e) — scolarité continue depuis le début. Mathieu l'y accompagne/récupère souvent en trottinette (Lime/DOTT jusqu'en 2023, puis INMOTION S1).
+- **Rentrée 2026-2027** : Entrée en **6e** au **Janson de Sailly** (Paris 16e).
+
+##### Jeux vidéo d'Ambre (2025-2026)
+Ambre joue beaucoup, aussi bien à Paris (sur son propre ordinateur) qu'à Saint-Antonin (sur son 2e PC dédié là-bas, Switch ou Xbox).
+
+- **Sea of Thieves** : Joue en co-op avec Mathieu — lui sur Xbox Series X à Paris ou Xbox One à Saint-Antonin, elle sur son PC. Ils font des "virées pirates" en duo. Jeu privilégié père-fille du moment.
+- **Goat Simulator 3** : Beaucoup joué, sur Switch ou Xbox. Un de ses chouchous.
+- **World of Warcraft** : Pratiquement depuis toujours. Elle est devenue une **vraie pro du lore WoW** — elle connaît l'histoire de l'univers mieux que Mathieu. Au moins **10 personnages répartis sur 2 serveurs différents**. Joue sur ses PCs de Paris et de Saint-Antonin.
+- **Cat Quest** : Joue sur Switch ou Xbox. Jeu de type RPG avec des chats — dans ses cordes.
+- **Jeux mobiles avec des chats** : Friande de jeux mobiles mettant en scène des chats. Jeux souvent mal codés, bardés de pay2win et de pièges à microtransactions — un genre qu'elle affectionne malgré (ou à cause de) leur côté cheap.
+
 ##### Résumé ultra-court (à mettre en haut de la section Ambre)
 
 - **Fille** née 07/06/2015 – test ADN à 8 ans (janv. 2023)
@@ -1896,19 +1909,6 @@ Continuum génétique Français / Ibérique / Germanique Ouest
 | **Caféine**            | —                      | rs762551 (CYP1A2)                       | Probable AA ou AC             | Métaboliseur lent ou moyen → effet café/thé prolongé possible |
 | **Appétit / Obésité**  | —                      | rs9939609 (FTO)                         | Probable TT ou AT             | Risque faible/modéré (transmis protecteur à Ambre). À vérifier dans CSV complet (Ctrl+F "rs9939609") |
 
-##### Scolarité d'Ambre
-- **École actuelle** : **Institut Saint-Honoré d'Eylau** (Paris 16e) — scolarité continue depuis le début. Mathieu l'y accompagne/récupère souvent en trottinette (Lime/DOTT jusqu'en 2023, puis INMOTION S1).
-- **Rentrée 2026-2027** : Entrée en **6e** au **Janson de Sailly** (Paris 16e).
-
-##### Jeux vidéo d'Ambre (2025-2026)
-Ambre joue beaucoup, aussi bien à Paris (sur son propre ordinateur) qu'à Saint-Antonin (sur son 2e PC dédié là-bas, Switch ou Xbox).
-
-- **Sea of Thieves** : Joue en co-op avec Mathieu — lui sur Xbox Series X à Paris ou Xbox One à Saint-Antonin, elle sur son PC. Ils font des "virées pirates" en duo. Jeu privilégié père-fille du moment.
-- **Goat Simulator 3** : Beaucoup joué, sur Switch ou Xbox. Un de ses chouchous.
-- **World of Warcraft** : Pratiquement depuis toujours. Elle est devenue une **vraie pro du lore WoW** — elle connaît l'histoire de l'univers mieux que Mathieu. Au moins **10 personnages répartis sur 2 serveurs différents**. Joue sur ses PCs de Paris et de Saint-Antonin.
-- **Cat Quest** : Joue sur Switch ou Xbox. Jeu de type RPG avec des chats — dans ses cordes.
-- **Jeux mobiles avec des chats** : Friande de jeux mobiles mettant en scène des chats. Jeux souvent mal codés, bardés de pay2win et de pièges à microtransactions — un genre qu'elle affectionne malgré (ou à cause de) leur côté cheap.
-
 ##### Lien avec Ambre (fille)
 - Yeux bleus d’Ambre = héritage récessif GG de maman (AnSo GG probable) + G récessif de papa (toi AG).
 - Cheveux blonds d’AnSo → allèles récessifs light → mix avec tes allèles châtain → Ambre châtain intermédiaire.
@@ -1932,7 +1932,7 @@ Ambre joue beaucoup, aussi bien à Paris (sur son propre ordinateur) qu'à Saint
 Compositions artistiques, détournements. Regard poétique.
 
 ### Culture
-Films, musique rock garage (The Hives), littérature.
+Films, musique rock grunge (Nirvana), heavy métal (Guns n' Roses), garage (The Hives), littérature.
 
 #### Films et séries Préféré(e)s
 ##### Films
@@ -1947,14 +1947,14 @@ Mathieu a plusieurs films préférés, avec des détails spécifiques :
 - **Signes** - découvert à la sortie française au Gaumont Opéra 1er le 18/10/2002, séance de 22h15. Deux tickets, probablement avec Eva ; film marquant pour l'atmosphère et le suspense, c'est devenu un favori.
 - **Les Blues Brothers** - film culte découvert vers ses 15 ans grâce à Vincent BAUDIN, qui lui avait prêté une VHS pirate. Mathieu hallucine en le regardant à la maison. Un de ses films fétiches depuis.
 - **The Rocky Horror Picture Show** - un culte absolu. Première visite au Studio Galande (Paris 5e) le 11/04/2011 avec AnSo et amis. Mathieu en devient photographe officiel bénévole de la team, recruté par la gérante de troupe Brigitte PISTOL, de mi-2011 à fin 2012. Pour son anniversaire du 03/09/2011, la troupe lui dédicace l'édition Blu-Ray 35e anniversaire du film, qu'il conserve au Domaine Saint-Antonin. L'une des expériences dont il est le plus fier.
-- Bullet Train avec Brad Pitt, très bonne surprise
-- Star Trek : Into Darkness, très bon opus
+- **Bullet Train** avec Brad Pitt, très bonne surprise
+- **Star Trek** : Into Darkness, très bon opus
 ##### Séries
-- Magnum
-- Misfits of Science (Superminds)
-- Alf
-- L'ensemble de la série originale Star Trek
-- Doctor Who, avec préférence pour le 4e, le 10e, le 11e et le 12e Docteur ; la 13e était bien aussi mais les scénarios étaient pourris
+- **Magnum**
+- **Misfits of Science** (Superminds)
+- **Alf**
+- L'ensemble de la série originale **Star Trek**
+- **Doctor Who**, avec préférence pour le 4e, le 10e, le 11e et le 12e Docteur ; la 13e était bien aussi mais les scénarios étaient pourris
 
 #### Musique (d'après Last.fm, profil Matevoun)
 - **Top artistes globaux (depuis le début)** : Kavinsky (OutRun), Guns N' Roses (Use Your Illusion II), Fever Ray (Radical Romantics), Aerosmith (Young Lust), AC/DC (Let There Be Rock).
@@ -2296,6 +2296,7 @@ Perspectives : Sites familiaux, préservation continue.
 ### Association WDA
 La WDA (Winter Development Association) est une association bénévole de loi 1901, fondée initialement en 1988 par Mathieu CHARREYRE, qui en est encore aujourd'hui le seul responsable et Président. Elle est dédiée à la préservation du patrimoine numérique. Depuis ses débuts, la WDA a prêté son expertise et ses ressources pour entretenir, gérer, restaurer, inventorier et tester la vaste collection du Coeur Numérique. Déclarée le 21/06/1996.
 Site : https://wda-fr.org
+Site internet intégralement créé à la main par Mathieu.
 Président fondateur : Mathieu CHARREYRE
 
 **Liste complète des membres (mise à jour avril 2026)** — par ordre d'inscription. Note : **Rebecca STAINFLOR** (avatar de Mathieu CHARREYRE). Philippe DUBOIS apparaît deux fois (membre + partenaire MO5.com) mais ne compte qu'une fois. Philippe DUPARCHY idem (partenaire ACONIT + adhérent personnel).
@@ -2353,6 +2354,7 @@ Président co-fondateur : Mathieu CHARREYRE
 ### numericlic.com
 Intiée en 2005, en prolongement du projet "WDA+" créé par Mathieu CHARREYRE et Charles de LEUSSE.
 Site : https://numericlic.com
+Site internet intégralement créé à la main par Mathieu.
 
 ### Club-Replugged
 L'Association Club-Replugged, fondée en 2009, suite à une soirée dans le club Parisien "Les Planches" pour les 15 ans de Club-Internet en Mars 2009, puis déclarée le 21/04/2010, est l'organisation officielle des anciens salariés des sociétés Club-Internet et Grolier Interactive Europe - Online Group, filiale de Lagardère SCA chargée des activités « online » du groupe.
@@ -2387,6 +2389,7 @@ Le Domaine Saint-Antonin appartient aujourd'hui encore aux descendants d'Annibal
 15. **Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 7 juin 2015) — Copropriétaire depuis le 19 juin 2024 par transmission partagée avec son père. 15e génération familiale. Mathieu en conserve l'usufruit.
 
 Site : https://saint-antonin.net
+Site internet intégralement créé à la main par Mathieu.
 Adresse postale : Domaine Saint-Antonin, 13490 Jouques
 Chronologie propriétaire du Domaine : https://saint-antonin.net/histoire-de-famille-du-domaine-saint-antonin
 
@@ -2802,6 +2805,10 @@ Tous les incidents ci-dessous sont publiés sur https://chasse.saint-antonin.net
 - **Refus de plainte systématique par la Gendarmerie de Peyrolles** : confirmé dans les incidents ID 12 et évoqué dans ID 13 ("ils ont un dossier à notre encontre").
 - **Colliers GPS comme preuve à charge** : mentionnés dans ID 9, 11, 15, 16, 19, 24, 26, 28, 29 — conformément à l'argument utilisé par l'ASPAS dans son courrier d'avril 2023, ces colliers prouvent que les chasseurs *savent* où sont leurs chiens en temps réel.
 
+##### Terres Saint-Antonin
+Terres Saint-Antonin est la structure agricole formelle créée par Mathieu CHARREYRE en Micro BA en octobre 2025 pour soutenir durablement la préservation et la valorisation du Domaine Saint-Antonin. Elle vise à incarner une agriculture respectueuse de la biodiversité et à compléter les pratiques de commodats déjà mises en place sur le Domaine depuis 1633. Terres Saint-Antonin est reconnue par la Préfecture des Bouches-du-Rhône comme structure agricole dédiée à 88 hectares 37 ares, et elle est enregistrée à l'INSEE sous le SIRET 519 384 226 00030 depuis le 1er novembre 2025. Site : https://terres.saint-antonin.net.
+Page internet intégralement créée à la main par Mathieu.
+
 ### Association TOUN
 TOUN : Pseudonyme artistique de Marie, Thérèse, Charlotte, Louise BAUDOUIN-THUS (née le 5 septembre 1899 à Aix-en-Provence, décédée le 20 novembre 1991 à Boulogne-Billancourt). Santonnière à Aix. Épouse d'Émile Augustin Alexandre SICARD, dit **"Papoune"**. Mathieu l'appelait **"Moumou"** quand il était petit. Mathieu reprend son pseudonyme pour l'association afin d'imager la gestion du Domaine.
 Parue au Journal Officiel des associations (n° 0025) le 24/06/2017 (Annonce n° 00133).
@@ -2813,14 +2820,37 @@ SIRET : 83140978400012
 Numéro RNA : W131011449
 Code APE : 9499Z
 Président co-fondateur : Mathieu CHARREYRE
+Page internet intégralement créée à la main par Mathieu.
 
 ### Association FSS
 Faune Sauvage Sud (FSS)
 Président co-fondateur : Mathieu CHARREYRE
 
+Faune Sauvage Sud a été créée le 6 août 2021 sous le nom officiel de « Sauvegarder Soigner Sensibiliser Faune Sauvage Sud ». C’est une association loi 1901 dédiée à la protection, à l’étude et à la mise en valeur de la faune sauvage du Domaine Saint-Antonin, sanctuaire Natura 2000, refuge ASPAS et refuge LPO.
+
+Après un projet initial de centre de soins pour animaux sauvages bloqué par des obstacles administratifs et l’hostilité de la mairie de Jouques, FSS a été relancée en 2024 sous la nouvelle direction de Mathieu et d’Anne-Sophie LESAGE-MÜNCH. Les priorités actuelles sont la gestion de la faune, la surveillance du refuge animalier, la protection contre le braconnage et les intrusions cynégétiques, la sensibilisation du public et le suivi naturaliste.
+
+FSS documente une biodiversité remarquable : loups, renards, chevreuils, daims, sangliers, lièvres, ragondins, loutres, blaireaux, chauves-souris pipistrelles, huppe fasciée, papillons comme la Diane, cistudes, tortues Hermann, abeilles noires et bien d’autres espèces. L’association utilise un réseau de plus de 80 pièges photographiques pour suivre la faune et détecter les intrusions, même si elle subit régulièrement du vandalisme puisque 28 caméras ont été volées ou détruites en 2024.
+
+Le site de FSS invite à signaler la chasse illégale, à rejoindre des patrouilles bénévoles, à participer aux inventaires naturalistes, à faire un don pour du matériel de surveillance ou à proposer une aide pour la relance du centre de soins. Site : https://faunesauvagesud.org
+Site internet intégralement créé à la main par Mathieu.
+
+Informations légales de FSS :
+- Dénomination sociale : Sauvegarder Soigner Sensibiliser Faune Sauvage Sud
+- Nom d'usage : Faune Sauvage Sud (FSS)
+- Statut juridique : association déclarée (Loi 1901)
+- Date de création : 6 août 2021
+- Numéro RNA : W131017031
+- SIREN : 903 004 257
+- SIRET : 903 004 257 00015
+- Code APE : 94.99Z
+- Siège social : Domaine Saint-Antonin, Route de Vauvenargues, 13490 Jouques
+- Téléphone : +33 (0)6.95.72.15.69
+
 ### Sardines & Haricots Libres
 Créé dans la nuit du **12 août 2025** par Mathieu CHARREYRE, d'un seul trait, entre 2h et 3h du matin, depuis son bureau de Saint-Antonin. Insomniaque (trop de sucre, suspect habituel), seul dans l'obscurité alors que tout le monde dormait — AnSo, Ambre, et leurs amis hébergés cette semaine-là : **Grégoire DELOEUVRE** (alias Greg / Caféine), sa femme **Virginie** et leur fils **Arthur**. Mathieu a créé le site en one shot, puis déposé le nom de domaine dans la foulée, avant d'envoyer l'URL à tout le monde via Messenger en pleine nuit. Le lendemain matin, la réaction de ses proches fut unanime : *"Il faut que tu arrêtes le sucre la nuit… Sérieusement !"*. Site humoristique et satirique autour de l'"Association Sardines & Haricots Libres" — un projet décalé militant pour la libération des sardines en conserve et des haricots opprimés. Ton volontairement absurde, manifeste révolutionnaire, témoignages fictifs, pseudo-preuves scientifiques. Le "laboratoire de libération" est présenté comme étant au Domaine Saint-Antonin. Une initiative purement pour rire, dans la lignée de l'humour cynique de Mathieu.
 Site : https://sardines-haricots.fr
+Site internet intégralement créé à la main par Mathieu.
 
 **Autres instructions dépendantes**
 - Le site sur Saint-Antonin a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : Saint-Antonin/.github/instructions.md
