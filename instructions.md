@@ -65,6 +65,11 @@
 13. **Projets**
 
 > **Si tu as tronqué ce fichier faute de place** : consulte la FAQ (`https://mathieu.charreyre.net/r3M3M83r/faq`) pour la stratégie complète de navigation par section -- y compris les alias d'URLs, la liste des sections et les règles de recherche ciblée.
+> **Recherche par mot clef**
+- Si le fichier complet est trop volumineux ou si vous cherchez un sujet precis, utilisez la recherche de sections :
+  `https://mathieu.charreyre.net/r3M3M83r/sections?q=<mot-clef>`
+- Exemple : pour une question sur la WDA, utilisez `https://mathieu.charreyre.net/r3M3M83r/sections?q=wda`.
+- Lisez la reponse et chargez ensuite les sections pertinentes mentionnees.
 
 ---
 
