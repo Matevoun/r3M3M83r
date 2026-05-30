@@ -646,9 +646,77 @@ Mathieu a accepté purement et simplement la succession.
 
 ***Article 4 — Domaine Saint-Antonin, Route de Vauvenargues, JOUQUES (13490)***
 
-- **Désignation** : Propriété rurale "Domaine de Saint-Antonin" — maison principale (RdC + 2 étages + grenier), logement de gardien (RdC + étage), bâtiments d'exploitation, terres cultivées, friches, bois.
+- **Désignation** : Propriété rurale "Domaine de Saint-Antonin" (y compris les annexes de Grand Vallon et Meyrargues) — maison principale (RdC + 2 étages + grenier), logement de gardien (RdC + étage), bâtiments d'exploitation, terres cultivées, friches, bois.
+- **Propriétaire principal** : Mathieu CHARREYRE.
 - **Quote-part transmise** : 1/2 en pleine propriété (l'autre moitié appartenant initialement à Madame Dominique MONTJOL, tante maternelle de Mathieu, ex-épouse VILLIERS — décédée le 25 mars 2009 ; sa part est passée à ses enfants VILLIERS).
-- **Surface cadastrale totale** : 89 ha 28 a 24 ca (parcelles Section D, lieux-dits : La Tour, Saint-Antonin, Chante-Merles, La Payanne).
+- **Mise à jour cadastrale** : 19 juin 2024.
+- **Surface cadastrale totale enregistrée** : 103 ha 88 a 35 ca, incluant 52 parcelles à Jouques et 6 parcelles à Meyrargues.
+  - Jouques : 89 ha 28 a 24 ca (parcelles Section D, lieux-dits : La Tour, Saint-Antonin, Chante-Merles, La Payanne).
+  - Meyrargues : 14 ha 60 a 11 ca (parcelles Section E, lieux-dits : Saint Claude, Le Lauvas).
+- **Liste des parcelles cadastrales** :
+  - **Meyrargues**
+    - Section E n°0239, Lieudit Saint Claude, 1 ha 32 a 40 ca, nature Taillis
+    - Section E n°0443, Lieudit Le Lauvas, 0 ha 11 a 64 ca, nature Terre
+    - Section E n°0454, Lieudit Le Lauvas, 0 ha 43 a 60 ca, nature Taillis
+    - Section E n°0457, Lieudit Le Lauvas, 4 ha 80 a 00 ca, nature Taillis
+    - Section E n°0461, Lieudit Le Lauvas, 0 ha 00 a 47 ca, nature Lande
+    - Section E n°0464, Lieudit Le Lauvas, 7 ha 92 a 00 ca, nature Taillis
+  - **Jouques**
+    - Section D n°0077, Lieudit La Tour, 0 ha 30 a 80 ca, nature Bois
+    - Section D n°0078, Lieudit La Tour, 0 ha 01 a 50 ca, nature Eaux
+    - Section D n°0079, Lieudit La Tour, 0 ha 00 a 28 ca, nature Sol
+    - Section D n°0080, Lieudit La Tour, 0 ha 45 a 27 ca, nature Bois
+    - Section D n°0081, Lieudit Saint-Antonin, 0 ha 58 a 29 ca, nature Terre
+    - Section D n°0082, Lieudit Saint-Antonin, 0 ha 25 a 14 ca, nature Bois
+    - Section D n°0083, Lieudit Saint-Antonin, 0 ha 41 a 95 ca, nature Bois
+    - Section D n°0084, Lieudit Saint-Antonin, 4 ha 39 a 80 ca, nature Terre Vigne
+    - Section D n°0085, Lieudit Saint-Antonin, 0 ha 12 a 20 ca, nature Bois
+    - Section D n°0086, Lieudit Saint-Antonin, 0 ha 44 a 00 ca, nature Sol
+    - Section D n°0087, Lieudit Saint-Antonin, 0 ha 35 a 50 ca, nature Bois
+    - Section D n°0088, Lieudit Saint-Antonin, 0 ha 13 a 52 ca, nature Bois
+    - Section D n°0089, Lieudit Saint-Antonin, 0 ha 90 a 00 ca, nature Terre
+    - Section D n°0090, Lieudit Saint-Antonin, 0 ha 14 a 60 ca, nature Terre d'agrément
+    - Section D n°0091, Lieudit Saint-Antonin, 0 ha 07 a 60 ca, nature Bois
+    - Section D n°0092, Lieudit Saint-Antonin, 0 ha 49 a 20 ca, nature Lande
+    - Section D n°0093, Lieudit Saint-Antonin, 0 ha 29 a 80 ca, nature Bois
+    - Section D n°0100, Lieudit Saint-Antonin, 0 ha 47 a 40 ca, nature Terre
+    - Section D n°0101, Lieudit Saint-Antonin, 0 ha 08 a 10 ca, nature Bois
+    - Section D n°0102, Lieudit Saint-Antonin, 0 ha 03 a 72 ca, nature Bois
+    - Section D n°0103, Lieudit Saint-Antonin, 0 ha 23 a 27 ca, nature Bois
+    - Section D n°0104, Lieudit Saint-Antonin, 2 ha 23 a 20 ca, nature Terre
+    - Section D n°0105, Lieudit Saint-Antonin, 0 ha 70 a 30 ca, nature Bois
+    - Section D n°0106, Lieudit Saint-Antonin, 0 ha 10 a 90 ca, nature Bois
+    - Section D n°0107, Lieudit Saint-Antonin, 0 ha 00 a 39 ca, nature Sol
+    - Section D n°0108, Lieudit Saint-Antonin, 0 ha 73 a 92 ca, nature Vigne Bois
+    - Section D n°0109, Lieudit Saint-Antonin, 0 ha 06 a 85 ca, nature Bois
+    - Section D n°0110, Lieudit Saint-Antonin, 0 ha 24 a 70 ca, nature Bois
+    - Section D n°0111, Lieudit Saint-Antonin, 0 ha 32 a 08 ca, nature Terre
+    - Section D n°0112, Lieudit Saint-Antonin, 2 ha 13 a 40 ca, nature Bois
+    - Section D n°0113, Lieudit Saint-Antonin, 1 ha 16 a 44 ca, nature Bois
+    - Section D n°0115, Lieudit Saint-Antonin, 1 ha 35 a 00 ca, nature Bois
+    - Section D n°0116, Lieudit Saint-Antonin, 0 ha 07 a 84 ca, nature Bois
+    - Section D n°0121, Lieudit Saint-Antonin, 1 ha 93 a 10 ca, nature Bois
+    - Section D n°0122, Lieudit Saint-Antonin, 2 ha 75 a 96 ca, nature Bois
+    - Section D n°0123, Lieudit Saint-Antonin, 0 ha 80 a 60 ca, nature Bois
+    - Section D n°0124, Lieudit Saint-Antonin, 0 ha 15 a 46 ca, nature Bois
+    - Section D n°0136, Lieudit Chante-Merles, 0 ha 17 a 66 ca, nature Bois
+    - Section D n°0137, Lieudit Chante-Merles, 1 ha 36 a 10 ca, nature Terre Bois
+    - Section D n°0138, Lieudit Chante-Merles, 0 ha 91 a 90 ca, nature Bois
+    - Section D n°0139, Lieudit Chante-Merles, 0 ha 57 a 49 ca, nature Bois
+    - Section D n°0140, Lieudit Chante-Merles, 0 ha 03 a 70 ca, nature Bois
+    - Section D n°0142, Lieudit Chante-Merles, 0 ha 11 a 10 ca, nature Bois
+    - Section D n°0143, Lieudit Chante-Merles, 0 ha 53 a 10 ca, nature Bois
+    - Section D n°0144, Lieudit Chante-Merles, 0 ha 57 a 60 ca, nature Terre
+    - Section D n°0145, Lieudit Chante-Merles, 0 ha 31 a 50 ca, nature Bois
+    - Section D n°0146, Lieudit Chante-Merles, 0 ha 22 a 02 ca, nature Bois
+    - Section D n°0159, Lieudit La Payanne, 28 ha 87 a 20 ca, nature Bois
+    - Section D n°0165, Lieudit La Payanne, 0 ha 26 a 64 ca, nature Bois
+    - Section D n°0166, Lieudit La Payanne, 0 ha 11 a 37 ca, nature Bois
+    - Section D n°0167, Lieudit La Payanne, 0 ha 36 a 85 ca, nature Bois
+    - Section D n°0664, Lieudit Saint-Antonin, 0 ha 55 a 28 ca, nature Terre
+    - Section D n°0684, Lieudit Saint-Antonin, 0 ha 19 a 03 ca, nature Terre
+    - Section D n°0818, Lieudit Saint-Antonin, 27 ha 42 a 46 ca, nature Bois
+    - Section D n°0820, Lieudit La Payanne, 1 ha 64 a 46 ca, nature Eaux
 - **Évaluation bien** : 420 000 € — **Valeur transmise : 210 000 €**
 - **Origine** : Anne CHARREYRE a reçu cette moitié indivise par partage (acte Maître SCOGNAMILLO, 29 avril 2005, publié SPF Aix-en-Provence 1 le 9 juin 2005) après le décès de sa mère Fanette BOIZARD née SICARD (décédée à AIX-EN-PROVENCE le 10 décembre 2002). Fanette avait elle-même hérité du Domaine de sa propre mère, Madame Marie Thérèse Charlotte Louise BAUDOUIN-THUS, veuve de Monsieur Emile Augustin Alexandre SICARD (décédée à BOULOGNE-BILLANCOURT le 20 novembre 1991). La succession BOIZARD avait été partagée entre les trois filles de Fanette BOIZARD née SICARD : Anne CHARREYRE (née MONTJOL), Florence VIEUVILLE (née MONTJOL) et Dominique VILLIERS (née MONTJOL).
 
@@ -2392,9 +2460,76 @@ Code APE : 9499Z
 Président co-fondateur : Mathieu CHARREYRE
 
 ### Domaine Saint-Antonin
-Saint-Antonin : Certainement en lien avec Saint-Antonin. Lien potentiel avec le village de Saint-Antonin, à 15kms du Domaine. Quartier de Jouques déjà sous ce nom à l'époque (1636) du legs du Seigneur (Jean-Baptiste ?) des MARTINS, de Puyloubier.
+Saint-Antonin : Lien potentiel avec le village de Saint-Antonin, à 15kms du Domaine. Quartier de Jouques déjà sous ce nom à l'époque (1636) du legs du Seigneur (Jean-Baptiste ?) des MARTINS, de Puyloubier.
 
 Le Domaine Saint-Antonin appartient aujourd'hui encore aux descendants d'Annibal THUS, chanoine de l'église de Fréjus, curé de Saint-Barthélémy à Paris, prieur de la maison des Ursulines de Moulins-Engilbert, et de la Chapelle Saint-Sébastien de Jouques, ainsi que recteur de Decize. Né en juillet 1579 à Jouques, il l'a acquis le 26 septembre 1636 auprès de Sieur (Jean-Baptiste ?) des MARTINS, Seigneur de Puyloubier, Viguier de Marseille. Décédé entre le 20 février 1644 et le 28 avril 1645. À sa mort, la propriété fut léguée à son frère cadet Sébastian THUS (né le 24 juillet 1585, calendrier julien), vraisemblablement bourgeois rural de Jouques.
+
+**Mise à jour cadastrale** : 19 juin 2024.
+
+**Parcelles cadastrales du Domaine Saint-Antonin (2024)** : 103 ha 88 a 35 ca au total, répartis entre Jouques et Meyrargues.
+  - **Meyrargues** — 6 parcelles, 14 ha 60 a 11 ca
+    - Section E n°0239, Lieudit Saint Claude, 1 ha 32 a 40 ca, nature Taillis
+    - Section E n°0443, Lieudit Le Lauvas, 0 ha 11 a 64 ca, nature Terre
+    - Section E n°0454, Lieudit Le Lauvas, 0 ha 43 a 60 ca, nature Taillis
+    - Section E n°0457, Lieudit Le Lauvas, 4 ha 80 a 00 ca, nature Taillis
+    - Section E n°0461, Lieudit Le Lauvas, 0 ha 00 a 47 ca, nature Lande
+    - Section E n°0464, Lieudit Le Lauvas, 7 ha 92 a 00 ca, nature Taillis
+  - **Jouques** — 52 parcelles, 89 ha 28 a 24 ca
+    - Section D n°0077, Lieudit La Tour, 0 ha 30 a 80 ca, nature Bois
+    - Section D n°0078, Lieudit La Tour, 0 ha 01 a 50 ca, nature Eaux
+    - Section D n°0079, Lieudit La Tour, 0 ha 00 a 28 ca, nature Sol
+    - Section D n°0080, Lieudit La Tour, 0 ha 45 a 27 ca, nature Bois
+    - Section D n°0081, Lieudit Saint-Antonin, 0 ha 58 a 29 ca, nature Terre
+    - Section D n°0082, Lieudit Saint-Antonin, 0 ha 25 a 14 ca, nature Bois
+    - Section D n°0083, Lieudit Saint-Antonin, 0 ha 41 a 95 ca, nature Bois
+    - Section D n°0084, Lieudit Saint-Antonin, 4 ha 39 a 80 ca, nature Terre Vigne
+    - Section D n°0085, Lieudit Saint-Antonin, 0 ha 12 a 20 ca, nature Bois
+    - Section D n°0086, Lieudit Saint-Antonin, 0 ha 44 a 00 ca, nature Sol
+    - Section D n°0087, Lieudit Saint-Antonin, 0 ha 35 a 50 ca, nature Bois
+    - Section D n°0088, Lieudit Saint-Antonin, 0 ha 13 a 52 ca, nature Bois
+    - Section D n°0089, Lieudit Saint-Antonin, 0 ha 90 a 00 ca, nature Terre
+    - Section D n°0090, Lieudit Saint-Antonin, 0 ha 14 a 60 ca, nature Terre d'agrément
+    - Section D n°0091, Lieudit Saint-Antonin, 0 ha 07 a 60 ca, nature Bois
+    - Section D n°0092, Lieudit Saint-Antonin, 0 ha 49 a 20 ca, nature Lande
+    - Section D n°0093, Lieudit Saint-Antonin, 0 ha 29 a 80 ca, nature Bois
+    - Section D n°0100, Lieudit Saint-Antonin, 0 ha 47 a 40 ca, nature Terre
+    - Section D n°0101, Lieudit Saint-Antonin, 0 ha 08 a 10 ca, nature Bois
+    - Section D n°0102, Lieudit Saint-Antonin, 0 ha 03 a 72 ca, nature Bois
+    - Section D n°0103, Lieudit Saint-Antonin, 0 ha 23 a 27 ca, nature Bois
+    - Section D n°0104, Lieudit Saint-Antonin, 2 ha 23 a 20 ca, nature Terre
+    - Section D n°0105, Lieudit Saint-Antonin, 0 ha 70 a 30 ca, nature Bois
+    - Section D n°0106, Lieudit Saint-Antonin, 0 ha 10 a 90 ca, nature Bois
+    - Section D n°0107, Lieudit Saint-Antonin, 0 ha 00 a 39 ca, nature Sol
+    - Section D n°0108, Lieudit Saint-Antonin, 0 ha 73 a 92 ca, nature Vigne Bois
+    - Section D n°0109, Lieudit Saint-Antonin, 0 ha 06 a 85 ca, nature Bois
+    - Section D n°0110, Lieudit Saint-Antonin, 0 ha 24 a 70 ca, nature Bois
+    - Section D n°0111, Lieudit Saint-Antonin, 0 ha 32 a 08 ca, nature Terre
+    - Section D n°0112, Lieudit Saint-Antonin, 2 ha 13 a 40 ca, nature Bois
+    - Section D n°0113, Lieudit Saint-Antonin, 1 ha 16 a 44 ca, nature Bois
+    - Section D n°0115, Lieudit Saint-Antonin, 1 ha 35 a 00 ca, nature Bois
+    - Section D n°0116, Lieudit Saint-Antonin, 0 ha 07 a 84 ca, nature Bois
+    - Section D n°0121, Lieudit Saint-Antonin, 1 ha 93 a 10 ca, nature Bois
+    - Section D n°0122, Lieudit Saint-Antonin, 2 ha 75 a 96 ca, nature Bois
+    - Section D n°0123, Lieudit Saint-Antonin, 0 ha 80 a 60 ca, nature Bois
+    - Section D n°0124, Lieudit Saint-Antonin, 0 ha 15 a 46 ca, nature Bois
+    - Section D n°0136, Lieudit Chante-Merles, 0 ha 17 a 66 ca, nature Bois
+    - Section D n°0137, Lieudit Chante-Merles, 1 ha 36 a 10 ca, nature Terre Bois
+    - Section D n°0138, Lieudit Chante-Merles, 0 ha 91 a 90 ca, nature Bois
+    - Section D n°0139, Lieudit Chante-Merles, 0 ha 57 a 49 ca, nature Bois
+    - Section D n°0140, Lieudit Chante-Merles, 0 ha 03 a 70 ca, nature Bois
+    - Section D n°0142, Lieudit Chante-Merles, 0 ha 11 a 10 ca, nature Bois
+    - Section D n°0143, Lieudit Chante-Merles, 0 ha 53 a 10 ca, nature Bois
+    - Section D n°0144, Lieudit Chante-Merles, 0 ha 57 a 60 ca, nature Terre
+    - Section D n°0145, Lieudit Chante-Merles, 0 ha 31 a 50 ca, nature Bois
+    - Section D n°0146, Lieudit Chante-Merles, 0 ha 22 a 02 ca, nature Bois
+    - Section D n°0159, Lieudit La Payanne, 28 ha 87 a 20 ca, nature Bois
+    - Section D n°0165, Lieudit La Payanne, 0 ha 26 a 64 ca, nature Bois
+    - Section D n°0166, Lieudit La Payanne, 0 ha 11 a 37 ca, nature Bois
+    - Section D n°0167, Lieudit La Payanne, 0 ha 36 a 85 ca, nature Bois
+    - Section D n°0664, Lieudit Saint-Antonin, 0 ha 55 a 28 ca, nature Terre
+    - Section D n°0684, Lieudit Saint-Antonin, 0 ha 19 a 03 ca, nature Terre
+    - Section D n°0818, Lieudit Saint-Antonin, 27 ha 42 a 46 ca, nature Bois
+    - Section D n°0820, Lieudit La Payanne, 1 ha 64 a 46 ca, nature Eaux
 
 **Lignée des 15 propriétaires successifs :**
 
@@ -2416,12 +2551,16 @@ Le Domaine Saint-Antonin appartient aujourd'hui encore aux descendants d'Annibal
 
 Site : https://saint-antonin.net
 Site internet intégralement créé à la main par Mathieu.
-Adresse postale : Domaine Saint-Antonin, 13490 Jouques
-Chronologie propriétaire du Domaine : https://saint-antonin.net/histoire-de-famille-du-domaine-saint-antonin
+Adresse postale : Domaine Saint-Antonin, 13490 Jouques (de 1930 à maintenant)
+Autre dénomination postale : Domaine Saint-Antonin, 2860 Route de Vauvenargues, 13490 Jouques (de 2018 à maintenant)
+Autre dénomination postale : Domaine Saint-Antonin, Route de Vauvenargues, 13490 Jouques (de 1990 à 2018)
+Autre dénomination postale : Domaine Saint-Antonin, Chemin Departemental 11 (D11), 13490 Jouques (de 1930 à 1990)
+Autre dénomination postale : Campagne Saint-Antonin, Route des contrebandiers, Jouques (de 19xx à 1930)
+Chronologie propriétaires du Domaine : https://saint-antonin.net/histoire-de-famille-du-domaine-saint-antonin
 
 #### Gestion du Domaine — Chasse, ASPAS, LPO et conflits locaux
 
-Le père de Mathieu, Henri CHARREYRE, avait son permis de chasser, était adhérent à l'ACCA de Jouques et entretenait une relation cordiale avec son président. Stratégie simple et efficace. Mathieu, lui, s'est trouvé face à un contexte radicalement différent dès son arrivée en tant que gestionnaire du Domaine.
+Le père de Mathieu CHARREYRE, Henri CHARREYRE, avait son permis de chasser, était adhérent à l'ACCA de Jouques et entretenait une relation cordiale avec son Président. Stratégie simple et efficace. Mathieu, lui, s'est trouvé face à un contexte radicalement différent dès son arrivée en tant que gestionnaire bénévole du Domaine.
 
 **Bernard BOUFFIER — le faux "garde-chasse"**
 
@@ -2434,8 +2573,7 @@ Ce flottement sur le nom de sa propre association est en soi un signal — comme
 L'ACCA de Jouques a très mal vécu la situation : les Parisiens étaient allés chercher un chasseur qui opérait pour son propre compte sur le territoire de Jouques. Cela partait très mal dès le départ — sans que les parents de Mathieu ne s'en rendent jamais compte.
 
 Ce qu'ils ignoraient totalement : les Jouquards considèrent Saint-Antonin comme une "cuvette" exceptionnellement riche en faune, qu'ils utilisent pour acculer le gibier avant de l'abattre plus facilement. BOUFFIER connaissait les dates de passage de la famille (essentiellement l'été), et l'hiver — seule vraie saison de chasse — c'était Beyrouth sur le Domaine : pas moins de **10 à 15 chasseurs** de sa propre société. Les parents de Mathieu croyaient sincèrement que "Bernard il est gentil, on l'autorise à venir se balader, il ne chasse presque rien". Ils étaient à 3 000 lieues de la vérité.
-
-BOUFFIER venait de temps en temps faire le dos rond, boire une bière avec le médecin parisien, histoire de ne pas se faire déloger. Il connaît les frontières du Domaine **au centimètre près**. BOUFFIER : ~75 ans (en 2026), vit avec sa femme à **21 Boulevard de la Gare, 13490 Jouques** — à l'entrée du village face à la place du marché. Rend des services au Domaine de Marine (en contrepartie de la domiciliation de son association de chasse) et au Domaine de Puybernier. Roule TOUJOURS à exactement 50 km/h sur la départementale, passe plusieurs fois par jour toute l'année.
+BOUFFIER venait de temps en temps faire le dos rond, boire une bière avec le médecin Parisien, histoire de ne pas se faire déloger. Il connaît les frontières du Domaine **au centimètre près**. BOUFFIER : ~75 ans (en 2026), vit avec sa femme à **21 Boulevard de la Gare, 13490 Jouques** — à l'entrée Sud du village face à la place du marché. Rend des services au Domaine de Marine (en contrepartie de la domiciliation de son association de chasse) et au Domaine de Puybernier. Roule TOUJOURS à exactement 50 km/h sur la départementale, passe plusieurs fois par jour toute l'année devant le Domaine.
 
 **La vision des Jouquards**
 
@@ -2443,7 +2581,7 @@ BOUFFIER venait de temps en temps faire le dos rond, boire une bière avec le m�
 
 Quand Mathieu a commencé à venir régulièrement à partir de **2014**, les villageois l'ont reçu de deux façons :
 - Une partie y a vu arriver "le petit con de Parisien qui se fout les pieds sous la table et s'imagine que tout va se faire tout seul car il est Parisien — donc dans leur esprit riche et puissant."
-- L'autre partie, ayant appris le décès de son père (qui n'était pas propriétaire mais s'était impliqué dans la gestion du Domaine de sa femme — qui elle ne faisait pas grand chose à part y planter des géraniums), a imaginé qu'un "petit con de Paris" avait racheté et voulait faire du village son fief.
+- L'autre partie, ayant appris le décès de son père (qui n'était pas propriétaire mais s'était impliqué dans la gestion du Domaine de sa femme — qui elle ne faisait pas grand chose à part y planter des géraniums), a imaginé qu'un "petit con de Paris" avait racheté au riche medécin Parisien et voulait faire du village son fief.
 
 BOUFFIER, à partir de 2014, s'est mis à "rendre des services" pour mettre Mathieu dans la poche à son tour : lui a montré les frontières du Domaine, l'a aidé à couper des branches, lui prêtait du matériel, l'a même emmené à Jouques et Meyrargues en voiture pour faire des courses. "L'ami de la famille." Hypocrite total.
 
@@ -2459,7 +2597,7 @@ En **2020**, BOUFFIER était donc encore présent — mais la dérogation expira
 
 Le climat est passé de "Salut Bernard" à "tiens, v'là le fada de Parisien."
 
-Les potes chasseurs de BOUFFIER ont commencé à venir exprès passer devant la maison avec leur carabine, tirer dans les champs devant la maison, tirer sur le panneau du Domaine, balancer des carcasses de sangliers dans la cour de ferme, jeter des oiseaux morts. **À ce jour : 21 menaces de mort.**
+Les potes chasseurs de BOUFFIER ont commencé à venir exprès passer devant la maison avec leur carabine, tirer dans les champs devant la maison, tirer sur le panneau du Domaine, balancer des carcasses de sangliers dans la cour de ferme, jeter des oiseaux morts. **À ce jour : 21 menaces de mort** dues à des chasseurs sur le Domaine.
 
 Mathieu pensait naïvement qu'il suffisait de dire "STOP, merci de ne plus venir chasser chez nous" en qualité de gérant pour être respecté. Il a vite compris que pour eux, quelqu'un qui "n'est pas né ici" n'a rien à leur dire.
 
@@ -2505,6 +2643,8 @@ Et elle s'en va.
 Mathieu regarde l'adjudant. Réponse : *"Je sais, Monsieur CHARREYRE, on ne peut rien faire. Venez demain pour porter plainte."*
 
 Il s'est avéré que **Marilys CINQUINI** était une lieutenant de louveterie mandatée par la préfecture, à la demande de **Mme THIEBLIN**, propriétaire du **Domaine de Marine** (route de Vauvenargues, 13490 Jouques), qui déclarait subir des destructions de culture massives par les sangliers. Mme THIEBLIN et son mari (un couple la cinquantaine à l'époque) sont venus le lendemain gueuler sur Mathieu en lui demandant de quoi il se mêlait.
+
+Dixit Esther MERCIER, amie du Domaine, oral du 29/05/2026 : Marilys CINQUINI serait gérante et/ou propriétaire du **Domaine de la Sicarde** à Jouques. Sur société.com, elle apparaît comme MADAME MARILYS CINQUINI – 13490, siège social depuis le 2 avril 2017, SIRET **824 701 460 00019**, activité **0111Z** (Culture de céréales, à l'exception du riz, de légumineuses et de graines oléagineuses), adresse **CHE DEPARTEMENTAL 11 DOMAINE LA SICARDE, 13490 JOUQUES**.
 
 **Points juridiques notables :**
 - Tirs de nuit depuis la voie publique (D11) sur une propriété privée classée refuge : illégal même dans le cadre de la louveterie sans autorisation préfectorale notifiée au propriétaire.
@@ -2554,7 +2694,7 @@ PV n° 04316/01606/2020 — BTA Peyrolles-en-Provence. OPJ : Maréchal des logis
 - *"On sait qui vous êtes."*
 - *"On va revenir avec des collègues."*
 
-Le conducteur avance son véhicule pour forcer le passage, pousse Mathieu, lui **écrase le pied gauche**. Mathieu donne un **coup de poing sur l'aile avant gauche** du véhicule. Le conducteur quitte les lieux en insultant Mathieu et lui faisant un doigt d'honneur. Mathieu photographie les deux véhicules depuis son domaine et appelle immédiatement GIRAUD (président de la société de chasse) — laisse un message vocal sur son répondeur avec les plaques d'immatriculation.
+Le conducteur avance son véhicule pour forcer le passage, pousse Mathieu, lui **écrase le pied gauche**. Mathieu donne un **coup de poing sur l'aile avant gauche** du véhicule. Le conducteur quitte les lieux en insultant Mathieu et lui faisant un doigt d'honneur. Mathieu photographie les deux véhicules depuis son Domaine et appelle immédiatement Mr GIRAUD (président de la société de chasse de Jouques) — laisse un message vocal sur son répondeur avec les plaques d'immatriculation.
 
 *Version contradictoire du conducteur (déclarée à la gendarmerie par ses soins) :* Prétend circuler normalement sur la départementale, affirme que Mathieu était "habillé en militaire", s'est planté devant son capot, a tapé un coup de poing sur le capot en criant "c'est parti c'est parti", l'a photographié. Le conducteur déclare avoir dit : *"va te faire enculer, arrêtez d'emmerder les gens."* La version de Mathieu est que les photos ont été prises de loin depuis le domaine (ce que les photos elles-mêmes confirment), et qu'il ne comprend pas la mention "c'est parti c'est parti".
 
@@ -2677,7 +2817,7 @@ Note : **Yvette AUBRÉE** (veuve DANGLARD, gardienne du Domaine, restée sur pla
 
 **L'intrusion armée dans le salon — "Le Studio"**
 
-Chronologie : après la convention ASPAS (2019), avant l'arrivée de Jean-Michel FRIEDMANN. Un septembre, été indien, fin d'après-midi. Mathieu est seul dans "**Le Studio**" — le petit salon au rez-de-chaussée de la maison, porte Sud ouverte pour laisser entrer le soleil couchant. Il est assis dos à la porte, regarde quelque chose à la TV. Le Domaine fait 100 ha, le premier voisin est à plus d'un kilomètre.
+Chronologie : après la convention ASPAS (2019), avant l'arrivée de Jean-Michel FRIEDMANN. Un septembre, été indien, fin d'après-midi. Mathieu est seul dans "**Le Studio**" — le petit salon au rez-de-chaussée Sud de la maison, porte Sud ouverte pour laisser entrer le soleil couchant. Il est assis dos à la porte, regarde quelque chose à la TV. Le Domaine fait 100 ha, le premier voisin est à plus d'un kilomètre.
 
 D'un coup — **quelque chose de froid dans la nuque. Le canon d'un fusil.** Un chasseur, entré sans bruit dans le salon par la porte ouverte, positionné derrière lui :
 
@@ -2695,13 +2835,80 @@ Face aux tensions montantes, Mathieu a signé la convention avec l'**ASPAS** (As
 
 Depuis **2016**, Mathieu avait sollicité la LPO sans résultat. La réponse de Marion FOUCHARD, alors en charge du secteur LPO : *"Monsieur CHARREYRE, votre Domaine est très beau, mais nous on cherche des terres à acheter, pas des commodats ou partenariats."* Pas un mouvement.
 
-Dès que l'ASPAS a sécurisé le Domaine avec ses juristes, la LPO est revenue d'elle-même proposer à Mathieu de créer un refuge LPO de vie sauvage. On se planque quand c'est houleux, on revient timidement une fois la protection en place. De toute façon, la LPO n'a jamais rien fait concrètement pour le Domaine. À l'adhésion LPO, ils ont remis à Mathieu un nichoir avec une entrée trop petite — jamais utilisé par le moindre oiseau.
+Dès que l'ASPAS a sécurisé le Domaine avec ses juristes, la LPO est revenue d'elle-même proposer à Mathieu de créer un refuge LPO de vie sauvage. On se planque quand c'est houleux, on revient timidement une fois la protection en place.
+
+**Statut Refuge LPO — Domaine Saint-Antonin**
+- **Date d’adhésion / labellisation** : octobre 2019.
+- **Références LPO** : N° Personne / Adhérent : M184119.
+- **Facture Coffret Refuges** : F15009668 du 24/10/2019.
+- **Facture Adhésion Familiale** : F01852298 du 23/10/2019.
+- **Paiements réalisés** :
+  - 23 octobre 2019 : adhésion Familiale LPO → 42 €.
+  - 17 octobre 2019 : coffret d’accueil Refuges LPO → 35 €.
+  Verifier réguliérement si le Domaine est toujours adhérent ?
+- **Documents conservés** : facture adhésion famille (F01852298), facture coffret refuges (F15009668), preuves de paiement par carte bancaire (Crédit Mutuel).
+
+Ce label engage le Domaine dans une démarche de protection de la faune sauvage : non-chasse, gestion écologique, et valorisation du refuge.
+
+De toute façon, la LPO n'a jamais rien fait concrètement pour le Domaine. À l'adhésion LPO, ils ont remis à Mathieu un nichoir avec une entrée trop petite — jamais utilisé par le moindre oiseau.
 
 Néanmoins, les panneaux "Refuge LPO" posés par Mathieu le long de la route (en plus de ceux de l'ASPAS) ont eu un effet inattendu au village : les Jouquards, qui avaient entendu parler de la LPO ("c'est le truc qui sauve les animaux"), ont commencé à prendre peur de représailles.
+
+**Partenariat L'Écho des Terriers — LPO AURA**
+
+- **Date de l'échange initial** : 6 février 2026.
+- **Interlocuteur** : Yves VERILHAC — Vice-président LPO AURA (ancien directeur de la LPO). Email : yves.verilhac@lpo.fr.
+- **Contexte** : Mathieu CHARREYRE (Domaine Saint-Antonin) a pris contact pour informer qu'il diffusait la newsletter "L'Écho des Terriers" (tribune hebdomadaire engagée pour la protection de la nature, rédigée par "Meles meles") sur le forum du Domaine. Connu via l'AOC.
+- **Actions réalisées** :
+  - partage de PDF de l'Écho des Terriers sur le forum du Domaine ;
+  - création d'un sous-forum dédié : L'Écho des Terriers ;
+  - depuis février 2026, diffusion régulière des numéros via le compte de l'association Faune Sauvage Sud (FSS).
+- **Liens utiles** :
+  - Forum général : https://saint-antonin.net/Forum/ ou https://forum.saint-antonin.net/
+  - Sous-forum L'Écho des Terriers : https://saint-antonin.net/forum/viewforum.php?f=29
+  - Exemple de thread (n°89) : https://saint-antonin.net/Forum/viewtopic.php?t=48
+- **Statut actuel** : partenariat de contenu actif avec Yves VERILHAC / L'Écho des Terriers, diffusion régulière sur le forum via Faune Sauvage Sud (FSS), inclusion de Mathieu dans la liste des destinataires de la newsletter complète.
 
 **AOC — Alliance des Opposants à la Chasse**
 
 Suite à ses déboires avec les chasseurs de Jouques, Mathieu a été contacté par l'**AOC** (Alliance des Opposants à la Chasse — https://alliance.opposantschasse.org), qui avait entendu parler de son histoire et la trouvait hallucinante. Il a rejoint leurs rangs en tant qu'administrateur.
+
+- **Nom complet** : Alliance des Opposants à la Chasse.
+- **Adresse** : 141 chemin des Dents de Lanfon, 74290 Menthon-Saint-Bernard.
+- **Objet** : défense de la faune sauvage, des habitats, des non-chasseurs, protection de l’enfance, respect des lois, relations homme-nature, information, etc.
+- **Président** : Jean-Louis CHUILON.
+
+**Don financier à la AOC**
+- **Date du don** : 1er août 2022 à 10:04.
+- **Montant** : 50 € (numéraire par carte bancaire).
+- **N° de reçu fiscal** : 01082022-HA-ASSO-000040.
+- **N° de donateur** : 6396783.
+- **Bénéficiaire** : Domaine Saint-Antonin (Mathieu CHARREYRE).
+- **Attestation HelloAsso** : n°41235119 du 01/08/2022 (total paiement 56 € dont 6 € de contribution volontaire HelloAsso).
+- **Réduction d’impôt** : Article 238 bis du CGI (réduction d’impôt sur les sociétés de 60 %).
+
+**Aire de Quiétude pour la Vie Sauvage**
+- **Date de signature** : 7 octobre 2022.
+- **Signataire** : Mathieu CHARREYRE (Bon pour accord).
+- **Propriété concernée** : Domaine Saint-Antonin, Route de Vauvenargues, 13490 Jouques.
+Verifier réguliérement si le Domaine est toujours adhérent ?
+
+Engagements du propriétaire :
+- pas de pesticides ;
+- pas d’exploitation forestière ;
+- pas d’exploitation animale ;
+- retrait des terrains de la chasse ;
+- pas de pêche ;
+- panneautage avec au moins un panneau officiel AOC (« Chasse interdite »).
+
+Engagements de l’AOC :
+- fournir le panneau officiel ;
+- fournir un guide de pratiques ;
+- assistance dans les démarches (conseil juridique possible avec don mensuel).
+
+**Synthèse 2022**
+- don de 50 € à l’AOC (août 2022) ;
+- création officielle d’une « Aire de Quiétude pour la Vie Sauvage » (octobre 2022) sur le Domaine Saint-Antonin, avec engagement de retrait de la chasse et de protection renforcée.
 
 **CA du 22 janvier 2025 — Candidature et présentation**
 
