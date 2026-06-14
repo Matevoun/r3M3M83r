@@ -121,7 +121,9 @@ Cette chronologie révèle alternance création/résistance. Voir sections spéc
 - **1801** : Décès de Jean-Baptiste THUS (30 juil. 1801). Le Domaine passe à son fils Jean-Baptiste Joseph Marie Augustin Mélite THUS (7e propriétaire, ~1777-1844), dernier notaire royal de la lignée, qui traverse la Révolution et la Restauration.
 - **1844** : Décès de Jean-Baptiste Mélite THUS (4 juil. 1844). Le Domaine passe à son fils Amédée François Marie THUS (8e propriétaire, né 30 nov. 1824), avocat à Aix-en-Provence.
 - **~1878** : Décès d'Amédée THUS. Son fils Marius (né 18 nov. 1872), encore mineur, est placé sous la tutelle du notaire **Jean-Marie Étienne LEYDIER** (né 27 sept. 1806, décédé 17 fév. 1885 à Jouques) — 9e propriétaire "tuteur" de fait.
+- **1878 (12 décembre)** : Premier bail agricole documenté sur le Domaine Saint-Antonin, signé avec DECANIS Joseph (marinier) et son épouse (notaire Me THUS Jean-Baptiste). Exploitation agricole.
 - **1885** : Marius Amédée Louis BAUDOIN-THUS hérite officiellement du Domaine après sa majorité (10e propriétaire). Il fera officialiser le double patronyme BAUDOIN-THUS par décret (validé 1894) et construire le Château du "Paradou" (aujourd'hui "Val Réal") sur les rives du Réal (~1890-1910).
+- **1888 (24 août)** : Second bail agricole documenté sur le Domaine Saint-Antonin avec DECANIS Joseph pour l'exploitation des vignes et cultures sur le Grand Vallon.
 - **1899 (5 septembre)** : Naissance à Aix-en-Provence de Marie-Thérèse Charlotte Louise BAUDOIN-THUS, dite **"TOUN"** (pseudonyme artistique), surnommée **"Moumou"** par le petit Mathieu et **Mamoune** par ses petites-filles — santonnière à Aix, future 11e propriétaire. Son pseudonyme donnera son nom à l'Association TOUN fondée par Mathieu en 2017.
 - **1921 (28 décembre)** : Naissance à Aix-en-Provence de Fanette Mathilde Honorine BOIZARD née SICARD — professeur de Français, future 12e propriétaire. Son prénom est celui de la chanson de BREL ("La Fanette") car son père Émile SICARD jouait au tennis avec Jacques BREL.
 
@@ -277,18 +279,24 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 - **2018 (20 décembre)** : Rencontre de Mathieu avec Olivier ANDRE via la WDA. Début d'une collaboration et d'une amitié durable.
 - **2018 (été)** : Arrivée des trottinettes en libre-service à Paris (Lime, Bird, DOTT). Mathieu prend un abonnement mensuel (~30 €) et les utilise pour emmener ou récupérer Ambre à l'école Saint-Honoré d'Eylau.
 - **2018 (1 août)** : Naissance de Luna, chien sauvé d'un exploitant du Domaine Saint-Antonin (Jonathan RABINO, ancien chevrier, second maître de Luna). Mathieu la sauve de maltraitance.
-- **2019 (14 avril)** : Sauvetage de la collection CPC-Hardware (matériel Amstrad de Gérard NICOLAS) par Mathieu et Olivier ANDRE pour la WDA.
-- **2019 (mars)** : Première descente à ski d'Ambre aux 3 Vallées (Méribel). Premier contact avec la neige en montagne — elle est interloquée par la quantité de neige, Mathieu a les photos. Mise directement aux cours ESF Piou-Piou. Début d'une tradition annuelle père-fille.
 - **2019** : Retour de Jean-Michel FRIEDMANN ("Egnee") à Paris après un séjour prolongé chez un ami en Belgique. Il est en situation précaire.
+- **2019 (mars)** : Première descente à ski d'Ambre aux 3 Vallées (Méribel). Premier contact avec la neige en montagne — elle est interloquée par la quantité de neige, Mathieu a les photos. Mise directement aux cours ESF Piou-Piou. Début d'une tradition annuelle père-fille.
+- **2019 (14 avril)** : Sauvetage de la collection CPC-Hardware (matériel Amstrad de Gérard NICOLAS) par Mathieu et Olivier ANDRE pour la WDA.
+- **2019 (juin)** : Signature du premier commodat moderne : Christopher SAMSON (apiculture), validé officiellement le 28 mars 2020.
 - **2019 (15 juillet)** : Visite de repérage de Fabien REMBLIER au Domaine Saint-Antonin, accompagné de sa femme Hind et de leur fils Noa, en vue du tournage de son futur film. À l'époque, le film s'intitulait encore *JEAN* et l'acteur principal pressenti était Patrick CHESNAIS. Le lieu convient à merveille à Fabien.
+- **2019 (12 décembre)** : Commodat avec Jonathan RABINO pour la Chevrerie Saint-Antonin (élevage caprin laitier BIO et transformation fromagère).
 - **2020** : Tournage du film *JEANNE* (moyen métrage) de Fabien REMBLIER au Domaine Saint-Antonin, du 18 au 25 novembre 2020, toutes les journées de très tôt à très tard (certaines prises de vues réalisées de nuit dans la forêt du Domaine). Le film s'appelait initialement *JEAN*, avec Patrick CHESNAIS dans le rôle principal ; mais CHESNAIS a annulé au dernier moment, atteint du Covid, forçant Fabien à modifier le personnage principal et à renommer le film : *Jean* est devenu *Jeanne*, avec Myriam BOYER dans le rôle titre. Mathieu y participe bénévolement comme photographe plateau, script adjoint, régisseur adjoint attaché au Domaine, et propriétaire du lieu. Jean-Michel FRIEDMANN ("Egnee") y obtient un petit rôle de figuration grâce à Mathieu (50€ TTC — dont il se plaint, estimant avoir mal été payé). Directrice de la photo & Décors : Hind R. BOUKLI (femme de Fabien, BOUKLI semblant être son nom de jeune fille). Mathieu héberge également Minh HOANG, ami de Fabien, concepteur de la Miniring, caméra qui a filmé *JEANNE* en 3D natif. Productions déléguées : Groupe d'AMAT et 3IND.
+- **2020 (28 mars)** : Validation officielle du commodat avec Christopher SAMSON (apiculture, parcelle « La Pointe Verte »).
 - **2020 (8 juillet)** : Mathieu héberge Jean-Michel FRIEDMANN ("Egnee") au Domaine Saint-Antonin (chambre Rose) après que celui-ci s'est retrouvé à la rue, mis à la porte de chez sa compagne du moment. Mathieu paie son déménagement les 7-8 juillet (800€). Egnee devient le "garde forestier" du Domaine.
 - **2020 (18 octobre)** : Article dans La Provence sur le Domaine Saint-Antonin, histoire (acquis le 26 septembre 1636 par Annibal THUS, chanoine de Fréjus, auprès de Sieur (Jean-Baptiste ?) des MARTINS, Seigneur de Puyloubier, Viguier de Marseille, légué à son frère cadet Sébastian THUS), bâtiments (bâtisse principale, pigeonnier carré de 1643, chapelle domestique XVIe siècle avec caveau, dépendances : bergerie, écuries, poulailler, clapier à lapins, soue à cochons), zone spéciale de conservation (ZSC) pour préservation habitats et espèces, hospitalité aux ruches de deux apiculteurs depuis 2017 pour sauvegarde abeilles, refuge animalier officiel ASPAS et LPO depuis 2019, WDA (collaborations avec CNAM, BNF, CNRS, Cité des Sciences depuis 2007 pour expertise patrimoine numérique, méthodes préserver/restaurer, pièces d'origine ou 3D, volume 480 m3 répartis sur 4 antennes nationales, projet regroupement sur domaine), bonheur de vivre sur 100 hectares de forêts et champs, observation espèces animales, compatibilité technologie et nature.
+- **2020 (30 octobre)** : Commodat avec Antoine CARPENTIER (apiculture, plantation mixte CRPF 1986).
+- **2020 (8 novembre)** : Commodat avec Vincent CLUZEAUD (apiculture).
 - **2020 (3-4 décembre)** : Mathieu paie à Egnee une formation de Garde Particulier à Marseille (400€) afin qu'il puisse devenir garde assermenté du Domaine.
 - **2020 (11 décembre)** : Décès du chat Zuul à la clinique du Dr Bertrand HOLLANDERS (57 rue des Moines, 75017 Paris). Mathieu pense qu'il a été empoisonné au Domaine Saint-Antonin par la gardienne Yvette. Ses cendres sont dispersées autour de la Chapelle du Domaine Saint-Antonin ; l'urne est conservée dans le bureau du Domaine.
-- **2021** : Fondation de Faune Sauvage Sud (FSS), association pour la protection de la faune dans les Bouches-du-Rhône, sur le domaine familial.
+- **2021** : Fondation de Faune Sauvage Sud (FSS), association pour la protection de la faune dans les Bouches-du-Rhône, sur le domaine familial. Commodat initial avec FSS pour un centre de soins pour faune sauvage (projet finalement non réalisé suite au départ des membres du bureau avec les subventions). Commodat avec Guy ALBERT (trufficulture sur champs "Mathieu" et champs du Cabanon). Vague de commodats 2021 : Elisabeth CHAUVIN (arboriculture/verger pédagogique, oliveraie, maraîchage), Sophie CIGNA & Larbi CHERFAOUI (safranière), Richard CROTTA & Vincent COROLLER (truffière), Elodie LEROY (haras/élevage équin), M. et Mme MOUMNA (potagers & plantes médicinales), Tsering ONDERKA & Florent BOGDEL (pépinière), Aurélie PERILLAT (apiculture), Jonathan RABINO second contrat (fourrage/agriculture), Jason GIRAUDON & Yves (apiculture et truffière).
 - **2021 (16 avril)** : Dîner chez Valérie SEZNEC, voisine du Domaine Saint-Antonin à Jouques, nourricière bénévole à l'AEP (Animaux en Péril). Ambre tombe amoureuse d'un tout petit chaton mâle roux et blanc non sevré (né le 10 mars 2021 à Peyrolles), confiné à Valérie. Ils s'endorment ensemble. Ambre le nomme Spotty (dit Spot).
 - **2021 (19 avril)** : Spot rejoint la famille au Domaine Saint-Antonin, malgré l'opposition de Pierrette DAVET, présidente de l'AEP, qui voulait récupérer le chat. Mathieu s'y oppose fermement.
+- **2022** : Nouveaux commodats : Kevin BARLES (vergers), Michael DANIELE (agriculture générale), Mathilde LEBRUN & Kris LEBISSONNAIS (apiculture), Djém SIARI & Kamel SADJI (safranière).
 - **2022 (début)** : Achat au black (500 €) d'une **Yamaha 125** à Emmanuel et Élodie LEROY (anciens exploitants du Domaine, qui cambrioleraient ensuite les extérieurs ; Mathieu pense qu'ils étaient manouches). Destinée aux rondes d'Egnee sur le Domaine. Engin suspecté d'être volé à l'origine, gardé caché depuis le départ brutal d'Egnee (novembre 2023).
 - **2022 (24 juin)** : Retour solitaire de Mathieu aux **hauts de Gigaro** (La Croix-Valmer), lieu des vacances estivales familiales pendant une dizaine d'années de son enfance/adolescence. Il retrouve le lotissement, l'appartement (n° 2708 sur la D93) et la plage privée Héraclée (aujourd'hui rebaptisée "La Cabane Méditerranée"). Il rapporte des photos pour les montrer à sa mère Anne, en fin de vie à Paris. Anne dit n'y être jamais allée de sa vie — probablement en raison d'effacements mémoriels causés par des micro-AVCs. Mathieu en est profondément attristé.
 - **2022 (23 août)** : Découverte d'Elvira par Ambre sur le quai de la gare de Meyrargues (≈ 6 mois), lors d'un arrêt avant un train régional pour Marseille (halte hôtelière avec AnSo et Ambre depuis Saint-Antonin). Un employé la signale comme régulière depuis quelques mois. Ambre et elle sympathisent immédiatement. Mathieu promet de revenir.
@@ -297,6 +305,7 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 - **2022 (02 septembre)** : Clinique HOLLANDERS (57 rue des Moines, 75017 Paris), 18h environ : diagnostic leucose féline (FeLV). Vétérinaire confirme ≈ 6 mois. Elvira vit dès lors séparée des autres chats rue de la Faisanderie.
 - **2022** : Mathieu offre à Jean-Michel FRIEDMANN ("Egnee") un mobile OnePlus Nord (200€). N'ayant jamais eu ni compte bancaire ni RSA, Mathieu effectue toutes les démarches pour lui ouvrir un compte N26 et activer son RSA — Egnee commence à percevoir 550€ par mois grâce à lui.
 - **2023-2026** : Escalade du conflit juridique sur Saint-Antonin. Expertises contradictoires (1,4 M€ vs 900 k€), assignations bancales, erreurs factuelles, pression financière. Mathieu gère seul, avec impact sur santé (pacemaker en 2025).
+- **2023** : Commodat avec Simon MARTIN (agriculture) et reconduction du commodat avec l'Association Dernière Lune (Samuel BITTON & Benjamin PICANO - jeux de rôles grandeur nature sur anciennes terres de la chevrerie).
 - **2023** : Descente du **Peugeot Ludix Trend** à Saint-Antonin en camion (en même temps que du matériel WDA), suite à la mise en place des places scooters payantes à Paris par Anne HIDALGO.
 - **2023 (1er mars)** : Lors d'un séjour à Méribel Mottaret, Olivier ANDRE rejoint AnSo, Ambre et Mathieu pour une session de ski, symbole d'une amitié consolidée.
 - **2023 (3 février)** : Décès en son domicile (75116) d'Anne CHARREYRE, née MONTJOL.
@@ -310,8 +319,9 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 - **2023 (25 septembre)** : Retour en urgence du Domaine Saint-Antonin car le chat Belzébuth ("Belze") n'allait plus du tout et avait perdu la vue.
 - **2023 (30 septembre)** : Décès de Belzébuth ("Belze") à 19h45, devant la cheminée du salon de la rue de la Faisanderie, en présence de Mathieu, AnSo et Ambre. Mort très douloureuse. Mathieu pense à un empoisonnement. Cendres dispersées autour de la Chapelle du Domaine Saint-Antonin ; urne conservée dans le bureau du Domaine.
 - **2023 (24 novembre)** : Départ brutal de Jean-Michel FRIEDMANN ("Egnee") du Domaine Saint-Antonin. Alors que Mathieu est à Paris, les caméras du Domaine montrent à 11h l'arrivée d'une camionnette conduite par le frère d'Egnee, Aurélien ("Aurel"), avec lequel Egnee était pourtant brouillé depuis des années. Ils chargent toutes les affaires et partent sans prévenir. Lorsque Mathieu l'appelle, Egnee lui rétorque qu'il l'a "trop pris pour un con". Il laisse le Domaine sans surveillance, emporte environ 5.000€ de matériel électrique (perceuses, scies, etc.) et une ardoise EDF de 600€ (il consommait énormément d'électricité ; Mathieu lui demandait 200€/mois de remboursement EDF, qu'il avait finalement refusé de payer). Depuis, Egnee appelle Mathieu "Le Connard" auprès de leurs contacts communs. Mathieu ne l'a plus jamais revu.
-- **2024** : Adoption définitive de Luna après la tragédie : Jonathan RABINO, drogué et bourré après une fête de la Musique borderline, tue accidentellement sa compagne Julie ALLEGRO (mère de leur fils Noah) dans la nuit du 21/06/2024 au 22/06/2024. Leur camionnette s'encastre dans un arbre près du Domaine en rentrant de Vauvenargues (sur la D11). Julie meurt sur le coup ; il faut 5 heures aux pompiers pour la sortir. Jonathan emprisonné pour homicide involontaire (3 ans normalement).
+- **2024** : Adoption définitive de Luna après la tragédie : Jonathan RABINO, drogué et bourré après une fête de la Musique borderline, tue accidentellement sa compagne Julie ALLEGRO (mère de leur fils Noah) dans la nuit du 21/06/2024 au 22/06/2024. Leur camionnette s'encastre dans un arbre près du Domaine en rentrant de Vauvenargues (sur la D11). Julie meurt sur le coup ; il faut 5 heures aux pompiers pour la sortir. Jonathan emprisonné pour homicide involontaire (3 ans normalement). Fin du commodat avec la Chevrerie Saint-Antonin.
 - **2024 (15 mai)** : Concert **Tenacious D** à l'**Accor Arena** (Paris 12e), e-ticket offert par AnSo pour Noël 2023. Place **fosse OR VIP**, 62 € + 93,50 €. Ticket conservé précieusement à Saint-Antonin.
+- **2025** : Nouveaux commodats : Elian LUCAS (apiculture), Isabelle MASSE (Ranch du Concors / élevage équin), Samuel BITTON & Benjamin PICANO/Association Dernière Lune (reconduction pour jeux de rôles), Peggy FALANTIN (ferme pédagogique), Mathieu CHARREYRE/Terres Saint-Antonin (agriculture raisonnée).
 - **2025 (janvier)** : Première prise de sang de sa vie, bilan sanguin complet prescrit par Dr COHEN Carole (laboratoire LBM Victor Hugo, Paris 16e), prélèvement le 21/01/25 à 11h45, résultats dans les normes (numération globulaire : hématies 5,28 Tera/L, hémoglobine 14,1 g/dL, leucocytes 6,55 Giga/L, plaquettes 295 Giga/L ; cholestérol total 4,30 mmol/L, LDL 2,82 mmol/L, HDL 1,17 mmol/L ; PSA total 1,13 ug/L ; TSH 1,718 mUI/L ; vitamine D 45,5 pg/ml ; etc.).
 - **2025 (11/01)** : Spectacle de **Capucine** au **Trianon** (Paris 18), première partie **Eric ANTOINE** pour le spectacle "Le Cas Pucine : Main mise". Mathieu avait offert les places à AnSo et Ambre pour l'anniversaire de cette dernière (07/06/2024, 9 ans). Billets à 24 € chacun ; dans l'orchestre à droite, au fond, mal placés, poteau en plein milieu, déception. Ambre s'en accommodait. Après la première partie, Eric ANTOINE, en se baladant dans les rangées, a repéré Ambre et a demandé qu'ils soient installés tous les 3 gracieusement au premier rang devant la scène. Mathieu a pris des tonnes de photos discrètement avec ses lunettes Meta, main droite posée sur le déclencheur. Capucine cherchait ('àeme min. du Spectacle) du monde pour monter sur scène ; elle a cru qu'il faisait un signe et a lancé publiquement via sa marionette Eliott « alors... lui... non, pas le chauve là... ». Mathieu a été un peu vexé. Ambre a adoré le spectacle. Après la première partie d'Eric ANTOINE, Mathieu est parti acheter l'une des dernieres marionnettes d'Eliott au stand devant la salle. Ambre l'a gardée tout le temps depuis. Mathieu a appris qu'Eric ANTOINE voulait les placer devant parce qu'il y avait captation du spectacle pour Téva (diffusé le 07 juin 2025 - ENORME coiincidence puisque le 07/06 est la date de naissance d'Ambre et en 2025 elle fétait ses 10 ans) ce soir-la et qu'il ne voulait pas de siège vide. En bon professionnel, il a vu qu'Ambre était mignonne et a voulu qu'elle soit devant. Cette petite a toujours eu un bol de taré. Mathieu à résussit à obtenir une copie de la diffusion en torrent.
 - **2025 (juillet)** : Pose d'un pacemaker suite aux tensions du conflit (arythmie cardiaque - Stress + tension élevée depuis la naissance). Année charnière de résilience.
@@ -831,6 +841,237 @@ Le Domaine Saint-Antonin, transmis dans la famille depuis 1636, est le coeur de 
 Depuis 2024, Mathieu travaille à structurer l'avenir du Domaine avec des projets agricoles. **Valentin GINEFRI**, expert du bio et des cultures en PACA, qui a été intégré au business plan de Charly pour concevoir et piloter une structure agricole à but financier, s'est rapproché de Mathieu d'abord pour canaliser les ressources du Domaine Saint-Antonin et ensuite pour aider Mathieu à toucher potentiellement des aides PAC. Le projet a été lancé sous la forme d'une MicroBA puis officialisé en octobre 2025 sous le nom **Terres Saint-Antonin**. Site internet : https://terres.saint-antonin.net.
 En octobre 2025, la structure a été reconnue par la Préfecture des Bouches-du-Rhône comme structure agricole dédiée à la mise en valeur durable de 88 hectares 37 ares du Domaine Saint-Antonin (parcelles cadastrales détaillées dans l’accusé de réception préfectoral). Depuis le 01 novembre 2025, Terres Saint-Antonin est officiellement reconnue par l'INSEE sous le numéro de SIRET **519 384 226 00030**. Ces pas formels renforcent l’engagement pluriséculaire du Domaine Saint-Antonin en faveur d’une agriculture respectueuse, en harmonie avec la biodiversité et les pratiques ancestrales de prêt à usage.
 Le conflit d'indivision (depuis 2009) le détruit émotionnellement, vu comme une violence contre cet héritage vivant.
+
+#### Commodats et Exploitants du Domaine Saint-Antonin
+
+Depuis plusieurs années, le Domaine Saint-Antonin renoue avec son histoire agricole en privilégiant l'agriculture biologique et les pratiques culturales respectueuses des équilibres naturels. Pour faire revivre cet écosystème riche, Mathieu met à disposition les parcelles du Domaine sous forme de **prêts à usage** (ou **commodat**, conformément aux [articles 1875 à 1891 du Code civil](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070721/LEGISCTA000006136396/)). Ce système juridique permet aux partenaires exploitants de disposer gratuitement d'un lieu pour réaliser leurs projets agricoles, tout en contribuant au développement écologique et à la biodiversité du Domaine.
+
+Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structure dédiée à la préservation et à la valorisation du patrimoine du Domaine Saint-Antonin. Plus d'informations sur le concept : [https://saint-antonin.net/biodiversite](https://saint-antonin.net/biodiversite).
+
+###### Baux Agricoles Historiques (XIXe siècle)
+
+**DECANIS Joseph (marinier) + épouse**
+- **Date** : 12 décembre 1878
+- **Type** : Bail agricole (notaire Me THUS Jean-Baptiste)
+- **Activité** : Exploitation agricole générale
+- **Statut** : Caduque
+
+**DECANIS Joseph (marié)**
+- **Date** : 24 août 1888
+- **Type** : Bail agricole
+- **Activité** : Exploitation agricole (vignes et cultures)
+- **Bien** : Grand Vallon
+- **Statut** : Caduque
+
+###### Commodats Modernes (2019-2025)
+
+Depuis 2019, tous les commodats sont gérés par l'Association TOUN. La durée standard est de 9 ans renouvelables tacitement, sauf mention contraire.
+
+**2019**
+
+**RABINO Jonathan** — *Chevrerie Saint-Antonin*
+- **Date** : 12 décembre 2019
+- **Adresse** : 30 rue du Portail, 83870 Signes
+- **Activité** : Élevage caprin laitier BIO + transformation fromagère
+- **Parcelles** : Poulailler (ancien clapier + soue) sur D-001-086 (extrémité Ouest) + D-001-121 (« Les Vignes du Roi »)
+- **Durée** : 9 ans (renouvelable tacitement)
+- **Statut** : **Terminé le 21 juin 2024**, suite au meurtre accidentel de sa compagne Julie ALLEGRO. Jonathan a été emprisonné pour homicide involontaire (3 ans). Luna, leur chienne, a été adoptée définitivement par Mathieu après que la mère de Jonathan ait voulu la faire euthanasier.
+
+**SAMSON Christopher** — *Apiculture*
+- **Date** : Contrat juin 2019, validation officielle 28 mars 2020
+- **Adresse** : 490 Nouveau Chemin du Cannet, 13490 Jouques
+- **Activité** : Exploitation apicole
+- **Parcelle** : Champ centre D-001-104 (« La Pointe Verte »)
+- **Durée** : 9 ans
+- **Statut** : Caduque
+
+**2020**
+
+**CARPENTIER Antoine** — *Apiculture*
+- **Date** : 30 octobre 2020
+- **Adresse** : 16 rue Simone Garcin, Chemin de la Plaine, 13650 Meyrargues
+- **Activité** : Apiculture
+- **Parcelle** : Portion D-001-0818 (dessus D-001-0083 – plantation mixte CRPF 1986)
+- **Durée** : 9 ans
+- **Statut** : **Toujours en place**
+
+**CLUZEAUD Vincent** — *Apiculture*
+- **Date** : 8 novembre 2020
+- **Adresse** : 719 Chemin des Pastras, 84160 Cadenet
+- **Activité** : Apiculture
+- **Parcelle** : D-001-0146
+- **Durée** : 9 ans
+- **Statut** : Caduque
+
+**2021**
+
+**ALBERT Guy** — *Trufficulture*
+- **Date** : 2021 (premier commodat officiel, Guy gérait déjà la truffière depuis la naissance de Mathieu)
+- **Adresse** : 17 Chemin de l'Oratoire, Route des Estrets, 13490 Jouques
+- **Activité** : Truffière (chênes truffiers)
+- **Parcelles** : Champ « Mathieu » (planté à la naissance de Mathieu) + champ du Cabanon
+- **Note** : Ancien Maire du village de Jouques. Gère la truffière familiale depuis des décennies.
+- **Statut** : **Toujours en place**
+
+**CHAUVIN Elisabeth** — *Arboriculture / Verger pédagogique / Oliveraie*
+- **Date** : Plusieurs contrats en 2021
+- **Adresse** : 29 Avenue Paul Cézanne, 13090 Aix-en-Provence
+- **Activités** : Arboriculture fruitière (amandiers 90, noisetiers 105, pistachiers 105, cognassiers 6, pommiers 5, poiriers 5, pruniers 5), plantation de lavandes, mûriers, noyers, oliviers
+- **Parcelles** : Elle a rendu plusieurs parcelles faute de temps libre, mais conserve les deux champs Ouest d'oliviers
+- **Statut** : **Partiellement en place** (oliviers uniquement)
+
+**CIGNA Sophie & CHERFAOUI Larbi** — *Safranière*
+- **Date** : 2021 (safranière) + avenant 2022 pour CHERFAOUI seul
+- **Adresse** : 62 Avenue Mirabeau, 13220 Châteauneuf-les-Martigues
+- **Activité** : Culture de safran (safranière)
+- **Parcelles** : Champs des basses terres
+- **Statut** : Caduque
+- **Note** : Sophie CIGNA a escroqué Larbi et s'est enfuie avec l'argent. Larbi a dû partir, dévasté, pleurant sur l'épaule de Mathieu. Une histoire triste.
+
+**CROTTA Richard & COROLLER Vincent** — *Truffière*
+- **Date** : 2021
+- **Adresses** : CROTTA Richard, 2424 Route des Estrets, 13490 Jouques ; COROLLER Vincent, 152 Chemin des Geilles, 13610 Le Puy Sainte Reparade
+- **Activité** : Truffière
+- **Statut** : Caduque (partis très vite)
+
+**Association Faune Sauvage Sud (FSS)** — *Centre de soins pour faune sauvage*
+- **Date** : 2021
+- **Déclarante** : Elodie CRAVINO, de Peyrolles
+- **Adresse** : Domaine Saint-Antonin, 13490 Jouques
+- **Activité** : Centre de soins pour animaux sauvages (sur le modèle du centre de Buoux)
+- **Statut** : Caduque
+- **Note** : Projet ambitieux avec plans d'architecte et aval de l'urbanisme. Les filles du bureau se sont enfuies avec les subventions dès qu'elles les ont obtenues. Seule Elodie CRAVINO, honnête, a préféré démissionner plutôt que d'être complice. Mathieu a sauvé l'association en 2023 et elle sert désormais à englober les activités faune du Domaine, mais malheureusement le projet de centre de soins n'a jamais vu le jour.
+
+**GIRAUDON Jason & Yves** — *Apiculture & Truffière*
+- **Date** : 2021
+- **Adresse** : 21 Avenue Victor Basch, 13600 La Ciotat
+- **Activités** : Apiculture (Yves, le père) + truffière (Jason, le fils)
+- **Statut** : **Partiellement en place**
+- **Note** : Yves (père) a arrêté l'apiculture. Jason continue les truffières dans le champ « Antoine » et certains champs des basses terres.
+
+**LEROY Elodie** — *Haras / Élevage équin*
+- **Date** : 2021
+- **Adresse** : RN96, Chemin du Concasseur, 13860 Peyrolles-en-Provence
+- **Activité** : Haras / élevage équin (projet de ranch)
+- **Statut** : Caduque
+- **Note** : Ils sont partis en foutant la merde. En 2023, ils ont cambriolé les extérieurs du Domaine (vol de jarres à huile pluricentenaires). Mathieu pense qu'ils étaient manouches. Voir aussi l'achat de la Yamaha 125 au black en 2022.
+
+**MOUMNA (M. & Mme)** — *Potagers & Plantes médicinales*
+- **Date** : 2021
+- **Adresse** : 30 Place Saint-André, 83790 Pignans
+- **Activité** : Potagers & plantes médicinales
+- **Statut** : Caduque
+- **Note** : Une rigolade. Le couple avait pris un champ de 1 hectare et demi et venait l'entretenir À LA MAIN avec des faux. Ils sont partis car « trop fatigant ». Évidemment.
+
+**ONDERKA Tsering & BOGDEL Florent** — *Pépinière*
+- **Date** : 5 mars 2021 (pépinière) + note parcelles 25 avril 2023
+- **Adresse** : 39 rue Bédarrides / 45 Avenue Saint-Mitre des Champs, 13090 Aix-en-Provence
+- **Activité** : Pépinière
+- **Parcelles** : D-001-111 et D-001-669 (non exploitées >20 ans)
+- **Statut** : Caduque
+- **Note** : Deux gamins sortis d'agro, qui pensaient devenir la pépinière du futur. Ils passaient leur temps à fumer des joints avec Jean-Michel FRIEDMANN (Egnee) et à ne rien foutre. Ils sont partis en même temps qu'Egnee (novembre 2023).
+
+**PERILLAT Aurélie** — *Apiculture*
+- **Date** : 2021
+- **Adresse** : 2 rue André Angelvin, 04700 Puimichel
+- **Activité** : Apiculture
+- **Statut** : Caduque
+
+**RABINO Jonathan** — *Second contrat : Fourrage / Agriculture*
+- **Date** : 2021
+- **Activité** : Fourrage / agriculture générale
+- **Statut** : Caduque (voir histoire de Jonathan, commodat principal terminé en juin 2024)
+
+**2022**
+
+**BARLES Kevin** — *Vergers*
+- **Date** : 2022
+- **Adresse** : 7 Impasse des Physalis, 13120 Gardanne
+- **Activité** : Vergers
+- **Statut** : Caduque
+
+**DANIELE Michael** — *Agriculture générale*
+- **Date** : 2022
+- **Adresse** : 49 rue Saint Bazile, 13001 Marseille
+- **Activité** : Agriculture générale
+- **Statut** : Caduque
+
+**LEBRUN Mathilde & LEBISSONNAIS Kris** — *Apiculture*
+- **Date** : 2022
+- **Adresse** : 587 Chemin des Garrigues, 13650 Meyrargues
+- **Activité** : Apiculture
+- **Statut** : Caduque
+
+**SIARI Djém & SADJI Kamel** — *Safranière*
+- **Date** : 2022
+- **Adresse** : 58 Rue du Chai, Résidence La Rabassière B101, 13860 Peyrolles-en-Provence
+- **Activité** : Safranière
+- **Statut** : Caduque
+
+**2023**
+
+**MARTIN Simon** — *Agriculture*
+- **Date** : 2023
+- **Adresse** : 20 Boulevard du Défend, 13490 Jouques
+- **Activité** : Agriculture générale
+- **Statut** : Caduque
+
+**BITTON Samuel & PICANO Benjamin** — *Association Dernière Lune : Jeux de rôles grandeur nature*
+- **Date** : 2023
+- **Activité** : Jeux de rôles grandeur nature (GN)
+- **Parcelles** : Anciennes terres de la chevrerie
+- **Statut** : **Reconduit en 2025, toujours en place**
+
+**2025 (Derniers contrats)**
+
+**LUCAS Elian** — *Apiculture*
+- **Date** : 2025
+- **Adresse** : 3965 Route des Seyes, 05310 Champcella
+- **Activité** : Apiculture
+- **Statut** : **En place**
+
+**MASSE Isabelle** — *Ranch du Concors / Élevage équin*
+- **Date** : 2025
+- **Adresse** : Camps de Mery, Chemin de la Gouiranne, 13490 Jouques
+- **Activité** : Ranch / élevage équin (« Ranch du Concors »)
+- **Statut** : **En place**
+
+**BITTON Samuel & PICANO Benjamin** — *Association Dernière Lune (reconduction)*
+- **Date** : 2025 (reconduction du commodat initial)
+- **Activité** : Jeux de rôles grandeur nature
+- **Parcelles** : Anciennes terres de la chevrerie
+- **Statut** : **En place**
+
+**FALANTIN Peggy** — *Ferme pédagogique*
+- **Date** : 2025
+- **Adresse** : Route de Berre, 13510 Eguilles
+- **Activité** : Ferme pédagogique / agriculture raisonnée
+- **Statut** : **En place**
+
+**CHARREYRE Mathieu** — *Terres Saint-Antonin : Agriculture raisonnée*
+- **Date** : 2025
+- **Structure** : Terres Saint-Antonin (SIRET 519 384 226 00030)
+- **Activité** : Agriculture raisonnée, mise en valeur durable de 88 hectares 37 ares
+- **Site internet** : [https://terres.saint-antonin.net](https://terres.saint-antonin.net)
+- **Statut** : **En place** — Reconnaissance préfectorale (Préfecture des Bouches-du-Rhône, octobre 2025) et enregistrement INSEE (01 novembre 2025)
+
+###### Exploitants Actuels (2026)
+
+Liste des exploitants toujours en activité sur le Domaine (mise à jour juin 2026) :
+
+- **Guy ALBERT** – Trufficulture
+- **Association WDA** – Préservation du Patrimoine numérique
+- **Antoine CARPENTIER** – Apiculture
+- **Elisabeth CHAUVIN** – Arboriculture fruitière et oliveraie
+- **Jason GIRAUDON** – Trufficulture
+- **Association Faune Sauvage Sud (FSS)** – Protection de la faune sauvage (activités faunistiques, sans centre de soins)
+- **Association Dernière Lune** (Samuel BITTON & Benjamin PICANO) – Jeux de Rôles grandeur nature
+- **Elian LUCAS** – Apiculture
+- **Isabelle MASSE** – Ranch du Concors / élevage équin
+- **Peggy FALANTIN** – Ferme pédagogique / agriculture raisonnée
+- **Mathieu CHARREYRE** (Terres Saint-Antonin) – Agriculture raisonnée
+
+Plus d'informations et parcelles disponibles : [https://saint-antonin.net/biodiversite](https://saint-antonin.net/biodiversite)
 
 ### Propriétés Immobilières Parisiennes
 Mathieu possède plusieurs biens immobiliers Parisiens, hérités, reflétant son attachement familial et historique.
