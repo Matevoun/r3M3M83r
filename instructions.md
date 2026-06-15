@@ -133,6 +133,7 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 
 - **1976 (3 septembre)** : Naissance à Paris 13e, boulevard de l'Hôpital (Pitié-Salpêtrière), à 13h50. Père : Henri Jean Louis CHARREYRE, né à Paris 6e le 25 octobre 1944, docteur en médecine. Mère : Anne Nicole MONTJOL, née à Aix-en-Provence (Bouches-du-Rhône) le 6 novembre 1944, docteur en médecine. Parents domiciliés à Saint Marcel par Vernon (Eure), 6 rampe de l'église. Acte déclaré par René SALÉ (employé, boulevard de l'Hôpital), dressé le 4 septembre 1976 par Danielle BROCHET (fonctionnaire Mairie 13e). Début d'une lignée médicale familiale (pharmaciens et médecins).
 - **1982 (10 févier)** : Naissance à Liège d'Anne-Sophie LESAGE-MÜNCH.
+- **1984** : Arrivée d'Yvette AUBREE et de son mari Jean-Jacques DANGLARD comme gardiens du Domaine Saint-Antonin. Ils occuperont l'appartement des gardiens situé dans la ferme (parcelle 000/00/0086) jusqu'au départ d'Yvette en 2023. Commodat formalisé tardivement le 06 octobre 2017.
 - **~milieu années 1980 (date exacte inconnue)** : Adoption du chat Tonin, sauvé dans les champs du Domaine Saint-Antonin par l'arrière-grand-mère maternelle de Mathieu, Marie Thérèse BAUDOUIN-THUS (mère de Fanette BOIZARD née SICARD), qui le nourrissait exclusivement de croissants. Ramené à Paris alors qu'il avait à peine un an, par la famille CHARREYRE (parents et Mathieu, alors enfant, habitant rue de la Faisanderie). Beau chat tigré de gouttière, poils courts, très sociable : il accompagnait la famille partout, en hôtels, trains et voitures. Date de décès inconnue.
 - **1987** : Rencontre avec Charles de LEUSSE de SYON de BUISSON de COURSON (ami d'enfance rencontré 1 ou 2 ans avant Julien, baron par sa mère décédée, surnommé 'quadri noble', 'le Baron' ou 'Le Fameux' dans le GAN) à l'École Gerson. Mathieu le considère Charles comme son frère, lui étant fils unique, et pense l'avoir toujours mal vécu. Mathieu a très mal vécu l'abandon par Charles en 2009.
 - **1988** : Étudie en 6ème à Charles de Foucault (Neuilly) avec Julien GAUTIER. Ils partagent la même passion pour l'informatique et suivent des cours avec "Sabine" la professeur d'informatique du lycée, qui avait pour dogme : "En informatique, il n'y a que 3 règles : Sauvegarder, Sauvegarder et Sauvegarder". Sabine s'habillait en velours marron souvent. Fondation de l'Association WDA (Winter Development Association) à l'âge de 12 ans. Vision précoce de la préservation numérique, avant même l'essor du Web. Début de la collection privée d'objets high-tech et vintage : acquisitions par achats, échanges (swaps), fusions de collections. Spécialisation précoce dans les formats legacy et l'archivage numérique. En classe avec lui notamment Anouck HAUTBOIS, une camarade surdouée (20/20 dans toutes les matières) avec qui Mathieu partage aussi deux 20/20 : en Latin et en informatique avec Julien (Julien étant une classe ou deux en dessous). Mathieu est par ailleurs passable dans l'ensemble (~10/20 de moyenne), sauf ces deux matières. Avec Julien, ils donnent même des cours aux élèves de Première quand Sabine doit s'absenter.
@@ -276,6 +277,7 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 - **2017 (25/04)** : Acquisition du **KYMCO MXU 250** (quad 2005) — offert par sa propriétaire de Pertuis (livré gratuitement après qu'elle l'eut retrouvé éparpillé dans son jardin). Mathieu le remonte seul ; opérationnel en juin 2017 après remplacement du carburateur.
 - **2017 (19/05)** : Décès d'Henri CHARREYRE, à l'hôpital Sainte-Anne (Paris 14e). Inhumé le **23 mai 2017** dans la concession perpétuelle n° BAT 00230 PP 1890 du cimetière des Batignolles. Élisabeth PAULY (grande soeur d'Henri) a pris en charge l'intégralité des obsèques : de la messe célébrée à **Saint-Honoré d'Eylau** (Paris 16e) jusqu'à l'inhumation. **Dernière conversation avec Henri** : 1 ou 2 jours avant son décès. Mathieu était au Domaine Saint-Antonin, Henri sur son lit d'hôpital à Paris. Ils ont parlé de la gestion du Domaine, des différends familiaux — et la conversation a dégénéré en dispute : Mathieu a raccroché en gueulant. Il ne savait évidemment pas que ce serait la dernière fois qu'il entendrait la voix de son père. Il s'en veut énormément, et cette culpabilité ne l'a jamais quitté. Il avait pourtant avec son père plus d'atomes crochus qu'avec sa mère, qu'il décrit comme très froide.
 - **2017** (succession Henri, véhicules) : Héritage de deux véhicules d'Henri CHARREYRE : une **Volkswagen Polo 1.4L grise métallisée** et la **Mercedes 1992 (231 KAC 75)**. Toutes deux stationnées dans la bergerie du Domaine Saint-Antonin avec la R5 "Titine".
+- **2017 (06 octobre)** : Formalisation tardive du commodat de gardiennage avec Yvette AUBREE, en place depuis 1984 avec son mari Jean-Jacques DANGLARD. Appartement des gardiens dans la ferme du Domaine Saint-Antonin (parcelle 000/00/0086).
 - **2018 (20 décembre)** : Rencontre de Mathieu avec Olivier ANDRE via la WDA. Début d'une collaboration et d'une amitié durable.
 - **2018 (été)** : Arrivée des trottinettes en libre-service à Paris (Lime, Bird, DOTT). Mathieu prend un abonnement mensuel (~30 €) et les utilise pour emmener ou récupérer Ambre à l'école Saint-Honoré d'Eylau.
 - **2018 (1 août)** : Naissance de Luna, chien sauvé d'un exploitant du Domaine Saint-Antonin (Jonathan RABINO, ancien chevrier, second maître de Luna). Mathieu la sauve de maltraitance.
@@ -294,10 +296,12 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 - **2020 (3-4 décembre)** : Mathieu paie à Egnee une formation de Garde Particulier à Marseille (400€) afin qu'il puisse devenir garde assermenté du Domaine.
 - **2020 (11 décembre)** : Décès du chat Zuul à la clinique du Dr Bertrand HOLLANDERS (57 rue des Moines, 75017 Paris). Mathieu pense qu'il a été empoisonné au Domaine Saint-Antonin par la gardienne Yvette. Ses cendres sont dispersées autour de la Chapelle du Domaine Saint-Antonin ; l'urne est conservée dans le bureau du Domaine.
 - **2021** : Fondation de Faune Sauvage Sud (FSS), association pour la protection de la faune dans les Bouches-du-Rhône, sur le domaine familial. Commodat initial avec FSS pour un centre de soins pour faune sauvage (projet finalement non réalisé suite au départ des membres du bureau avec les subventions). Commodat avec Guy ALBERT (trufficulture sur champs "Mathieu" et champs du Cabanon). Vague de commodats 2021 : Elisabeth CHAUVIN (arboriculture/verger pédagogique, oliveraie, maraîchage), Sophie CIGNA & Larbi CHERFAOUI (safranière), Richard CROTTA & Vincent COROLLER (truffière), Elodie LEROY (haras/élevage équin), M. et Mme MOUMNA (potagers & plantes médicinales), Tsering ONDERKA & Florent BOGDEL (pépinière), Aurélie PERILLAT (apiculture), Jonathan RABINO second contrat (fourrage/agriculture), Jason GIRAUDON & Yves (apiculture et truffière).
+- **2021 (février)** : Jean-Michel FRIEDMANN ("Egnee") commence officiellement son activité de garde forestier au Domaine Saint-Antonin. Commodat signé rétroactivement le 14 mars 2022. Il occupe le bâtis dit « Cafoutch A » à l'entrée de la ferme (parcelle 000/0D/0086) et dispose également de la Chambre Rose dans l'habitation principale.
 - **2021 (16 avril)** : Dîner chez Valérie SEZNEC, voisine du Domaine Saint-Antonin à Jouques, nourricière bénévole à l'AEP (Animaux en Péril). Ambre tombe amoureuse d'un tout petit chaton mâle roux et blanc non sevré (né le 10 mars 2021 à Peyrolles), confiné à Valérie. Ils s'endorment ensemble. Ambre le nomme Spotty (dit Spot).
 - **2021 (19 avril)** : Spot rejoint la famille au Domaine Saint-Antonin, malgré l'opposition de Pierrette DAVET, présidente de l'AEP, qui voulait récupérer le chat. Mathieu s'y oppose fermement.
 - **2022** : Nouveaux commodats : Kevin BARLES (vergers), Michael DANIELE (agriculture générale), Mathilde LEBRUN & Kris LEBISSONNAIS (apiculture), Djém SIARI & Kamel SADJI (safranière).
 - **2022 (début)** : Achat au black (500 €) d'une **Yamaha 125** à Emmanuel et Élodie LEROY (anciens exploitants du Domaine, qui cambrioleraient ensuite les extérieurs ; Mathieu pense qu'ils étaient manouches). Destinée aux rondes d'Egnee sur le Domaine. Engin suspecté d'être volé à l'origine, gardé caché depuis le départ brutal d'Egnee (novembre 2023).
+- **2022 (14 mars)** : Signature du commodat officiel de gardiennage avec Jean-Michel FRIEDMANN ("Egnee") comme garde forestier du Domaine Saint-Antonin, avec effet rétroactif à février 2021. Biens mis à disposition : bâtis dit « Cafoutch A » à l'entrée de la ferme (parcelle 000/0D/0086) + Chambre Rose dans l'habitation principale.
 - **2022 (24 juin)** : Retour solitaire de Mathieu aux **hauts de Gigaro** (La Croix-Valmer), lieu des vacances estivales familiales pendant une dizaine d'années de son enfance/adolescence. Il retrouve le lotissement, l'appartement (n° 2708 sur la D93) et la plage privée Héraclée (aujourd'hui rebaptisée "La Cabane Méditerranée"). Il rapporte des photos pour les montrer à sa mère Anne, en fin de vie à Paris. Anne dit n'y être jamais allée de sa vie — probablement en raison d'effacements mémoriels causés par des micro-AVCs. Mathieu en est profondément attristé.
 - **2022 (23 août)** : Découverte d'Elvira par Ambre sur le quai de la gare de Meyrargues (≈ 6 mois), lors d'un arrêt avant un train régional pour Marseille (halte hôtelière avec AnSo et Ambre depuis Saint-Antonin). Un employé la signale comme régulière depuis quelques mois. Ambre et elle sympathisent immédiatement. Mathieu promet de revenir.
 - **2022 (25 août)** : Retour de Marseille — Elvira est toujours là. Elle court vers Ambre dès qu'elle l'appelle.
@@ -305,7 +309,7 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 - **2022 (02 septembre)** : Clinique HOLLANDERS (57 rue des Moines, 75017 Paris), 18h environ : diagnostic leucose féline (FeLV). Vétérinaire confirme ≈ 6 mois. Elvira vit dès lors séparée des autres chats rue de la Faisanderie.
 - **2022** : Mathieu offre à Jean-Michel FRIEDMANN ("Egnee") un mobile OnePlus Nord (200€). N'ayant jamais eu ni compte bancaire ni RSA, Mathieu effectue toutes les démarches pour lui ouvrir un compte N26 et activer son RSA — Egnee commence à percevoir 550€ par mois grâce à lui.
 - **2023-2026** : Escalade du conflit juridique sur Saint-Antonin. Expertises contradictoires (1,4 M€ vs 900 k€), assignations bancales, erreurs factuelles, pression financière. Mathieu gère seul, avec impact sur santé (pacemaker en 2025).
-- **2023** : Commodat avec Simon MARTIN (agriculture) et reconduction du commodat avec l'Association Dernière Lune (Samuel BITTON & Benjamin PICANO - jeux de rôles grandeur nature sur anciennes terres de la chevrerie).
+- **2023** : Commodat avec Simon MARTIN (agriculture) et reconduction du commodat avec l'Association Dernière Lune (Samuel BITTON & Benjamin PICANO - jeux de rôles grandeur nature sur anciennes terres de la chevrerie). Départ d'Yvette AUBREE, gardienne du Domaine Saint-Antonin depuis 1984, placée en maison de retraite.
 - **2023** : Descente du **Peugeot Ludix Trend** à Saint-Antonin en camion (en même temps que du matériel WDA), suite à la mise en place des places scooters payantes à Paris par Anne HIDALGO.
 - **2023 (1er mars)** : Lors d'un séjour à Méribel Mottaret, Olivier ANDRE rejoint AnSo, Ambre et Mathieu pour une session de ski, symbole d'une amitié consolidée.
 - **2023 (3 février)** : Décès en son domicile (75116) d'Anne CHARREYRE, née MONTJOL.
@@ -848,6 +852,24 @@ Depuis plusieurs années, le Domaine Saint-Antonin renoue avec son histoire agri
 
 Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structure dédiée à la préservation et à la valorisation du patrimoine du Domaine Saint-Antonin. Plus d'informations sur le concept : [https://saint-antonin.net/biodiversite](https://saint-antonin.net/biodiversite).
 
+###### Commodats de Gardiennage / Logement (caducs)
+
+**AUBREE Yvette**
+- **Date** : 06 octobre 2017 (mais en fait elle et son mari Jean-Jacques DANGLARD sont arrivés en 1984)
+- **Adresse** : Gardienne du Domaine Saint-Antonin, 13490 Jouques
+- **Activité** : Gardiennage du domaine + lieu de vie
+- **Biens** : Appartement des gardiens, situé dans la ferme sur la parcelle 000/00/0086
+- **Durée** : Caduque — Yvette partie en 2023. Elle est en maison de retraite.
+- **Note** : Présence effective depuis 1984 avec son mari Jean-Jacques DANGLARD. Formalisation tardive du commodat en 2017.
+
+**FRIEDMANN Jean-Michel**
+- **Date** : Signé le 14 mars 2022 (effet rétroactif février 2021)
+- **Adresse** : Garde du Domaine Saint-Antonin, 13490 Jouques
+- **Activité** : Garde forestier
+- **Biens** : Bâtis dit « Cafoutch A », situé à l'entrée de la ferme sur la parcelle 000/0D/0086 + Chambre Rose dans l'habitation.
+- **Durée** : Caduque — Jean-Michel parti le 24 novembre 2023 en cambriolant le Domaine (environ 5 000 € de matériel électrique emporté, ardoise EDF de 600 €).
+- **Note** : Également connu sous le pseudonyme "Egnee" ou "L'Araignée Noire". Ancien membre de la "Cour des Fous" (team de Katastars). Rencontré par Mathieu le 6 avril 2001 dans les Catacombes de Paris (secteur derrière la Salle Z, Grand Réseau Sud). Hébergé au Domaine depuis le 8 juillet 2020, puis formalisé en garde forestier avec commodat en mars 2022. Formation de Garde Particulier payée par Mathieu en décembre 2020 (400 €). Départ brutal sans préavis alors que Mathieu était à Paris, avec l'aide de son frère Aurélien avec qui il était pourtant brouillé. Depuis, il appelle Mathieu "Le Connard" auprès de leurs contacts communs.
+
 ###### Baux Agricoles Historiques (XIXe siècle)
 
 **DECANIS Joseph (marinier) + épouse**
@@ -865,7 +887,7 @@ Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structu
 
 ###### Commodats Modernes (2019-2025)
 
-Depuis 2019, tous les commodats sont gérés par l'Association TOUN. La durée standard est de 9 ans renouvelables tacitement, sauf mention contraire.
+Depuis 2017, tous les commodats sont gérés par l'Association TOUN. La durée standard est de 9 ans renouvelables tacitement, sauf mention contraire.
 
 **2019**
 
