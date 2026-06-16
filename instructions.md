@@ -310,7 +310,7 @@ Cette chronologie globale intègre tous les aspects de la vie de Mathieu CHARREY
 - **2022 (02 septembre)** : Clinique HOLLANDERS (57 rue des Moines, 75017 Paris), 18h environ : diagnostic leucose féline (FeLV). Vétérinaire confirme ≈ 6 mois. Elvira vit dès lors séparée des autres chats rue de la Faisanderie.
 - **2022** : Mathieu offre à Jean-Michel FRIEDMANN ("Egnee") un mobile OnePlus Nord (200€). N'ayant jamais eu ni compte bancaire ni RSA, Mathieu effectue toutes les démarches pour lui ouvrir un compte N26 et activer son RSA — Egnee commence à percevoir 550€ par mois grâce à lui.
 - **2023-2026** : Escalade du conflit juridique sur Saint-Antonin. Expertises contradictoires (1,4 M€ vs 900 k€), assignations bancales, erreurs factuelles, pression financière. Mathieu gère seul, avec impact sur santé (pacemaker en 2025).
-- **2023** : Commodat avec Simon MARTIN (agriculture) et reconduction du commodat avec l'Association Dernière Lune (Samuel BITTON & Benjamin PICANO - jeux de rôles grandeur nature sur anciennes terres de la chevrerie).
+- **2023** : Commodat avec Simon MARTIN (agriculture) et reconduction du commodat avec l'Association Dernière Lune (Samuel BITTON & Benjamin PICANO - jeux de rôles grandeur nature sur anciennes vignes Ouest).
 - **2023** : Descente du **Peugeot Ludix Trend** à Saint-Antonin en camion (en même temps que du matériel WDA), suite à la mise en place des places scooters payantes à Paris par Anne HIDALGO.
 - **2023 (1er mars)** : Lors d'un séjour à Méribel Mottaret, Olivier ANDRE rejoint AnSo, Ambre et Mathieu pour une session de ski, symbole d'une amitié consolidée.
 - **2023 (3 février)** : Décès en son domicile (75116) d'Anne CHARREYRE, née MONTJOL.
@@ -1045,7 +1045,7 @@ Depuis 2017, tous les commodats sont gérés par l'Association TOUN. La durée s
 **BITTON Samuel & PICANO Benjamin** — *Association Dernière Lune : Jeux de rôles grandeur nature*
 - **Date** : 2023
 - **Activité** : Jeux de rôles grandeur nature (GN)
-- **Parcelles** : Anciennes terres de la chevrerie
+- **Parcelles** : Anciennes vignes Ouest
 - **Statut** : **Reconduit en 2025, toujours en place**
 
 **2025 (Derniers contrats)**
