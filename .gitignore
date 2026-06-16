@@ -1,3 +1,21 @@
-*
-!.gitignore
-!instructions.md
+# Dependances Node.js (regenerees par npm install)
+reformulator/node_modules/
+
+# Fichiers d'environnement (contiennent les cles API — NE JAMAIS commiter)
+reformulator/.env
+.env
+
+# Fichiers de log (donnees personnelles)
+reformulator/log/
+*.log
+error_log
+
+# Fichier de port genere au demarrage de Node.js
+reformulator/.port
+
+# Fichiers temporaires
+*.DS_Store
+*.swp
+*~
+*.bak
+Thumbs.db

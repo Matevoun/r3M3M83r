@@ -1,0 +1,54 @@
+# Contexte IA — Lecture libre et ouverte
+# Ce dossier contient le fichier de contexte de Mathieu CHARREYRE destiné aux IAs.
+# Aucune restriction d'accès ne doit s'appliquer ici.
+
+# Accès explicitement autorisé (écrase toute règle parente éventuelle)
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+
+# CORS ouvert : permet la lecture par les agents IA, fetch cross-origin, outils tiers
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type"
+    # Pas d'indexation par les moteurs de recherche (accès IA uniquement, pas de discovery)
+    Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+# Type MIME correct pour les fichiers .md (renforce la règle parente)
+AddCharset UTF-8 .md
+<FilesMatch "\.md$">
+    ForceType text/plain;charset=UTF-8
+</FilesMatch>
+
+# Pas de listing de répertoire (sécurité minimale, même si le fichier est public)
+Options -Indexes
+
+# Réécriture transparente : instructions.md -> tracker.php (envoie un email + sert le fichier)
+RewriteEngine On
+RewriteRule ^instructions\.md$ tracker.php [L,QSA]
+
+# Alias sans extension .php pour les agents IA qui bloquent les URLs .php
+# data.php?s=list    → sections
+# data.php?s=XXXX    → section/XXXX
+# data.php?s=N       → sN  (ex: s3, s7, s11)
+RewriteRule ^sections$          data.php?s=list  [L,QSA]
+RewriteRule ^section/(.+)$      data.php?s=$1    [L,QSA]
+RewriteRule ^s([0-9]+)$         data.php?s=$1    [L,QSA]
+RewriteRule ^faq$               data.php?s=faq   [L,QSA]
+RewriteRule ^table$             data.php?s=table [L,QSA]
+RewriteRule ^profil$            data.php         [L,QSA]
+RewriteRule ^saisie$            saisie.php       [L,QSA]
+
+# Alias direct pour mot-cle de section unique (ex. /BERTHIER → data.php?s=BERTHIER)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)$ data.php?s=$1 [L,QSA]
+
+# Bloquer l'accès public au log uniquement (tracker.php est protégé côté PHP)
+<FilesMatch "^access\.log$">
+    Require all denied
+</FilesMatch>
+
+# tracker.php est protégé côté PHP (vérifie que REQUEST_URI ne contient pas "tracker.php")

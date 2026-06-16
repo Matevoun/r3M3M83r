@@ -1,0 +1,52 @@
+# Mathieu CHARREYRE — Fichier de memoire pour IAs
+
+Ce dossier contient le fichier de reference complet de Mathieu CHARREYRE, destine a etre lu par les IAs avant tout echange. Il decrit son identite, sa biographie, ses projets, sa famille, ses associations et ses valeurs. Document vivant, mis a jour regulierement.
+
+> Si ce fichier depasse ta fenetre de contexte, utilise le service de sections ci-dessous pour charger uniquement les parties pertinentes a ta requete.
+
+## Regles absolues (a respecter dans toutes les reponses)
+
+- Vouvoiement systematique envers Mathieu
+- Noms de famille en MAJUSCULES (CHARREYRE, LESAGE-MUNCH, MONTJOL...)
+- Pas de tiret cadratin ni demi-cadratin dans le texte courant
+- Pas d'emojis
+- Orthographe archaique : CLEF, NENUPHAR, VOEUX, COEUR (jamais de ligature "oe")
+- Majuscule a "Domaine" pour le Domaine Saint-Antonin (jamais "Domaine DE Saint-Antonin")
+- Signature de Mathieu : "MaT." (M majuscule, a minuscule, T majuscule, point)
+- Confirmer la lecture : indiquer le nombre exact de lignes lues
+
+## Fichier complet
+
+- [instructions.md](https://mathieu.charreyre.net/r3M3M83r/): Portrait complet et memoire vivante de Mathieu CHARREYRE (~2936 lignes, ~55 000 tokens). Lire en entier si la fenetre de contexte le permet.
+- [instructions.md GitHub](https://raw.githubusercontent.com/Matevoun/r3M3M83r/refs/heads/main/instructions.md): Meme fichier, miroir GitHub public.
+
+## Index des sections (chargement cible si fichier tronque)
+
+L'URL `https://mathieu.charreyre.net/r3M3M83r/sections` liste toutes les sections avec leurs tailles et URLs. A utiliser comme point d'entree si le fichier complet est tronque.
+
+- [FAQ et regles pour IAs](https://mathieu.charreyre.net/r3M3M83r/faq): Instructions comportementales, regles de style, confirmation de lecture, gestion des doublons
+- [Table des matieres](https://mathieu.charreyre.net/r3M3M83r/table): Index complet du fichier
+- [Section 1 — Identite](https://mathieu.charreyre.net/r3M3M83r/s1): Nom complet, naissance, famille (AnSo, Ambre, animaux), domiciles, SIRET, mobile
+- [Section 2 — Chronologie](https://mathieu.charreyre.net/r3M3M83r/s2): Jalons de 1579 a 2026 (famille, fondations, rencontres, deuils)
+- [Section 3 — Experiences personnelles](https://mathieu.charreyre.net/r3M3M83r/s3): Famille, animaux, patrimoine, successions, vacances
+- [Section 4 — Experiences professionnelles](https://mathieu.charreyre.net/r3M3M83r/s4): CalvaCom, Club-Internet, WDA, PhotoMat, associations
+- [Section 5 — Connaissances techniques](https://mathieu.charreyre.net/r3M3M83r/s5): PHP/MySQL, HTML/CSS/JS, vehicules, materiel informatique historique, domotique
+- [Section 6 — Vie sociale](https://mathieu.charreyre.net/r3M3M83r/s6): Amis (Charles de LEUSSE, Julien GAUTIER, Egnee, Fabien REMBLIER...), GAN (urbex), avatars, pseudos
+- [Section 7 — Vie medicale](https://mathieu.charreyre.net/r3M3M83r/s7): Pacemaker, hypertension, TDAH, profil ADN MyHeritage (Mathieu, Ambre, AnSo)
+- [Section 8 — Passions](https://mathieu.charreyre.net/r3M3M83r/s8): Photographie, musique (The Hives, GNR, Iron Maiden), films, jeux video, concerts
+- [Section 9 — Philosophie](https://mathieu.charreyre.net/r3M3M83r/s9): Valeurs, anti-bullshit, preservation patrimoniale
+- [Section 10 — Defis actuels](https://mathieu.charreyre.net/r3M3M83r/s10): Conflit indivision Saint-Antonin, conflits chasseurs, licitation
+- [Section 11 — Annexes](https://mathieu.charreyre.net/r3M3M83r/s11): Adresses historiques, sites web, CV professionnel, references mediatiques
+- [Section 12 — Entites](https://mathieu.charreyre.net/r3M3M83r/s12): WDA, TOUN, FSS, Club-Replugged, Terres Saint-Antonin, chasse/ASPAS, Sardines & Haricots
+- [Section 13 — Projets](https://mathieu.charreyre.net/r3M3M83r/s13): Parking Saint-Antonin, voyage a Londres, tatouage
+
+## Recherche par mot clef
+- Si le fichier complet est trop volumineux ou si vous cherchez un sujet precis, utilisez la recherche de sections :
+  `https://mathieu.charreyre.net/r3M3M83r/sections?q=<mot-clef>`
+- Exemple : pour une question sur la WDA, utilisez `https://mathieu.charreyre.net/r3M3M83r/sections?q=wda`.
+- Lisez la reponse et chargez ensuite les sections pertinentes mentionnees.
+
+## Interfaces
+
+- [Interface de saisie](https://mathieu.charreyre.net/r3M3M83r/saisie.php): Interface pour alimenter le fichier (reformulation via GROQ/LLM)
+- [Index des sections](https://mathieu.charreyre.net/r3M3M83r/sections): Navigation interactive par section pour humains et IAs

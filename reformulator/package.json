@@ -1,0 +1,16 @@
+{
+  "name": "reformulator",
+  "version": "1.0.5",
+  "private": true,
+  "description": "Service local de reformulation de texte pour saisie.php. Envoie du texte vers un LLM via l'API Groq/OpenAI et renvoie le texte corrige.",
+  "author": "Mathieu CHARREYRE",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "cors": "^2.8.5"
+  }
+}
