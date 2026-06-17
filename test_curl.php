@@ -1,276 +1,203 @@
 <?php
 /**
- * test_curl.php
- *
- * Outil de verification pour le service de reformulation LLM.
- * Il envoie un texte de test vers l'endpoint configure et affiche:
- *   - la phrase de test envoye
- *   - la reponse brute du serveur
- *   - la phrase nettoyage/reformulee retournee par l'IA
- *   - les versions de PHP, cURL, Node.js, NPM et des dependances du package local.
- *
- * Note : sur o2switch mutualise, Node.js est gere via cPanel.
- * URL cPanel actuelle pour Node.js :
- *   https://nombre.o2switch.net:2083/cpsess4982455582/frontend/o2switch/lveversion/nodejs-selector.html.tt#/applications/public_html%2FCHARREYRE%2Fr3M3M83r%2Freformulator
+ * test_curl.php — outil de vérification du service LLM
+ * Affiche la séquence réellement tentée (attempts) renvoyée par Node.js.
  */
 
-// Determine l'endpoint de test : connexion directe 127.0.0.1:PORT si .port existe,
-// sinon fallback sur l'URL publique. Meme logique que saisie.php.
-$portFile = __DIR__ . '/reformulator/.port';
-$endpointBase = '';
-$connectionMode = '';
-if (is_file($portFile) && is_readable($portFile)) {
-    $portRaw = trim((string)@file_get_contents($portFile));
-    if ($portRaw !== '' && ctype_digit($portRaw) && (int)$portRaw > 0 && (int)$portRaw < 65536) {
-        $endpointBase = 'http://127.0.0.1:' . $portRaw;
-        $connectionMode = 'direct localhost:' . $portRaw . ' (via .port)';
-    }
-}
-if ($endpointBase === '') {
-    $endpointBase = 'https://charreyre.net/r3M3M83r/reformulator';
-    $connectionMode = 'URL publique (fallback)';
-}
-$endpoint = $endpointBase . '/reformuler';
-$testText = 'toto fait du ski';
-if (function_exists('ini_set')) {
-    @ini_set('error_log', __DIR__ . '/reformulator/log/error.log');
-    @ini_set('log_errors', '1');
-    ensure_reformulator_log_file(get_error_log_path());
+$endpointBase  = 'https://charreyre.net/r3M3M83r/reformulator';
+$connectionMode = 'URL publique (o2switch Passenger)';
+$endpoint      = $endpointBase . '/reformuler';
+$testText      = 'toto fait du ski';
+
+$testEngine = trim($_GET['engine'] ?? '');
+if ($testEngine !== '' && in_array($testEngine, ['groq','cerebras','mistral','openrouter'], true)) {
+    $testEngineLabel = strtoupper($testEngine) . ' (manuel)';
+} else {
+    $testEngine = '';
+    $testEngineLabel = null;
 }
 
-function get_requests_log_path(): string {
-    return __DIR__ . '/reformulator/log/requests.log';
+function get_requests_log_path(): string { return __DIR__ . '/reformulator/log/requests.log'; }
+function get_error_log_path(): string    { return __DIR__ . '/reformulator/log/error.log'; }
+function ensure_reformulator_log_file(string $p): void {
+    $d = dirname($p);
+    if (!is_dir($d)) @mkdir($d, 0755, true);
+    if (!file_exists($p)) { @file_put_contents($p, '', LOCK_EX); @chmod($p, 0644); }
 }
-
-function get_error_log_path(): string {
-    return __DIR__ . '/reformulator/log/error.log';
-}
-
-function ensure_reformulator_log_file(string $filePath): void {
-    $dir = dirname($filePath);
-    if (!is_dir($dir)) {
-        @mkdir($dir, 0755, true);
-    }
-    if (!file_exists($filePath)) {
-        @file_put_contents($filePath, '', LOCK_EX);
-        @chmod($filePath, 0644);
-    }
-}
-
 function append_requests_log(string $line): void {
-    $filePath = get_requests_log_path();
-    ensure_reformulator_log_file($filePath);
-    @file_put_contents($filePath, $line, FILE_APPEND | LOCK_EX);
-    @chmod($filePath, 0644);
+    $p = get_requests_log_path(); ensure_reformulator_log_file($p);
+    @file_put_contents($p, $line, FILE_APPEND | LOCK_EX); @chmod($p, 0644);
 }
-
 function log_test_curl_request(string $text): void {
     $date = date('d/m/Y H:i:s') . ' Europe/Paris';
-    $ip = $_SERVER['REMOTE_ADDR'] ?? 'cli';
-    $length = mb_strlen($text, 'UTF-8');
-    $line = sprintf("[%s] TEST_CURL IP=%s length=%d\n", $date, $ip, $length);
-    append_requests_log($line);
+    $ip   = $_SERVER['REMOTE_ADDR'] ?? 'cli';
+    append_requests_log(sprintf("[%s] TEST_CURL IP=%s length=%d\n", $date, $ip, mb_strlen($text, 'UTF-8')));
 }
 
+if (function_exists('ini_set')) {
+    @ini_set('error_log', get_error_log_path());
+    @ini_set('log_errors', '1');
+}
+ensure_reformulator_log_file(get_error_log_path());
 log_test_curl_request($testText);
 
-$isCli = php_sapi_name() === 'cli';
-$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+$isCli     = php_sapi_name() === 'cli';
+$isAjax    = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 $wantPlain = $isCli || $isAjax || isset($_GET['plain']);
 
+// ── Info LLM ─────────────────────────────────────────────────────────────────
 function parse_llm_info_from_server_file(): array {
-    $serverFile = __DIR__ . '/reformulator/server.js';
-    if (!is_file($serverFile)) {
-        return [];
-    }
-
-    $content = file_get_contents($serverFile);
-    if ($content === false) {
-        return [];
-    }
-
-    // Supprime les commentaires JavaScript pour éviter de parser des valeurs
-    // présentes uniquement dans la documentation ou les blocs commentés.
-    $content = preg_replace(['@//.*$@m', '@/\*.*?\*/@s'], '', $content);
-    if ($content === null) {
-        return [];
-    }
-
+    $f = __DIR__ . '/reformulator/server.js';
+    if (!is_file($f)) return [];
+    $c = file_get_contents($f);
+    if ($c === false) return [];
+    $c = preg_replace(['@//.*$@m', '@/\*.*?\*/@s'], '', $c);
+    if ($c === null) return [];
     $info = [];
-    if (preg_match('/const\s+LLM_ENGINE\s*=\s*["\']([^"\']+)["\']/', $content, $matches)) {
-        $info['engineName'] = strtoupper($matches[1]);
-    }
-    if (preg_match('/const\s+DEFAULT_LLM_ENGINE\s*=\s*["\']([^"\']+)["\']/', $content, $matches)) {
-        $info['defaultEngine'] = strtoupper($matches[1]);
-    }
-    if (preg_match('/defaultModel:\s*["\']([^"\']+)["\']/', $content, $matches)) {
-        $info['selectedModel'] = trim($matches[1]);
-    }
-    if (empty($info['engineName']) && !empty($info['defaultEngine'])) {
-        $info['engineName'] = $info['defaultEngine'];
-    }
-    if (empty($info['selectedModel'])) {
-        $info['selectedModel'] = 'inconnu';
-    }
+    if (preg_match('/const\s+DEFAULT_LLM_ENGINE\s*=\s*["\']([^"\']+)["\']/', $c, $m)) $info['engineName'] = strtoupper($m[1]);
+    if (preg_match('/defaultModel:\s*["\']([^"\']+)["\']/', $c, $m)) $info['selectedModel'] = trim($m[1]);
+    if (empty($info['selectedModel'])) $info['selectedModel'] = 'inconnu';
     return $info;
 }
-
 function get_llm_info(): array {
-    $url = 'https://charreyre.net/r3M3M83r/reformulator/llm-info';
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
-    $result = curl_exec($ch);
-    curl_close($ch);
-
-    if ($result !== false) {
-        $decoded = json_decode($result, true);
-        if (is_array($decoded) && !empty($decoded['engineName'])) {
-            return [
-                'engineName' => strtoupper($decoded['engineName'] ?? 'INCONNU'),
-                'selectedModel' => $decoded['selectedModel'] ?? 'inconnu',
-                'engineUrl' => $decoded['engineUrl'] ?? '',
-            ];
-        }
+    $ch = curl_init('https://charreyre.net/r3M3M83r/reformulator/llm-info');
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_HTTPHEADER => ['Accept: application/json']]);
+    $r = curl_exec($ch); curl_close($ch);
+    if ($r !== false) {
+        $d = json_decode($r, true);
+        if (is_array($d) && !empty($d['engineName'])) return [
+            'engineName'       => strtoupper($d['engineName'] ?? 'INCONNU'),
+            'selectedModel'    => $d['selectedModel'] ?? 'inconnu',
+            'engineUrl'        => $d['engineUrl'] ?? '',
+            'fallbackOrder'    => $d['fallbackOrder'] ?? [],
+            'availableEngines' => $d['availableEngines'] ?? [],
+        ];
     }
-
     return parse_llm_info_from_server_file();
 }
 
-$llmInfo = get_llm_info();
+$llmInfo   = get_llm_info();
 $llmEngine = $llmInfo['engineName'] ?? 'INCONNU';
-$llmModel = $llmInfo['selectedModel'] ?? 'inconnu';
 
+// ── Appel reformulateur ──────────────────────────────────────────────────────
+$payload = ['text' => $testText];
+if ($testEngine !== '') $payload['engine'] = $testEngine;
+
+$ch = curl_init($endpoint);
+curl_setopt_array($ch, [
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => json_encode($payload),
+    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT        => 30,
+]);
+$result   = curl_exec($ch);
+$curlErr  = curl_error($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$timing   = curl_getinfo($ch, CURLINFO_TOTAL_TIME);
+curl_close($ch);
+
+$decoded         = json_decode($result, true);
+$cleaned         = is_array($decoded) && isset($decoded['cleaned'])  ? $decoded['cleaned']  : null;
+$usedEngine      = is_array($decoded) && isset($decoded['engine'])   ? $decoded['engine']   : null;
+$usedModel       = is_array($decoded) && isset($decoded['model'])    ? $decoded['model']    : null;
+$attempts        = is_array($decoded) && isset($decoded['attempts']) ? $decoded['attempts'] : [];
+$llmErrorDetails = null;
+if (is_array($decoded) && !empty($decoded['details'])) $llmErrorDetails = $decoded['details'];
+elseif (is_array($decoded) && !empty($decoded['error']))
+    $llmErrorDetails = is_string($decoded['error']) ? $decoded['error'] : json_encode($decoded['error'], JSON_UNESCAPED_UNICODE);
+
+$curlInfo        = curl_version();
+$packageJsonPath = __DIR__ . '/reformulator/package.json';
+
+// ── Rendu ────────────────────────────────────────────────────────────────────
 if (!$wantPlain) {
     header('Content-Type: text/html; charset=UTF-8');
-    echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Test Reformulation LLM</title>';
+    echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Test LLM</title>';
     echo '<style>body{font-family:Menlo,Consolas,monospace;background:#f4f4f4;color:#111;padding:1rem}pre{background:#fff;border:1px solid #ccc;padding:1rem;white-space:pre-wrap;word-break:break-word;line-height:1.4;margin:0}</style></head><body><pre>';
 } else {
     header('Content-Type: text/plain; charset=UTF-8');
 }
 
-echo "--- TEST DE REFORMULATION LLM ---\n";
-echo str_repeat('=', 50) . "\n";
-echo "Endpoint de test : $endpoint\n";
-echo "Mode de connexion : $connectionMode\n";
-echo "Phrase de test   : $testText\n";
-echo "Moteur LLM utilise : $llmEngine ($llmModel)\n\n";
+$sep = str_repeat('=', 56);
+$sub = str_repeat('-', 56);
 
-$ch = curl_init($endpoint);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['text' => $testText]));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+echo "--- TEST DE REFORMULATION LLM ---\n$sep\n";
+echo "Endpoint        : $endpoint\n";
+echo "Phrase de test  : $testText\n";
+echo "Moteur DEMANDÉ  : " . ($testEngineLabel ?? "AUTO — $llmEngine") . "\n";
+echo "Fallback order  : " . implode(' → ', $llmInfo['fallbackOrder'] ?? []) . "\n";
+echo "Moteurs dispo   : " . implode(', ', $llmInfo['availableEngines'] ?? []) . "\n";
+echo "$sep\n\n";
 
-$result = curl_exec($ch);
-$error  = curl_error($ch);
-$code   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$info   = curl_getinfo($ch);
-if (function_exists('curl_close')) {
-    call_user_func('curl_close', $ch);
-}
+echo "HTTP code       : $httpCode\n";
+echo "Temps réponse   : " . round($timing, 3) . " s\n";
+echo "cURL erreur     : " . ($curlErr !== '' ? $curlErr : 'aucune') . "\n\n";
 
-$decoded = json_decode($result, true);
-$cleaned = null;
-if (is_array($decoded) && array_key_exists('cleaned', $decoded)) {
-    $cleaned = $decoded['cleaned'];
-}
-
-$curlInfo = curl_version();
-$packageJsonPath = __DIR__ . '/reformulator/package.json';
-$packageInfo = null;
-if (is_file($packageJsonPath)) {
-    $packageInfo = json_decode(file_get_contents($packageJsonPath), true);
-}
-
-echo str_repeat('=', 50) . "\n";
-echo "HTTP code     : $code\n";
-echo "cURL erreur   : " . ($error !== '' ? $error : 'aucune') . "\n";
-echo "Temps de reponse : " . round($info['total_time'] ?? 0, 3) . " s\n";
-echo str_repeat('=', 50) . "\n\n";
-
-echo "--- REPONSE SERVEUR BRUTE ---\n";
-if ($result === false || trim($result) === '') {
-    echo "aucune reponse brute\n\n";
-} else {
-    $trimmed = trim($result);
-    if ($decoded === null) {
-        echo "Corps non JSON ou page d'erreur renvoyée (" . strlen($trimmed) . " octets).\n";
-        $preview = substr($trimmed, 0, 400);
-        echo $preview . (strlen($trimmed) > 400 ? "... (truncated)\n" : "\n");
+// ── Séquence réellement tentée ───────────────────────────────────────────────
+if (!empty($attempts)) {
+    echo "$sub\nSÉQUENCE TENTÉE\n$sub\n";
+    foreach ($attempts as $i => $a) {
+        $n      = $i + 1;
+        $eng    = strtoupper($a['engine'] ?? '?');
+        $mod    = $a['model'] ?? '?';
+        $status = $a['status'] ?? '?';
+        $err    = $a['error'] ?? '';
+        $icon   = ($status === 'success') ? '✓' : (($status === 'skipped') ? '○' : '✗');
+        echo "  $icon $n. $eng ($mod) → $status";
+        if ($err !== '' && $err !== null) echo " — $err";
         echo "\n";
-    } else {
-        echo $trimmed . "\n\n";
-    }
-}
-
-echo "--- REPONSE SERVEUR NETTOYEE ---\n";
-if ($code === 404) {
-    echo "Erreur : URL introuvable (HTTP 404).\n\n";
-    echo "Causes probables :\n";
-    if (strpos($connectionMode, 'localhost') !== false) {
-        echo "  - Node.js a ecrit le fichier .port mais n'ecoute plus sur ce port.\n";
-        echo "  - Relancer Node.js dans cPanel => Node.js Apps => Restart.\n";
-        echo "  - Apres redemarrage, le fichier .port est regenere.\n";
-    } else {
-        echo "  - Node.js n'est pas demarre ou Passenger ne proxifie pas les requetes.\n";
-        echo "  - Solution : cPanel => Node.js Apps => votre app reformulator :\n";
-        echo "      Application URL    = /r3M3M83r/reformulator\n";
-        echo "      Application Root   = public_html/CHARREYRE/r3M3M83r/reformulator\n";
-        echo "      Startup file       = server.js\n";
-        echo "    Puis cliquer Save et Restart.\n";
-        echo "  - Note : apres le premier redemarrage, le fichier .port sera cree\n";
-        echo "    et les prochains appels passeront en connexion directe localhost.\n";
     }
     echo "\n";
-} elseif ($code >= 500) {
-    if (is_array($decoded) && !empty($decoded['error'])) {
-        $details = is_string($decoded['error']) ? $decoded['error'] : json_encode($decoded['error'], JSON_UNESCAPED_UNICODE);
-        echo "Erreur LLM : $details\n\n";
-    } else {
-        echo "Erreur serveur : HTTP $code. Réponse non JSON ou non attendue.\n\n";
-    }
-} elseif ($cleaned !== null) {
-    echo trim($cleaned) . "\n\n";
+}
+
+// ── Résultat ─────────────────────────────────────────────────────────────────
+echo "$sub\nRÉSULTAT\n$sub\n";
+
+if ($cleaned !== null && $cleaned !== '') {
+    $finalEngine = strtoupper($usedEngine ?? '?');
+    $finalModel  = $usedModel ?? '?';
+    echo "✓ Reformulation OK via $finalEngine ($finalModel) :\n$cleaned\n";
+} elseif ($httpCode === 0 || $curlErr !== '') {
+    echo "✗ Impossible de joindre le service Node.js.\n";
+    echo "  → cPanel › Node.js Apps › reformulator › Restart\n";
+    echo "  → URL attendue : $endpointBase\n";
+} elseif ($httpCode === 404) {
+    echo "✗ HTTP 404 — route introuvable.\n";
+    echo "  → Vérifier Application URL = /r3M3M83r/reformulator et Startup file = server.js\n";
+    if ($result !== false && trim($result) !== '')
+        echo "\n  Réponse brute :\n  " . substr(trim($result), 0, 600) . "\n";
+} elseif ($httpCode === 429) {
+    echo "✗ HTTP 429 — rate limit (voir séquence ci-dessus pour le moteur concerné).\n";
+    if ($llmErrorDetails) echo "  Détail API : $llmErrorDetails\n";
+    echo "  → Attendre et réessayer, ou choisir un autre moteur\n";
+} elseif ($httpCode >= 500) {
+    echo "✗ HTTP $httpCode — erreur Node.js (voir séquence ci-dessus).\n";
+    if ($llmErrorDetails) echo "\n  Détail : $llmErrorDetails\n";
+    if (is_array($decoded))
+        echo "\n  JSON complet :\n" . json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
+    elseif ($result !== false && trim($result) !== '')
+        echo "\n  Réponse brute :\n  " . substr(trim($result), 0, 800) . "\n";
+    echo "\n  Causes fréquentes : Modèle inexistant, clef API invalide, quota dépassé\n";
 } else {
-    if ($result === false || trim($result) === '') {
-        echo "Aucune réponse JSON valide retournée par le serveur.\n\n";
-    } else {
-        echo "Réponse reçue, mais aucun champ 'cleaned' trouvé. Vérifiez le backend Node.js.\n\n";
+    echo "✗ Réponse inattendue (HTTP $httpCode).\n";
+    if ($result !== false && trim($result) !== '')
+        echo "\n  Réponse brute :\n  " . substr(trim($result), 0, 600) . "\n";
+}
+
+echo "\n$sep\nENVIRONNEMENT\n$sub\n";
+echo "PHP     : " . phpversion() . "\n";
+echo "cURL    : " . ($curlInfo['version'] ?? 'inconnu') . "\n";
+
+if (is_file($packageJsonPath)) {
+    $pkg = json_decode(file_get_contents($packageJsonPath), true);
+    if (is_array($pkg)) {
+        echo "$sep\nPACKAGE REFORMULATOR\n$sub\n";
+        echo "name    : " . ($pkg['name'] ?? '?') . "\n";
+        echo "version : " . ($pkg['version'] ?? '?') . "\n";
+        if (!empty($pkg['dependencies']))
+            foreach ($pkg['dependencies'] as $n => $v) echo "  $n: $v\n";
     }
 }
-
-echo str_repeat('=', 50) . "\n";
-echo "ENVIRONNEMENT\n";
-echo str_repeat('-', 50) . "\n";
-echo "PHP version : " . phpversion() . "\n";
-echo "cURL version : " . ($curlInfo['version'] ?? 'inconnu') . "\n";
-
-
-if ($packageInfo !== null) {
-    echo str_repeat('=', 50) . "\n";
-    echo "PACKAGE LOCAL\n";
-    echo str_repeat('-', 50) . "\n";
-    echo "name    : " . ($packageInfo['name'] ?? 'inconnu') . "\n";
-    echo "version : " . ($packageInfo['version'] ?? 'inconnu') . "\n";
-    if (!empty($packageInfo['dependencies'])) {
-        echo "dependances :\n";
-        foreach ($packageInfo['dependencies'] as $name => $version) {
-            $version = str_replace(["\\n", "\r"], ["\n", ''], trim((string) $version));
-            foreach (explode("\n", $version) as $line) {
-                echo "  - $name: " . trim($line) . "\n";
-            }
-        }
-    }
-}
-
-echo str_repeat('=', 50) . "\n";
-echo "FIN DU TEST\n";
-echo str_repeat('=', 50) . "\n";
-
-if (!$wantPlain) {
-    echo '</pre></body></html>';
-}
-?>
+echo "$sep\nFIN DU TEST\n$sep\n";
+if (!$wantPlain) echo '</pre></body></html>';

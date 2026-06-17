@@ -5,6 +5,11 @@
  * Affiche les fichiers de log de reformulator avec les entrees les plus
  * recentes en premier (ordre inverse chronologique).
  * Rendu HTML dans un navigateur, texte brut en CLI ou avec ?plain=1.
+ *
+ * Actions supportées :
+ *   ?name=error_log|requests_log        → affiche le journal
+ *   ?name=...&plain=1                   → texte brut
+ *   ?name=...&action=clear (POST)       → vide le fichier
  */
 
 $allowed = ['error_log', 'requests_log'];
@@ -37,6 +42,21 @@ if (!file_exists($file)) {
 if (!is_readable($file)) {
     @chmod($file, 0666);
 }
+
+// Action : vider le fichier (POST uniquement)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clear') {
+    if (is_writable($file)) {
+        file_put_contents($file, '');
+        header('Location: ?name=' . urlencode($name));
+        exit;
+    } else {
+        http_response_code(403);
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo 'Impossible de vider le fichier (permissions)';
+        exit;
+    }
+}
+
 if (!is_readable($file)) {
     http_response_code(403);
     header('Content-Type: text/plain; charset=UTF-8');
@@ -67,10 +87,11 @@ if ($wantPlain) {
     exit;
 }
 
-$title  = htmlspecialchars($labels[$name] ?? $name, ENT_QUOTES, 'UTF-8');
-$count  = count($lines);
-$mtime  = @filemtime($file);
+$title   = htmlspecialchars($labels[$name] ?? $name, ENT_QUOTES, 'UTF-8');
+$count   = count($lines);
+$mtime   = @filemtime($file);
 $mtimeStr = $mtime ? date('d/m/Y H:i:s', $mtime) : 'inconnue';
+$nameEnc = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
 header('Content-Type: text/html; charset=UTF-8');
 ?>
@@ -87,9 +108,11 @@ body{margin:0;font-family:Menlo,Consolas,'Courier New',monospace;background:#0f1
 .bar{background:#16275b;color:#fff;padding:.7rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;position:sticky;top:0;z-index:10}
 .bar h1{font-size:1rem;margin:0;font-family:Arial,sans-serif}
 .bar .meta{font-size:.82rem;color:#a0aec0}
-.bar-actions{display:flex;gap:.5rem;align-items:center}
+.bar-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
 a.btn,button.btn{background:#374e8c;color:#fff;border:none;padding:.35rem .8rem;border-radius:5px;text-decoration:none;font-size:.82rem;cursor:pointer;font-family:Arial,sans-serif}
 a.btn:hover,button.btn:hover{background:#2e4475}
+button.btn-danger{background:#7f1d1d}
+button.btn-danger:hover{background:#991b1b}
 .empty{color:#6e7681;font-style:italic;padding:2rem 1.2rem}
 .log-wrap{padding:.8rem 1.2rem}
 .entry{border-bottom:1px solid #21262d;padding:.45rem 0;white-space:pre-wrap;word-break:break-all}
@@ -103,11 +126,15 @@ a.btn:hover,button.btn:hover{background:#2e4475}
 <div class="bar">
   <div>
     <h1><?php echo $title; ?></h1>
-    <div class="meta">Derniere modification : <?php echo $mtimeStr; ?> — <?php echo $count; ?> ligne<?php echo $count !== 1 ? 's' : ''; ?> — Plus recent en haut</div>
+    <div class="meta">Derniere modification : <?php echo $mtimeStr; ?> &mdash; <?php echo $count; ?> ligne<?php echo $count !== 1 ? 's' : ''; ?> &mdash; Plus recent en haut</div>
   </div>
   <div class="bar-actions">
     <button class="btn" onclick="copyAll()">Copier tout</button>
-    <a class="btn" href="?name=<?php echo htmlspecialchars($name, ENT_QUOTES); ?>&amp;plain=1" target="_blank">Texte brut</a>
+    <a class="btn" href="?name=<?php echo $nameEnc; ?>&amp;plain=1" target="_blank">Texte brut</a>
+    <form method="post" action="?name=<?php echo $nameEnc; ?>" style="display:inline" onsubmit="return confirm('Vider ce journal ? Cette action est irréversible.')">
+      <input type="hidden" name="action" value="clear">
+      <button type="submit" class="btn btn-danger">Vider le journal</button>
+    </form>
     <a class="btn" href="../saisie.php">&#8592; Retour</a>
   </div>
 </div>
@@ -118,7 +145,6 @@ a.btn:hover,button.btn:hover{background:#2e4475}
 <?php foreach ($lines as $line): ?>
 <?php
     $escaped = htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
-    // Colore le timestamp entre crochets
     $escaped = preg_replace('/^(\[[^\]]+\])/', '<span class="ts">$1</span>', $escaped);
     $isErr = (stripos($line, 'error') !== false || stripos($line, 'exception') !== false || stripos($line, 'fatal') !== false);
     $cls = $isErr ? ' err' : (stripos($line, 'REFORMULER') !== false || stripos($line, 'TEST_CURL') !== false ? ' req' : '');

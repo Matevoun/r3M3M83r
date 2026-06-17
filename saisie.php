@@ -50,20 +50,14 @@ define('SOURCE_FILE', __DIR__ . '/instructions.md');
 // Priorite 3 : URL publique codee en dur (dernier recours).
 // Toute modification de cette logique doit etre consignee dans les regles d'or.
 function get_reformulator_base_url(): string {
-    $portFile = __DIR__ . '/reformulator/.port';
-    if (is_file($portFile) && is_readable($portFile)) {
-        $port = trim((string)@file_get_contents($portFile));
-        if ($port !== '' && ctype_digit($port) && (int)$port > 0 && (int)$port < 65536) {
-            return 'http://127.0.0.1:' . $port;
-        }
-    }
-
+    // Sur hébergement mutualisé o2switch/Passenger, la connexion directe
+    // via 127.0.0.1:PORT n'est pas accessible depuis PHP (Passenger proxy).
+    // On utilise toujours l'URL publique — identique au comportement de test_curl.php.
     if (!empty($_SERVER['HTTP_HOST'])) {
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
         $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
         return $scheme . '://' . $_SERVER['HTTP_HOST'] . $basePath . '/reformulator';
     }
-
     return 'https://charreyre.net/r3M3M83r/reformulator';
 }
 
@@ -142,22 +136,27 @@ function parse_llm_info_from_server_file(): array {
 // la configuration LLM active. Si le service Node.js n'est pas joignable, on bascule
 // sur un fallback local en lisant `reformulator/server.js` directement.
 function get_llm_info(): array {
-    $ch = curl_init(REFORMULATOR_BASE_URL . '/llm-info');
+    $url = REFORMULATOR_BASE_URL . '/llm-info';
+    $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 4); // Reduit pour ne pas bloquer le chargement de la page
+    curl_setopt($ch, CURLOPT_TIMEOUT, 8);        // augmenté
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); // nouveau
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
     $result = curl_exec($ch);
     $error  = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     close_curl_handle($ch);
 
-    if ($error || !$result) {
+    if ($error || !$result || $httpCode >= 400) {
+        error_log("LLM-INFO unreachable - HTTP $httpCode - $error"); // pour debug
         $fallback = parse_llm_info_from_server_file();
         $fallback['reachable'] = false;
+        $fallback['last_error'] = $error ?: "HTTP $httpCode";
         return $fallback;
     }
 
     $data = json_decode($result, true);
-    if (!is_array($data)) {
+    if (!is_array($data) || empty($data['engineName'])) {
         $fallback = parse_llm_info_from_server_file();
         $fallback['reachable'] = false;
         return $fallback;
@@ -222,11 +221,15 @@ if (function_exists('ini_set')) {
 // Le backend est responsable de comprendre un récit à la première personne
 // et de le transposer en mémoire à la troisième personne lorsque c'est nécessaire.
 function reformuler_via_node(string $text, string $instructionsContext = ''): string {
+    global $selected_engine;
     // Envoie le texte saisi au service Node.js local pour reformulation LLM.
     // La route distante peut etre ajustee si le serveur est deplace.
     $payload = ['text' => $text];
     if ($instructionsContext !== '') {
         $payload['instructionsContext'] = $instructionsContext;
+    }
+    if (!empty($selected_engine)) {
+        $payload['engine'] = $selected_engine;
     }
     $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
     curl_setopt($ch, CURLOPT_POST, true);
@@ -245,9 +248,13 @@ function reformuler_via_node(string $text, string $instructionsContext = ''): st
 }
 
 function propose_emplacement_via_node(string $text, string $instructionsContext = ''): string {
+    global $selected_engine;
     $payload = ['text' => $text, 'purpose' => 'location'];
     if ($instructionsContext !== '') {
         $payload['instructionsContext'] = $instructionsContext;
+    }
+    if (!empty($selected_engine)) {
+        $payload['engine'] = $selected_engine;
     }
     $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
     curl_setopt($ch, CURLOPT_POST, true);
@@ -266,8 +273,12 @@ function propose_emplacement_via_node(string $text, string $instructionsContext 
 }
 
 function call_reformulator_service(array $payload): string {
-    global $last_reformulator_error;
+    global $last_reformulator_error, $selected_engine;
     $last_reformulator_error = '';
+    // Injecte le moteur sélectionné par l'utilisateur si non déjà présent.
+    if (!empty($selected_engine) && !isset($payload['engine'])) {
+        $payload['engine'] = $selected_engine;
+    }
     $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
@@ -771,6 +782,15 @@ function build_search_term_label(array $searchTerms, string $query, array $secti
 
 function choose_search_terms(string $query, string $llmOutput, array $sections): array {
     $queryTerms = filter_search_query_terms(extract_keywords($query));
+
+    // Amélioration : on garde les noms propres même courts
+    $rawQueryWords = preg_split('/\s+/', normalize_for_matching($query), -1, PREG_SPLIT_NO_EMPTY);
+    foreach ($rawQueryWords as $word) {
+        if (preg_match('/^[A-Z]/u', $word) && mb_strlen($word) >= 3) {
+            $queryTerms[] = $word;
+        }
+    }
+
     $llmTerms = filter_search_query_terms(build_query_terms_from_llm($llmOutput, ''));
     $candidates = array_unique(array_merge($queryTerms, $llmTerms));
     $candidates = array_values(array_filter($candidates, function ($value) {
@@ -781,9 +801,8 @@ function choose_search_terms(string $query, string $llmOutput, array $sections):
     $scored = [];
     foreach ($candidates as $term) {
         $df = score_term_document_frequency($term, $sections);
-        if ($df === 0) {
-            continue;
-        }
+        if ($df === 0) continue;
+
         $scored[$term] = [
             'is_query' => in_array($term, $queryTerms, true) ? 1 : 0,
             'idf' => log(1 + ($sectionCount / $df)),
@@ -797,30 +816,12 @@ function choose_search_terms(string $query, string $llmOutput, array $sections):
     }
 
     uasort($scored, function ($a, $b) {
-        if ($a['is_query'] !== $b['is_query']) {
-            return $b['is_query'] <=> $a['is_query'];
-        }
-        if ($a['idf'] !== $b['idf']) {
-            return $b['idf'] <=> $a['idf'];
-        }
+        if ($a['is_query'] !== $b['is_query']) return $b['is_query'] <=> $a['is_query'];
+        if ($a['idf'] !== $b['idf']) return $b['idf'] <=> $a['idf'];
         return $b['length'] <=> $a['length'];
     });
 
-    if (!empty($queryTerms)) {
-        $queryMatches = array_values(array_filter($queryTerms, function ($term) use ($scored) {
-            return isset($scored[$term]);
-        }));
-        if (!empty($queryMatches)) {
-            return array_values(array_unique($queryMatches));
-        }
-    }
-
-    $selected = array_slice(array_keys($scored), 0, 5, true);
-    $selectedQueryIntersection = array_intersect($selected, $queryTerms);
-    if (empty($selectedQueryIntersection) && !empty($queryTerms)) {
-        return array_values($queryTerms);
-    }
-
+    $selected = array_slice(array_keys($scored), 0, 6, true); // un peu plus large
     return array_values($selected);
 }
 
@@ -1099,6 +1100,7 @@ $proposed_location         = '';
 $query_result              = '';
 $query_debug               = '';
 $last_reformulator_error   = '';
+$selected_engine           = '';  // Moteur IA choisi par l'utilisateur (état global)
 $instructions_outline      = [];
 $instructions_excerpt      = '';
 $instructions_context      = '';
@@ -1134,6 +1136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input_text = trim($_POST['story'] ?? '');
     $instructions_context = trim($_POST['instructions_context'] ?? '');
+    // Moteur IA sélectionné par l'utilisateur (vide = auto/fallback).
+    $selected_engine = trim($_POST['selected_engine'] ?? '');
 
     // Si les instructions sont chargees, enrichir le contexte avec le contenu de la section la plus probable.
     if ($instructions_context !== '') {
@@ -1183,11 +1187,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Bouton "Interroger le fichier d'instructions"
     if (isset($_POST['query_instructions']) && $input_text !== '') {
         $reformule_original = $input_text;
         $sections = extract_instructions_sections();
-        $sectionMatches = [];
-        $searchTerms = [];
 
         if ($instructions_context === '') {
             $instructions_context = build_instructions_context_for_text($input_text);
@@ -1195,81 +1198,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $instructions_line_count = count_instructions_lines();
         }
 
-        if (!empty($sections)) {
-            $query_result = query_instructions_via_node($input_text, $instructions_context);
-            $isaResponse = $query_result;
-            if ($query_result !== '' && !is_negative_query_answer($query_result)) {
-                $reformule_msg = 'Réponse directement générée par l’IA à partir du contexte du fichier d\'instructions.';
-            } else {
-                $llmKeywords = extract_query_keywords_via_node($input_text, $instructions_context);
-                $searchTerms = choose_search_terms($input_text, $llmKeywords, $sections);
-                if (empty($searchTerms)) {
-                    $searchTerms = filter_search_query_terms(extract_keywords($input_text));
-                }
-                $query_debug = '';
-                if (is_negative_query_answer($isaResponse)) {
-                    $query_debug = 'IA a répondu : "' . trim($isaResponse) . '"';
-                } else {
-                    $query_debug = 'IA n\'a pas renvoyé de réponse utile.';
-                }
-                if ($llmKeywords !== '') {
-                    $query_debug .= ' Mots-clés IA : ' . trim($llmKeywords) . '.';
-                }
-                if (!empty($searchTerms)) {
-                    $query_debug .= ' Termes de recherche : ' . implode(', ', $searchTerms) . '.';
-                }
+        $query_result = '';
+        $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n\n";
 
-                $sectionMatches = search_instructions_sections_by_terms($searchTerms, $sections, 0);
-                if (empty($sectionMatches) && !empty($searchTerms)) {
-                    $sectionMatches = search_instructions_sections_by_terms(filter_search_query_terms($searchTerms), $sections, 0);
-                }
-                if (empty($sectionMatches)) {
-                    $sectionMatches = search_instructions_sections_by_full_query($input_text, $sections, 0);
-                }
-                if (empty($sectionMatches)) {
-                    $sectionMatches = search_instructions_sections_by_terms_loose($searchTerms, $sections, 0);
-                }
+        // === 1. On donne la priorité maximale à l'IA ===
+        $llmResponse = query_instructions_via_node($input_text, $instructions_context);
+        $query_debug .= "Réponse LLM : " . ($llmResponse ?: '(vide)') . "\n";
 
-                $query_debug .= ' Recherches locales : ' . count($sectionMatches) . ' section(s) trouvée(s).';
-                if (!empty($sectionMatches)) {
-                    $sectionTitles = array_keys($sectionMatches);
-                    $query_debug .= ' Titres : ' . implode(' | ', array_slice($sectionTitles, 0, 5)) . '.';
-                }
-
-                if (!empty($sectionMatches)) {
-                    $instructions_loaded = true;
-                    $instructions_line_count = count_instructions_lines();
-                    $query_result = format_local_query_response($searchTerms, $sectionMatches, $input_text);
-                    $reformule_msg = 'Recherche locale dans le fichier d\'instructions.';
-                } else {
-                    $termsLabel = !empty($searchTerms) ? implode(', ', $searchTerms) : 'aucun terme utile';
-                    $query_result = $query_result !== ''
-                        ? $query_result . ' Termes recherchés : ' . $termsLabel . '.'
-                        : 'Aucune mention trouvée dans le fichier d\'instructions. Termes recherchés : ' . $termsLabel . '.';
-                    $reformule_msg = 'Résultat de la recherche dans le fichier d\'instructions.';
-                    $query_debug .= ' Recherche locale : 0 sections trouvées.';
-                    if (!empty($last_reformulator_error)) {
-                        $query_debug .= ' Erreur service : ' . $last_reformulator_error . '.';
-                    }
-                }
-            }
+        if ($llmResponse !== '' && !is_negative_query_answer($llmResponse)) {
+            $query_result = $llmResponse;
+            $reformule_msg = 'Réponse générée directement par l’IA (elle a compris la question).';
         } else {
-            $query_result = query_instructions_via_node($input_text, $instructions_context);
-            if ($query_result !== '' && !is_negative_query_answer($query_result)) {
-                $reformule_msg = 'Réponse directement générée par l’IA à partir du contexte du fichier d\'instructions.';
+            $query_debug .= "→ LLM n'a pas trouvé de réponse utile → recherche locale renforcée\n";
+
+            // Recherche locale très permissive pour les noms
+            $llmKeywords = extract_query_keywords_via_node($input_text, $instructions_context);
+            $searchTerms = choose_search_terms($input_text, $llmKeywords, $sections);
+
+            // Force tous les noms propres
+            preg_match_all('/\b[A-ZÀÂÄÉÈÊËÎÏÔÖÙÛÜ][a-zàâäéèêëîïôöùûü]+\b/u', $input_text, $nameMatches);
+            foreach ($nameMatches[0] as $name) {
+                $searchTerms[] = normalize_for_matching($name);
+            }
+            $searchTerms = array_unique(array_filter($searchTerms));
+
+            $query_debug .= "Termes recherchés : " . implode(', ', $searchTerms) . "\n";
+
+            $sectionMatches = search_instructions_sections_by_terms($searchTerms, $sections, 0);
+
+            if (empty($sectionMatches)) {
+                $sectionMatches = search_instructions_sections_by_full_query($input_text, $sections, 0);
+            }
+
+            if (!empty($sectionMatches)) {
+                $query_result = format_local_query_response($searchTerms, $sectionMatches, $input_text);
+                $reformule_msg = 'Résultat trouvé par recherche locale.';
             } else {
-                $query_debug = is_negative_query_answer($query_result)
-                    ? 'IA a répondu : "' . trim($query_result) . '".'
-                    : 'IA n\'a pas renvoyé de réponse utile.';
-                if (!empty($last_reformulator_error)) {
-                    $query_debug .= ' Erreur service : ' . $last_reformulator_error . '.';
-                }
-                $query_result = $query_result !== ''
-                    ? $query_result
-                    : 'Aucune mention trouvée dans le fichier d\'instructions.';
-                $reformule_msg = 'Résultat de la recherche dans le fichier d\'instructions.';
+                $query_result = "Aucune mention trouvée dans instructions.md pour cette question.";
+                $reformule_msg = 'Aucun résultat trouvé.';
             }
         }
+
+        $query_debug .= "\nSections trouvées : " . count($sectionMatches ?? []) . "\n";
     }
 
     // Bouton "Charger les instructions"
@@ -1374,6 +1344,10 @@ button.secondary:hover{background:#6d7a9b}
 .meta-line strong{margin-right:.5rem}
 .mini-button{font-size:.92rem;padding:.45rem .75rem;border-radius:6px;border:none;background:#16275b;color:#fff;cursor:pointer;white-space:nowrap;min-width:140px;max-width:180px;width:auto !important;transition:transform .14s ease,background .14s ease}
 .mini-button:hover{background:#1f3d83;transform:translateY(-1px)}
+.engine-select-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.7rem;padding:.55rem .7rem;background:#f0f3fa;border:1px solid #d0d8ef;border-radius:7px}
+.engine-select-row label{font-size:.93rem;color:#333;white-space:nowrap}
+.engine-select-row select{font-size:.93rem;padding:.35rem .6rem;border:1px solid #b0bdd8;border-radius:5px;background:#fff;color:#1d1d1d;cursor:pointer}
+.engine-badge{display:inline-block;font-size:.82rem;padding:.2rem .55rem;border-radius:4px;background:#d4e4f7;color:#0a3d62;font-weight:bold;white-space:nowrap}
 @media(max-width:720px){.meta-actions{flex-direction:column;align-items:flex-start} .mini-button{width:auto !important}}
 @media(min-width:720px){.blocks{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.header{flex-direction:column}button{width:100%}}
@@ -1388,7 +1362,7 @@ button.secondary:hover{background:#6d7a9b}
     </div>
     <div class="meta">
       <p class="meta-line">
-        <button type="button" id="reset-page" class="mini-button" title="Recharge la page saisie.php à zéro, sans contexte ni historique">Recharger</button>
+        <button type="button" id="reset-page" class="mini-button" title="Recharge la page saisie.php à zéro, sans contexte ni historique">Reset</button>
       </p>
       <p class="meta-line">
         Cible analysee : <strong><a href="<?php echo html_escape($source_url ?: basename(SOURCE_FILE)); ?>" target="_blank" rel="noopener noreferrer" title="Ouvrir <?php echo html_escape(basename(SOURCE_FILE)); ?> dans un nouvel onglet"><?php echo html_escape(basename(SOURCE_FILE)); ?></a></strong>
@@ -1404,16 +1378,21 @@ button.secondary:hover{background:#6d7a9b}
         <?php endif; ?>
       </div>
       <div class="meta-actions">
-        <p style="margin:0">Moteur LLM utilise : <strong><?php
+        <p style="margin:0">Moteur LLM demandé : <strong><?php
             $engineName = html_escape(strtoupper($llmInfo['engineName'] ?? 'INCONNU'));
             $engineUrl = $llmInfo['engineUrl'] ?? '';
             $modelName = $llmInfo['selectedModel'] ?? 'modele inconnu';
-            if ($engineUrl !== '') {
-                echo '<a href="' . html_escape($engineUrl) . '" target="_blank" rel="noopener noreferrer" title="Ouvrir la console du moteur ' . $engineName . '">' . $engineName . '</a>';
-            } else {
-                echo $engineName;
+            $displayText = $engineName . ' (' . html_escape($modelName) . ')';
+
+            if ($selected_engine !== '') {
+                $displayText = html_escape(strtoupper($selected_engine)) . ' <em>(manuel)</em>';
             }
-            echo ' (' . html_escape($modelName) . ')';
+
+            if ($engineUrl !== '') {
+                echo '<a href="' . html_escape($engineUrl) . '" target="_blank" rel="noopener noreferrer">' . $displayText . '</a>';
+            } else {
+                echo $displayText;
+            }
         ?></strong></p>
         <button type="button" id="open-test-modal" class="mini-button" title="Tester le moteur LLM">Tester</button>
       </div>
@@ -1474,12 +1453,33 @@ button.secondary:hover{background:#6d7a9b}
   <div class="card">
     <form method="post" action="">
       <label for="story"><strong>Texte libre</strong></label>
-      <textarea id="story" name="story" placeholder="Raconte ta vie à la première personne ; l'IA le transposera en mémoire de Mathieu à la troisième personne." required><?php echo html_escape($input_text); ?></textarea>
-      <p class="notice">Définir en « je » ou « moi ». Le service IA corrige et reformule, puis propose où ranger le souvenir dans le fichier d'instructions. Le bouton "Rechercher" interroge le fichier d'instructions pour répondre à une question.</p>
+      <textarea id="story" name="story" placeholder="Raconte ta vie à la première personne ; l'IA le transposera en mémoire de Mathieu à la troisième personne." required><?php echo html_escape($input_text); ?></textarea>
+      <p class="notice">Le service IA corrige, reformule et transpose à la troisième personne, puis propose où ranger le souvenir dans le fichier d'instructions. Le bouton “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
       <input type="hidden" name="instructions_context" value="<?php echo html_escape($instructions_context); ?>">
-      <?php if ($instructions_loaded && $instructions_line_count > 0): ?>
-      <div class="msg-ok" style="margin:0 0 1rem 0;">Contexte d'instructions chargé — <?php echo html_escape((string)$instructions_line_count); ?> lignes lues.</div>
-      <?php endif; ?>
+      <?php
+        // Construction de la liste des moteurs disponibles pour le sélecteur.
+        $availableEngines = $llmInfo['availableEngines'] ?? [];
+        $currentEngineName = strtolower($llmInfo['engineName'] ?? 'groq');
+        // Si la liste est vide (service non joignable), on propose les moteurs connus.
+        if (empty($availableEngines)) {
+            $availableEngines = ['groq', 'cerebras', 'mistral', 'openrouter'];
+        }
+        $engineLabels = ['groq' => 'Groq', 'cerebras' => 'Cerebras', 'mistral' => 'Mistral', 'openrouter' => 'OpenRouter'];
+      ?>
+      <div class="engine-select-row">
+        <label for="selected_engine">Moteur IA :</label>
+        <select id="selected_engine" name="selected_engine">
+          <option value="" <?php echo ($selected_engine === '') ? 'selected' : ''; ?>>Auto — <?php echo html_escape(strtoupper($currentEngineName)); ?> (défaut)</option>
+          <?php foreach ($availableEngines as $eng): ?>
+          <option value="<?php echo html_escape($eng); ?>" <?php echo ($selected_engine === $eng) ? 'selected' : ''; ?>>
+            <?php echo html_escape($engineLabels[$eng] ?? ucfirst($eng)); ?>
+          </option>
+          <?php endforeach; ?>
+        </select>
+        <?php if ($selected_engine !== ''): ?>
+          <span class="engine-badge"><?php echo html_escape(strtoupper($selected_engine)); ?> sélectionné</span>
+        <?php endif; ?>
+      </div>
       <div class="btn-row">
         <button type="submit" name="analyser" class="secondary" title="Analyser le texte localement">Analyse simple</button>
         <button type="submit" name="query_instructions" class="test" title="Interroger le fichier d'instructions">Interroger</button>
@@ -1577,7 +1577,15 @@ function openTestModal() {
     if (output && modal) {
         output.textContent = 'Chargement du benchmark en cours ...';
         modal.classList.add('open');
-        fetch('./test_curl.php', {
+
+        // Récupère le moteur actuellement sélectionné dans le formulaire
+        const engineSelect = document.getElementById('selected_engine');
+        let engineParam = '';
+        if (engineSelect && engineSelect.value !== '') {
+            engineParam = '?engine=' + encodeURIComponent(engineSelect.value);
+        }
+
+        fetch('./test_curl.php' + engineParam, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'text/plain'
@@ -1736,6 +1744,37 @@ function escapeHtml(text) {
 
 if (openModal) {
     openModal.addEventListener('click', openTestModal);
+}
+// Mise à jour dynamique du moteur affiché en haut
+const engineSelect = document.getElementById('selected_engine');
+const engineDisplay = document.querySelector('.meta-actions p strong');
+
+function updateEngineDisplay() {
+    if (!engineSelect || !engineDisplay) return;
+
+    const selectedValue = engineSelect.value.trim();
+    let displayText = '';
+
+    if (selectedValue === '') {
+        // Option "Auto"
+        displayText = 'GROQ (défaut)';
+    } else {
+        // Moteur sélectionné manuellement
+        displayText = selectedValue.toUpperCase() + ' (manuel)';
+    }
+
+    engineDisplay.textContent = displayText;
+
+    // Petit effet visuel
+    engineDisplay.style.transition = 'color 0.4s';
+    engineDisplay.style.color = '#0a3d62';
+    setTimeout(() => { engineDisplay.style.color = ''; }, 1200);
+}
+
+if (engineSelect && engineDisplay) {
+    engineSelect.addEventListener('change', updateEngineDisplay);
+    // Mise à jour initiale au chargement
+    setTimeout(updateEngineDisplay, 100);
 }
 if (closeModal) {
     closeModal.addEventListener('click', closeTestModal);
