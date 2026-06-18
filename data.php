@@ -231,7 +231,7 @@ a.btn-clear:hover{background:#3a2525;color:#e99}
 .btn-copy:hover{border-color:#7cf;color:#7cf}
 mark{background:#2b2b00;color:#ffe566;font-weight:bold;padding:0 3px;border-radius:2px}
 .ellipsis{color:#7cf;font-weight:bold;opacity:0.8}
-#filter-info{font-size:.82rem;color:#666;min-height:1.2rem;margin-bottom:.3rem}
+#filter-info{font-size:.82rem;color:#666;margin-bottom:.3rem}
 /* Date de derniere modification du fichier source */
 .file-meta{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.6rem;row-gap:.1rem;font-size:.78rem;margin:.15rem 0 1.1rem}
 .file-meta .lbl{color:#444}
@@ -337,7 +337,7 @@ function html_footer(bool $show_back = true): string {
     $back = $show_back ? '<p><a class="back" href="sections">← Retour à la liste des sections</a></p>' : '';
     $github_raw = 'https://raw.githubusercontent.com/Matevoun/r3M3M83r/refs/heads/main/instructions.md';
     $local_md   = 'https://mathieu.charreyre.net/r3M3M83r/instructions.md';
-    $foot_text = '<div style="margin-top:1.5rem;padding:1rem 1.1rem;background:#111;border:1px solid #222;border-radius:6px;color:#bbb;font-size:.86rem;line-height:1.5;">'
+    $foot_text = '<div style="margin-top:1.5rem;background:#111;color:#bbb;font-size:.86rem;line-height:1.5;">'
                . '<p style="margin:.2rem 0;">Fichier brut accessible en <a href="' . $local_md . '" style="color:#7cf;" target="_blank">local</a> (<span style="color:#999;">' . $local_md . '</span>) et sur <a href="' . $github_raw . '" style="color:#7cf;" target="_blank">GitHub</a> (<span style="color:#999;">' . $github_raw . '</span>)</p><br>'
                . '<p style="margin:.2rem 0;">Si vous êtes là, c’est que Mathieu vous a normalement autorisé à consulter cette page... ou que vous êtes un agent particulièrement persuasif.</p>'
                . '</div>';
