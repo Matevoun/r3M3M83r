@@ -135,7 +135,10 @@ button.btn-danger:hover{background:#991b1b}
       <input type="hidden" name="action" value="clear">
       <button type="submit" class="btn btn-danger">Vider le journal</button>
     </form>
-    <a class="btn" href="../saisie.php">&#8592; Retour</a>
+
+    <!-- Boutons améliorés -->
+    <button class="btn" onclick="window.close()" style="background:#e53e3e;color:white;">✕ Fermer cet onglet</button>
+    <a class="btn" href="../saisie.php" target="_self" style="background:#2f855a;">← Retour à la saisie</a>
   </div>
 </div>
 <?php if (empty($lines)): ?>
@@ -164,6 +167,22 @@ function copyAll() {
         setTimeout(function() { b.textContent = orig; }, 1800);
     });
 }
+
+function closeTab() {
+    window.close();
+    // Fallback si le navigateur bloque la fermeture
+    setTimeout(() => {
+        window.location.href = '../saisie.php';
+    }, 800);
+}
+
+// Optionnel : rendre le bouton Fermer encore plus visible
+document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.querySelector('button[onclick*="window.close"]');
+    if (closeBtn) {
+        closeBtn.style.fontWeight = 'bold';
+    }
+});
 </script>
 </body>
 </html>

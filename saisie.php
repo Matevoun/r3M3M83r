@@ -728,7 +728,7 @@ function build_query_terms_from_llm(string $llmOutput, string $fallback = ''): a
 function score_term_document_frequency(string $term, array $sections): int {
     $count = 0;
     foreach ($sections as $content) {
-        if (match_term_in_text($term, normalize_for_matching($content))) {
+        if (match_term_in_text($term, $content)) {  // ← corrigé
             $count++;
         }
     }
@@ -825,12 +825,77 @@ function choose_search_terms(string $query, string $llmOutput, array $sections):
     return array_values($selected);
 }
 
+// -----------------------------------------------------------------------------
+// FONCTIONS DE RECHERCHE AMÉLIORÉES (Interroger)
+// -----------------------------------------------------------------------------
+
 function match_term_in_text(string $term, string $text): bool {
-    if ($term === '') {
-        return false;
+    if ($term === '') return false;
+    $term_norm = normalize_for_matching($term);
+    $text_norm = normalize_for_matching($text);
+
+    if (mb_stripos($text_norm, $term_norm) !== false) {
+        return true;
     }
-    $pattern = '/\b' . preg_quote($term, '/') . '\b/u';
-    return preg_match($pattern, $text) === 1;
+
+    $pattern = '/\b' . preg_quote($term, '/') . '\b/ui';
+    return preg_match($pattern, $text) === 1 ||
+           preg_match('/' . preg_quote($term_norm, '/') . '/ui', $text_norm) === 1;
+}
+
+function match_term_in_text_improved(string $term, string $text): bool {
+    return match_term_in_text($term, $text); // alias pour compatibilité
+}
+
+function search_with_counts(string $query, array $sections): array {
+    $llmKeywords = extract_query_keywords_via_node($query);
+    $searchTerms = choose_search_terms($query, $llmKeywords, $sections);
+
+    // Force noms propres
+    preg_match_all('/\b[A-ZÀÂÄÉÈÊËÎÏÔÖÙÛÜ][a-zàâäéèêëîïôöùûü]+(?:\s+[A-ZÀÂÄÉÈÊËÎÏÔÖÙÛÜ][a-zàâäéèêëîïôöùûü]+)*\b/u', $query, $names);
+    foreach ($names[0] as $name) {
+        $searchTerms[] = normalize_for_matching($name);
+    }
+    $searchTerms = array_unique(array_filter($searchTerms));
+
+    $results = [];
+    $totalOccurrences = 0;
+
+    foreach ($sections as $title => $content) {
+        $score = 0;
+        $matchesInSection = [];
+        $normContent = normalize_for_matching($content);
+
+        foreach ($searchTerms as $term) {
+            if (empty($term)) continue;
+
+            $countInSection = substr_count($normContent, $term);
+            $totalOccurrences += $countInSection;
+
+            if (match_term_in_text($term, $content)) {
+                $score += 10;
+                $sentences = extract_section_match_sentences($content, [$term], 6);
+                $matchesInSection = array_merge($matchesInSection, $sentences);
+            }
+        }
+
+        if ($score > 0) {
+            $results[$title] = [
+                'score'       => $score,
+                'content'     => $content,
+                'matches'     => array_slice(array_unique($matchesInSection), 0, 8),
+                'excerpt'     => $matchesInSection[0] ?? '',
+                'occurrences' => $countInSection // par section
+            ];
+        }
+    }
+
+    uasort($results, fn($a, $b) => $b['score'] <=> $a['score']);
+    return [
+        'sections'   => $results,
+        'total_occ'  => $totalOccurrences,
+        'terms'      => $searchTerms
+    ];
 }
 
 function extract_section_match_sentences(string $content, array $terms, int $maxSentences = 12): array {
@@ -1201,45 +1266,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query_result = '';
         $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n\n";
 
-        // === 1. On donne la priorité maximale à l'IA ===
-        $llmResponse = query_instructions_via_node($input_text, $instructions_context);
-        $query_debug .= "Réponse LLM : " . ($llmResponse ?: '(vide)') . "\n";
+        // 1. Recherche locale renforcée (toujours exécutée)
+        $localSearch = search_with_counts($input_text, $sections);
+        $localEvidence = '';
 
-        if ($llmResponse !== '' && !is_negative_query_answer($llmResponse)) {
-            $query_result = $llmResponse;
-            $reformule_msg = 'Réponse générée directement par l’IA (elle a compris la question).';
-        } else {
-            $query_debug .= "→ LLM n'a pas trouvé de réponse utile → recherche locale renforcée\n";
+        if (!empty($localSearch['sections'])) {
+            $localEvidence = "Recherche locale — Termes : " . implode(', ', $localSearch['terms']) . "\n";
+            $localEvidence .= "Occurrences totales trouvées : " . $localSearch['total_occ'] . "\n\n";
 
-            // Recherche locale très permissive pour les noms
-            $llmKeywords = extract_query_keywords_via_node($input_text, $instructions_context);
-            $searchTerms = choose_search_terms($input_text, $llmKeywords, $sections);
-
-            // Force tous les noms propres
-            preg_match_all('/\b[A-ZÀÂÄÉÈÊËÎÏÔÖÙÛÜ][a-zàâäéèêëîïôöùûü]+\b/u', $input_text, $nameMatches);
-            foreach ($nameMatches[0] as $name) {
-                $searchTerms[] = normalize_for_matching($name);
-            }
-            $searchTerms = array_unique(array_filter($searchTerms));
-
-            $query_debug .= "Termes recherchés : " . implode(', ', $searchTerms) . "\n";
-
-            $sectionMatches = search_instructions_sections_by_terms($searchTerms, $sections, 0);
-
-            if (empty($sectionMatches)) {
-                $sectionMatches = search_instructions_sections_by_full_query($input_text, $sections, 0);
-            }
-
-            if (!empty($sectionMatches)) {
-                $query_result = format_local_query_response($searchTerms, $sectionMatches, $input_text);
-                $reformule_msg = 'Résultat trouvé par recherche locale.';
-            } else {
-                $query_result = "Aucune mention trouvée dans instructions.md pour cette question.";
-                $reformule_msg = 'Aucun résultat trouvé.';
+            foreach ($localSearch['sections'] as $title => $data) {
+                $localEvidence .= "### " . $title . " (" . count($data['matches']) . " extraits)\n";
+                foreach ($data['matches'] as $excerpt) {
+                    $localEvidence .= "- " . mb_substr($excerpt, 0, 280) . "...\n";
+                }
+                $localEvidence .= "\n";
             }
         }
 
-        $query_debug .= "\nSections trouvées : " . count($sectionMatches ?? []) . "\n";
+        // 2. On demande à l'IA de synthétiser (humain + avis constructif)
+        $finalResponse = finalize_query_response_via_node(
+            $input_text,
+            $localEvidence,
+            $instructions_context
+        );
+
+        if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
+            $query_result = $finalResponse;
+            $reformule_msg = !empty($localSearch['sections'])
+    ? '✅ ' . count($localSearch['sections']) . ' section(s) trouvée(s) — ' . number_format($localSearch['total_occ'] ?? 0, 0, ',', ' ') . ' occurrences'
+    : 'Réponse basée uniquement sur recherche locale.';
+        } else {
+            // Fallback ultra-simple
+            $query_result = $localEvidence ?: "Aucune mention trouvée.";
+            $reformule_msg = 'Réponse basée uniquement sur recherche locale.';
+        }
+
+        $query_debug .= "Occurrences détectées : " . ($localSearch['total_occ'] ?? 0) . "\n";
+        $query_debug .= "Sections trouvées : " . count($localSearch['sections'] ?? []) . "\n";
     }
 
     // Bouton "Charger les instructions"
@@ -1289,11 +1352,11 @@ if (isset($_GET['test_error_log'])) {
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#1d1d1d}
 .page{width:100%;max-width:1100px;margin:0 auto;padding:1rem}
-.header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+.header{display:flex;flex-wrap:wrap;justify-content:space-between;margin-bottom:1rem}
 .header h1{font-size:1.4rem;margin:0}
 .header .meta{font-size:.95rem;color:#555;line-height:1.5}
 .card{background:#fff;border:1px solid #dadada;border-radius:8px;padding:1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:1rem}
-textarea{width:100%;min-height:240px;border:1px solid #bbb;border-radius:6px;padding:.8rem;font:1rem/1.5rem Arial,Helvetica,sans-serif;resize:vertical}
+textarea{width:100%;min-height:200px;border:1px solid #bbb;border-radius:6px;padding:.8rem;font:1rem/1.5rem Arial,Helvetica,sans-serif;resize:vertical}
 .btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
 button{border:none;background:#16275b;color:#fff;padding:.72rem .95rem;border-radius:6px;font-size:.95rem;cursor:pointer;min-width:104px}
 .btn-row button{min-width:110px}
@@ -1357,7 +1420,7 @@ button.secondary:hover{background:#6d7a9b}
 <div class="page">
   <div class="header">
     <div>
-      <h1>Interface de saisie mémoriel de MaT.</h1>
+      <h1>Reformulator - Interface de saisie mémoriel de MaT.</h1>
       <p class="notice">Saisir un texte libre. L'outil propose des blocs rédigés et un classement par section. Aucune modification automatique n'est effectuée.</p>
     </div>
     <div class="meta">
@@ -1371,12 +1434,12 @@ button.secondary:hover{background:#6d7a9b}
       <?php if ($source_date !== ''): ?>
       <p>Date du fichier cible : <?php echo html_escape($source_date); ?></p>
       <?php endif; ?>
-      <p>Analyse locale disponible — la reformulation avancée utilise un service LLM externe.</p>
       <div class="instructions-status-container">
         <?php if ($instructions_loaded && $instructions_line_count > 0): ?>
           <div class="msg-ok" style="margin:0 0 1rem 0;">Contexte d'instructions chargé — <?php echo html_escape((string)$instructions_line_count); ?> lignes lues.</div>
         <?php endif; ?>
       </div>
+      <p>La reformulation avancée utilise des services LLM externes.</p>
       <div class="meta-actions">
         <p style="margin:0">Moteur LLM demandé : <strong><?php
             $engineName = html_escape(strtoupper($llmInfo['engineName'] ?? 'INCONNU'));
@@ -1437,24 +1500,37 @@ button.secondary:hover{background:#6d7a9b}
   </div>
   <?php endif; ?>
 
-  <?php if ($query_result !== ''): ?>
-  <div class="ia-result">
-    <h2>Réponse du fichier d'instructions :</h2>
-    <pre><?php echo html_escape($query_result); ?></pre>
-  </div>
-  <?php endif; ?>
+  <!-- Affichage du résultat de la requête d'interrogation du fichier d'instructions -->
+    <?php if ($query_result !== ''): ?>
+    <div class="ia-result">
+        <h2>Réponse du fichier d'instructions :</h2>
+        <pre><?php echo html_escape($query_result); ?></pre>
+    </div>
+    <?php endif; ?>
 
-  <?php if ($query_debug !== ''): ?>
-  <div class="msg-err" style="white-space:pre-wrap; font-size:.93rem; margin-top:.8rem;">
-    <?php echo html_escape($query_debug); ?>
-  </div>
-  <?php endif; ?>
+    <?php
+    // === NOUVEL AFFICHAGE PROPRE DES STATS ===
+    if (isset($localSearch) && !empty($localSearch['sections'])):
+    ?>
+    <div class="msg-ok" style="margin:1rem 0; padding:1rem; border-radius:8px;">
+        <strong>✅ Recherche terminée</strong><br>
+        <strong>Moteur :</strong> <?php echo html_escape($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')); ?><br>
+        <strong>Occurrences détectées :</strong> <?php echo number_format($localSearch['total_occ'] ?? 0, 0, ',', ' '); ?><br>
+        <strong>Sections trouvées :</strong> <?php echo count($localSearch['sections'] ?? []); ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($query_debug !== '' && strpos($reformule_msg, 'Erreur') !== false): ?>
+    <div class="msg-err" style="white-space:pre-wrap; font-size:.93rem; margin-top:.8rem;">
+        <?php echo html_escape($query_debug); ?>
+    </div>
+    <?php endif; ?>
 
   <div class="card">
     <form method="post" action="">
       <label for="story"><strong>Texte libre</strong></label>
-      <textarea id="story" name="story" placeholder="Raconte ta vie à la première personne ; l'IA le transposera en mémoire de Mathieu à la troisième personne." required><?php echo html_escape($input_text); ?></textarea>
-      <p class="notice">Le service IA corrige, reformule et transpose à la troisième personne, puis propose où ranger le souvenir dans le fichier d'instructions. Le bouton “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
+      <textarea id="story" name="story" placeholder="Salut Mathieu, raconte donc ta vie à la première personne ; l'IA le transposera en experiences memorielles à la troisième personne." required><?php echo html_escape($input_text); ?></textarea>
+      <p class="notice">Le bouton "Reformulation avancee avec IA" corrige, reformule et transpose à la troisième personne, "Proposer emplacement" propose où ranger le souvenir dans le fichier d'instructions, et “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
       <input type="hidden" name="instructions_context" value="<?php echo html_escape($instructions_context); ?>">
       <?php
         // Construction de la liste des moteurs disponibles pour le sélecteur.
@@ -1481,11 +1557,10 @@ button.secondary:hover{background:#6d7a9b}
         <?php endif; ?>
       </div>
       <div class="btn-row">
-        <button type="submit" name="analyser" class="secondary" title="Analyser le texte localement">Analyse simple</button>
-        <button type="submit" name="query_instructions" class="test" title="Interroger le fichier d'instructions">Interroger</button>
-        <button type="submit" name="proposer_emplacement" class="test" title="Proposer un emplacement dans le fichier d'instructions">Proposer emplacement</button>
-        <button type="submit" name="reformuler" class="ia" title="Reformuler le texte en utilisant le moteur LLM">Reformulation avancee avec IA</button>
-      </div>
+            <button type="submit" name="query_instructions" class="test" title="Interroger le fichier d'instructions">Interroger le fichier</button>
+            <button type="submit" name="proposer_emplacement" class="test" title="Proposer un emplacement dans le fichier d'instructions">Proposer emplacement</button>
+            <button type="submit" name="reformuler" class="ia" title="Reformuler le texte en utilisant le moteur LLM">✨ Reformulation avancée avec IA</button>
+        </div>
     </form>
   </div>
 
