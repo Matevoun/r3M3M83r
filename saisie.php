@@ -495,69 +495,6 @@ function find_names(string $text): array {
     return array_keys($candidates);
 }
 
-function build_section_values(array $titles): array {
-    $values = [];
-    foreach ($titles as $title) {
-        $norm = normalize_for_matching($title);
-        $values[$title] = array_unique(array_merge(extract_keywords($title), preg_split('/\s+/', $norm, -1, PREG_SPLIT_NO_EMPTY)));
-    }
-    return $values;
-}
-
-function classify_paragraph(string $paragraph, array $section_values): string {
-    $keywords = extract_keywords($paragraph);
-    $scores   = [];
-    foreach ($section_values as $title => $terms) {
-        $score = 0;
-        foreach ($keywords as $word) {
-            if (in_array($word, $terms, true)) $score += 2;
-            if (strpos($title, ucfirst($word)) !== false) $score += 1;
-        }
-        $scores[$title] = $score;
-    }
-    arsort($scores);
-    $best = key($scores);
-    if ($scores[$best] < 2) {
-        if (preg_match('/\b(chronologie|date|anniversaire|né|née|décès|mort|naissance|événement|evenement|194|195|196|197|198|199|200|201|202)\b/i', $paragraph))
-            return 'Chronologie : ligne de vie et jalons clefs';
-        if (preg_match('/\b(Domaine|Saint-Antonin|TOUN|WDA|indivision|refuge|Natura 2000|ASPAS|LPO)\b/u', $paragraph))
-            return 'Chronologie : ligne de vie et jalons clefs';
-        return 'A trier / Proposition libre';
-    }
-    return $best;
-}
-
-function build_results(string $input): array {
-    $titles        = load_section_titles();
-    $section_values = build_section_values($titles);
-    $paragraphs    = preg_split('/\R{2,}/u', trim($input));
-    $results       = [];
-    foreach ($paragraphs as $index => $paragraph) {
-        $clean = normalize_string($paragraph);
-        if ($clean === '') continue;
-        $dates   = find_dates($clean);
-        $names   = find_names($clean);
-        $section = classify_paragraph($clean, $section_values);
-        $suggestions = [];
-        if (!empty($dates)) $suggestions[] = 'Dates detectees : ' . implode(', ', $dates);
-        if (!empty($names)) $suggestions[] = 'Noms detectes : ' . implode(', ', $names);
-        $suggestions[] = ($section === 'A trier / Proposition libre')
-            ? 'Section non identifiee avec certitude. Proposez un classement manuel.'
-            : "Section proposee: {$section}";
-        $suggestions[] = 'Reformulation interne appliquee. Aucun LLM externe ou local n est utilise.';
-        $results[] = [
-            'content'     => $clean,
-            'rewrite'     => rewrite_paragraph($clean),
-            'section'     => $section,
-            'dates'       => $dates,
-            'names'       => $names,
-            'suggestions' => $suggestions,
-            'id'          => 'block-' . ($index + 1),
-        ];
-    }
-    return $results;
-}
-
 function html_escape(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
@@ -1313,21 +1250,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $instructions_loaded = true;
         $instructions_line_count = count_instructions_lines();
         $reformule_msg = 'Le fichier d\'instructions a été chargé et analysé.';
-    }
-
-    // Bouton "Analyser"
-    // Nettoie le texte localement puis lance l'analyse de classification / reformulation interne.
-    if (isset($_POST['analyser']) && $input_text !== '') {
-        $clean_input = normalize_string($input_text);
-        $cleaned     = ($clean_input !== $input_text);
-        if ($cleaned) {
-            $input_text = $clean_input;
-        }
-        $blocks   = build_results($input_text);
-        $feedback = count($blocks) . ' bloc' . (count($blocks) > 1 ? 's' : '') . ' propose' . (count($blocks) > 1 ? 's' : '') . ' pour verification.';
-        if ($cleaned) {
-            $feedback .= ' Texte nettoye avant analyse.';
-        }
     }
 
     if (is_file(SOURCE_FILE)) {
