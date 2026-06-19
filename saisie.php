@@ -1092,6 +1092,50 @@ function find_relevant_instruction_sections(string $text, array $sections, int $
     return $result;
 }
 
+function extract_text_from_file(string $tmpPath, string $originalName): string {
+    $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+    if ($ext === 'txt' || $ext === 'md') {
+        return trim(@file_get_contents($tmpPath) ?: '');
+    }
+
+    // Pour PDF et DOCX → on délègue vraiment à Node.js
+    if (in_array($ext, ['pdf', 'docx'])) {
+        // On envoie le fichier au backend pour vraie extraction
+        return extract_via_node($tmpPath, $originalName);
+    }
+
+    return "[Type de fichier non supporté : $originalName]";
+}
+
+function extract_via_node(string $tmpPath, string $originalName): string {
+    $mime = mime_content_type($tmpPath) ?: 'application/octet-stream';
+
+    $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);   // plus long pour gros fichiers
+
+    $postfields = [
+        'purpose' => 'extract',
+        'file'    => new CURLFile($tmpPath, $mime, $originalName)
+    ];
+
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+
+    $result = curl_exec($ch);
+    $error  = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    close_curl_handle($ch);
+
+    if ($error || $httpCode >= 400 || !$result) {
+        return "[Erreur Node.js (HTTP $httpCode) : $error]";
+    }
+
+    $data = json_decode($result, true);
+    return $data['cleaned'] ?? "[Aucun texte retourné par Node.js]";
+}
+
 // ---------------------------------------------------------------
 // TRAITEMENT DU FORMULAIRE
 // ---------------------------------------------------------------
@@ -1137,8 +1181,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input_text = trim($_POST['story'] ?? '');
+
+    // === EXTRACTION SEULE DU FICHIER (nouveau bouton) ===
+    if (isset($_GET['extract_only']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json');
+        if (!empty($_FILES['uploaded_file']) && $_FILES['uploaded_file']['error'] === UPLOAD_ERR_OK) {
+            $tmpPath = $_FILES['uploaded_file']['tmp_name'];
+            $fileName = $_FILES['uploaded_file']['name'];
+            $fileContent = extract_text_from_file($tmpPath, $fileName);
+
+            if ($fileContent && strpos($fileContent, 'Erreur') === false && strpos($fileContent, 'non extractible') === false) {
+                echo json_encode(['success' => true, 'text' => $fileContent]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Impossible d\'extraire le texte du fichier']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Aucun fichier reçu']);
+        }
+        exit;
+    }
+
     $instructions_context = trim($_POST['instructions_context'] ?? '');
-    // Moteur IA sélectionné par l'utilisateur (vide = auto/fallback).
+    // Moteur IA sélectionné par l'utilisateur (vide = auto/fallback)
     $selected_engine = trim($_POST['selected_engine'] ?? '');
 
     // Si les instructions sont chargees, enrichir le contexte avec le contenu de la section la plus probable.
@@ -1449,9 +1513,15 @@ button.secondary:hover{background:#6d7a9b}
     <?php endif; ?>
 
   <div class="card">
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
       <label for="story"><strong>Texte libre</strong></label>
       <textarea id="story" name="story" placeholder="Salut Mathieu, raconte donc ta vie à la première personne ; l'IA le transposera en experiences memorielles à la troisième personne." required><?php echo html_escape($input_text); ?></textarea>
+      <!-- === Upload de fichiers === -->
+        <div style="margin: 15px 0 20px 0; padding: 12px; background: #f8f9ff; border: 1px solid #d0d8ef; border-radius: 8px;">
+        <label><strong>Ou charger un fichier à analyser :</strong></label><br>
+        <input type="file" id="uploaded_file" name="uploaded_file" accept=".pdf,.docx,.txt,.md" style="margin-top:8px;">
+        <small style="color:#555; display:block; margin-top:4px;">(Optionnel) PDF, DOCX, TXT, MD — max 15 Mo</small>
+        </div>
       <p class="notice">Le bouton "Reformulation avancee avec IA" corrige, reformule et transpose à la troisième personne, "Proposer emplacement" propose où ranger le souvenir dans le fichier d'instructions, et “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
       <input type="hidden" name="instructions_context" value="<?php echo html_escape($instructions_context); ?>">
       <?php
@@ -1479,6 +1549,7 @@ button.secondary:hover{background:#6d7a9b}
         <?php endif; ?>
       </div>
       <div class="btn-row">
+            <button type="button" id="extract-file-btn" class="test">📄 Charger & Extraire fichier</button>
             <button type="submit" name="query_instructions" class="test" title="Interroger le fichier d'instructions">Interroger le fichier</button>
             <button type="submit" name="proposer_emplacement" class="test" title="Proposer un emplacement dans le fichier d'instructions">Proposer emplacement</button>
             <button type="submit" name="reformuler" class="ia" title="Reformuler le texte en utilisant le moteur LLM">✨ Reformulation avancée avec IA</button>
@@ -1803,6 +1874,45 @@ if (copyTestOutputButton) {
         });
     });
 }
+
+// Extraction seule du fichier
+document.getElementById('extract-file-btn').addEventListener('click', function() {
+  const fileInput = document.getElementById('uploaded_file');
+  if (!fileInput.files || fileInput.files.length === 0) {
+    alert("Veuillez choisir un fichier d'abord.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('uploaded_file', fileInput.files[0]);
+
+  const btn = this;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Extraction en cours...';
+
+  fetch('saisie.php?extract_only=1', {
+    method: 'POST',
+    body: formData
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success && data.text) {
+      document.getElementById('story').value = data.text;
+      alert("✅ Fichier extrait et placé dans le champ texte !");
+    } else {
+      alert("Erreur : " + (data.error || "Impossible d'extraire le fichier"));
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Erreur de communication avec le serveur");
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  });
+});
 </script>
 </body>
 </html>

@@ -3,8 +3,7 @@
  * test_curl.php — outil de vérification du service LLM
  * Affiche la séquence réellement tentée (attempts) renvoyée par Node.js.
  *
- * Modification du 19/06/2026 : Prompt de test pré-renseigné riche et délirant
- * comme demandé par Mathieu.
+ * Modification du 19/06/2026 : Prompt de test pré-renseigné riche et délirant.
  */
 
 $endpointBase  = 'https://charreyre.net/r3M3M83r/reformulator';

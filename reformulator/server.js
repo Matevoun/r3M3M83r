@@ -1,13 +1,24 @@
 /**
  * reformulator/server.js
- * (voir entête complet dans la version précédente — inchangé)
+ * Version avec support upload de fichiers (PDF, DOCX, TXT, MD)
+ * Mise à jour du 19/06/2026 - Mathieu CHARREYRE
  */
+
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const cors = require('cors');
+
+const multer = require('multer');
+const pdf = require('pdf-parse');
+const mammoth = require('mammoth');
+
+const upload = multer({
+  dest: 'uploads/',
+  limits: { fileSize: 15 * 1024 * 1024 }
+});
 
 dotenv.config();
 process.env.TZ = 'Europe/Paris';
@@ -17,6 +28,7 @@ const ERROR_LOG_FILE = path.join(LOG_DIR, 'error.log');
 const REQUESTS_LOG_FILE = path.join(LOG_DIR, 'requests.log');
 const LEGACY_ERROR_LOG_FILE = path.join(__dirname, '..', 'error_log');
 
+// ==================== LOGGING ====================
 const formatTimestamp = () => {
   const now = new Date();
   now.setHours(now.getHours() + 2);
@@ -53,6 +65,7 @@ const ensureLogFile = (filePath) => {
   }
 };
 const migrateOldErrorLog = () => {
+  // Migration ancien log
   if (fs.existsSync(LEGACY_ERROR_LOG_FILE) && !fs.existsSync(ERROR_LOG_FILE)) {
     try { fs.renameSync(LEGACY_ERROR_LOG_FILE, ERROR_LOG_FILE); } catch (e) {}
   }
@@ -69,10 +82,12 @@ process.on('unhandledRejection', (reason) => {
   logError('unhandledRejection: ' + (reason && reason.stack ? reason.stack : String(reason)));
 });
 
+// ==================== APP & UPLOAD ====================
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ==================== CONFIG LLM ====================
 const PORT = process.env.PORT || 3000;
 
 const DEFAULT_LLM_ENGINE = 'groq';
@@ -81,6 +96,7 @@ const DEFAULT_FALLBACK_ORDER = 'groq,cerebras,mistral,openrouter';
 const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_ORDER)
   .split(',').map(function(item) { return item.trim().toLowerCase(); }).filter(Boolean);
 
+// Prompts pour les différents usages
 const SAISIE_PROMPT = "Tu es un assistant correcteur orthographique et de style appelé Reformulator. Mathieu, l'utilisateur, te donne un texte brut avec des fautes. Il s'agit de ses souvenirs personnels. Si le texte utilise la première personne (je, moi, mon, ma, mes, nous, notre, nos), tu le transforms impérativement en troisième personne avec Mathieu comme sujet. Ne conserve jamais de formes de première personne dans la réponse. Ne commences jamais par une salutation ni par une formule d'accueil. Ne réponds pas par une phrase de présentation. Ensuite, tu dois UNIQUEMENT corriger les fautes d'orthographe, de grammaire et de frappe, et améliorer légèrement la fluidité. Tu réponds toujours en français correct et naturel. Structure en paragraphes clairs. Tu ne poses JAMAIS de questions. Tu ne commentes JAMAIS le texte. Ne change pas les faits, tu ne rajoutes RIEN. Ne reformule pas en ajoutant du contenu ou des détails inexistants. Tu retournes UNIQUEMENT le texte reformulé, sans introduction, sans explication, sans guillemets. Si le texte est très court, tu le retournes simplement corrigé.";
 const LOCATION_PROMPT = "Tu es un assistant expert en placement de contenu dans un document de référence appelé Reformulator. Reçois un texte à ajouter dans instructions.md et, en te basant sur la structure des sections disponibles, propose l'endroit ou les endroits les plus pertinents où insérer ce texte. Comprends que le texte peut être un souvenir raconté à la première personne pour Mathieu, et choisis la ou les sections les plus pertinentes du mémoire. Donne une réponse courte, claire et précise, en mentionnant la section ou la position d'insertion. N'ajoute pas de contenu supplémentaire. Ne reformule pas le texte, répond seulement à la question de placement poliment.";
 const QUERY_KEYWORD_PROMPT = "Tu es un assistant expert en extraction d'intention de recherche appelé Reformulator. Reçois une question à propos d'un document et retourne seulement les mots-clefs ou expressions clefs qui permettent de chercher la réponse dans ce document. Répond en une seule ligne, avec des mots ou expressions séparés par des virgules. Ne réponds pas par une phrase complète, ne donne pas de salutations et ne rajoute pas de texte inutile.";
@@ -91,6 +107,7 @@ Réponds de façon naturelle, humaine et bienveillante en français.
 - Termine par un petit avis constructif ou une réflexion intelligente (jamais moralisateur).
 Si le sujet n'est pas mentionné : dis-le gentiment et propose éventuellement des pistes proches.`;
 
+// LLM_ENGINES contient la configuration de chaque moteur LLM supporté, avec la fonction createPayload() pour construire la requête API.
 const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   const messages = [];
   if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
@@ -107,6 +124,7 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
 };
 
 const LLM_ENGINES = {
+  // Groq
   groq: {
     name: 'Groq',
     apiKeyEnv: 'GROQ_API_KEY',
@@ -132,6 +150,7 @@ const LLM_ENGINES = {
       return { model: model, messages: messages, temperature: temperature, max_tokens: 1500 };
     }
   },
+  // Cerebras
   cerebras: {
     name: 'Cerebras',
     apiKeyEnv: 'CEREBRAS_API_KEY',
@@ -142,6 +161,7 @@ const LLM_ENGINES = {
     models: ['gpt-oss-120b', 'zai-glm-4.7'],
     createPayload: createOpenAICompatiblePayload,
   },
+  // Mistral
   mistral: {
     name: 'Mistral',
     apiKeyEnv: 'MISTRAL_API_KEY',
@@ -152,6 +172,7 @@ const LLM_ENGINES = {
     models: ['mistral-small-latest','open-mistral-7b','mistral-medium-latest'],
     createPayload: createOpenAICompatiblePayload,
   },
+  // OpenRouter
   openrouter: {
     name: 'OpenRouter',
     apiKeyEnv: 'OPENROUTER_API_KEY',
@@ -182,6 +203,7 @@ const getEngineModel = function(engineName) {
   return engine.defaultModel;
 };
 
+// Retourne la liste des moteurs LLM disponibles (avec clé API présente)
 const getAvailableEngines = function() {
   return Object.keys(LLM_ENGINES).filter(function(name) {
     var eng = LLM_ENGINES[name];
@@ -203,14 +225,17 @@ const getCurrentEngineInfo = function() {
   };
 };
 
+// Construire l'URL de requête pour le moteur LLM, en ajoutant /chat/completions si nécessaire
 const buildRequestUrl = function(baseUrl) {
   var normalized = String(baseUrl).trim().replace(/\/+$/, '');
   if (normalized.endsWith('/chat/completions') || normalized.endsWith('/completions')) return normalized;
   return normalized + '/chat/completions';
 };
 
+// Fonction utilitaire pour attendre un certain temps (en ms)
 const sleep = function(ms) { return new Promise(function(resolve) { setTimeout(resolve, ms); }); };
 
+// Extraire le délai de retry à partir de l'erreur HTTP (429) ou du message d'erreur
 const extractRetryAfterSeconds = function(error) {
   var headers = error.response && error.response.headers ? error.response.headers : {};
   if (headers['retry-after']) {
@@ -269,6 +294,7 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
       continue;
     }
 
+    // Tentative de requête au moteur LLM
     var retryCount = 0;
     var maxRetries = 2;
 
@@ -389,9 +415,101 @@ const registerReformulationRoute = function(routePath) {
   });
 };
 
-registerReformulationRoute('/reformuler');
-registerReformulationRoute('/r3M3M83r/reformulator/reformuler');
+// ====================== GESTION UPLOAD FICHIERS ======================
+async function extractTextFromFile(file) {
+  try {
+    const ext = path.extname(file.originalname).toLowerCase();
+    console.log(`[EXTRACTION] Fichier : ${file.originalname} (${ext}) - taille ${file.size} octets`);
 
+    if (ext === '.pdf') {
+      const dataBuffer = fs.readFileSync(file.path);
+      const data = await pdf(dataBuffer);
+      let extracted = data.text ? data.text.trim() : '';
+
+      if (extracted.length < 30) {
+        extracted = "[PDF chargé : " + file.originalname + " — texte non extractible (PDF scanné ou protégé)]";
+        console.log(`[WARN] PDF trop court ou vide (${extracted.length} caractères)`);
+      } else {
+        console.log(`[SUCCESS] PDF extrait avec succès : ${extracted.length} caractères`);
+      }
+      return extracted;
+    }
+
+    if (ext === '.docx') {
+      const result = await mammoth.extractRawText({ path: file.path });
+      return result.value.trim() || `[DOCX vide ou illisible : ${file.originalname}]`;
+    }
+
+    if (ext === '.txt' || ext === '.md') {
+      const content = fs.readFileSync(file.path, 'utf8').trim();
+      return content || `[Fichier texte vide : ${file.originalname}]`;
+    }
+
+    return `[Fichier joint : ${file.originalname} — type non supporté]`;
+  } catch (err) {
+    logError(`Extraction échouée pour ${file.originalname} : ${err.message}`);
+    console.error(`[ERROR] ${err.message}`);
+    return `[Erreur extraction ${file.originalname} — ${err.message.substring(0, 100)}]`;
+  }
+}
+
+// Route principale avec upload + mode extraction
+app.post('/reformuler', upload.single('file'), async function(req, res) {
+  logRequest(req);
+
+  let text = (req.body && req.body.text) || '';
+  const file = req.file;
+
+  // Récupération du purpose même en multipart
+  const purpose = (req.body && req.body.purpose) ? req.body.purpose.toLowerCase() : 'rewrite';
+
+  console.log(`[ROUTE] Purpose reçu : ${purpose} | Fichier : ${file ? file.originalname : 'aucun'}`);
+
+  // === EXTRACTION DE FICHIER ===
+  if (file) {
+    const extracted = await extractTextFromFile(file);
+    text = extracted + "\n\n" + text;
+    try { fs.unlinkSync(file.path); } catch(e) {}
+  }
+
+  // Mode extraction seule
+  if (purpose === 'extract') {
+    console.log(`[EXTRACT MODE] Texte extrait : ${text.length} caractères`);
+    return res.json({
+      cleaned: text.trim(),
+      engine: 'extraction',
+      model: 'local',
+      attempts: []
+    });
+  }
+
+  // Mode normal (reformulation, etc.)
+  var context = (req.body && typeof req.body.instructionsContext === 'string') ? req.body.instructionsContext : '';
+  var preferredEngine = null;
+  if (req.body && typeof req.body.engine === 'string' && req.body.engine.trim() !== '') {
+    var eng = req.body.engine.trim().toLowerCase();
+    if (LLM_ENGINES[eng]) preferredEngine = eng;
+  }
+
+  if (!text.trim()) return res.status(400).json({ error: 'Texte absent' });
+
+  try {
+    var result = await reformulate(text, context, purpose, preferredEngine);
+    res.json({ cleaned: result.cleaned, engine: result.engine, model: result.model, attempts: result.attempts });
+  } catch (error) {
+    var errorMessage = error && error.message ? error.message : String(error);
+    logError(errorMessage);
+    res.status(500).json({ error: 'Erreur LLM', details: errorMessage, attempts: error.attempts || [] });
+  }
+});
+
+// Compatibilité ancienne route
+app.post('/r3M3M83r/reformulator/reformuler', upload.single('file'), function(req, res) {
+  req.url = '/reformuler';
+  app.handle(req, res);
+});
+
+// ===================== LANCEMENT DU SERVEUR ======================
 app.listen(PORT, function() {
   var info = getCurrentEngineInfo();
   var portFile = path.join(__dirname, '.port');
