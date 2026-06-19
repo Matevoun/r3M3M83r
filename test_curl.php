@@ -2,12 +2,21 @@
 /**
  * test_curl.php — outil de vérification du service LLM
  * Affiche la séquence réellement tentée (attempts) renvoyée par Node.js.
+ *
+ * Modification du 19/06/2026 : Prompt de test pré-renseigné riche et délirant
+ * comme demandé par Mathieu.
  */
 
 $endpointBase  = 'https://charreyre.net/r3M3M83r/reformulator';
-$connectionMode = 'URL publique (o2switch Passenger)';
 $endpoint      = $endpointBase . '/reformuler';
-$testText      = 'toto fait du ski';
+
+// === PROMPT TEST PRÉ-RENSIGNÉ (optimisé) ===
+$defaultTestText = 'Tu es en mode TEST PUR. Réponds de manière directe et créative. Raconte un fait totalement absurde et drôle avec Mathieu CHARREYRE. Commence directement par l\'histoire, sans répéter ma phrase.';
+
+$testText = trim($_REQUEST['text'] ?? $defaultTestText);
+if (empty($testText)) {
+    $testText = $defaultTestText;
+}
 
 $testEngine = trim($_GET['engine'] ?? '');
 if ($testEngine !== '' && in_array($testEngine, ['groq','cerebras','mistral','openrouter'], true)) {
@@ -124,10 +133,13 @@ $sub = str_repeat('-', 56);
 
 echo "--- TEST DE REFORMULATION LLM ---\n$sep\n";
 echo "Endpoint        : $endpoint\n";
-echo "Phrase de test  : $testText\n";
 echo "Moteur DEMANDÉ  : " . ($testEngineLabel ?? "AUTO — $llmEngine") . "\n";
 echo "Fallback order  : " . implode(' → ', $llmInfo['fallbackOrder'] ?? []) . "\n";
 echo "Moteurs dispo   : " . implode(', ', $llmInfo['availableEngines'] ?? []) . "\n";
+echo "$sep\n\n";
+
+echo "=== PROMPT ENVOYÉ ===\n";
+echo $testText . "\n\n";
 echo "$sep\n\n";
 
 echo "HTTP code       : $httpCode\n";
@@ -157,7 +169,7 @@ echo "$sub\nRÉSULTAT\n$sub\n";
 if ($cleaned !== null && $cleaned !== '') {
     $finalEngine = strtoupper($usedEngine ?? '?');
     $finalModel  = $usedModel ?? '?';
-    echo "✓ Reformulation OK via $finalEngine ($finalModel) :\n$cleaned\n";
+    echo "✓ Reformulation OK via $finalEngine ($finalModel) :\n\n$cleaned\n";
 } elseif ($httpCode === 0 || $curlErr !== '') {
     echo "✗ Impossible de joindre le service Node.js.\n";
     echo "  → cPanel › Node.js Apps › reformulator › Restart\n";
