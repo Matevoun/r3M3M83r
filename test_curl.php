@@ -10,7 +10,7 @@ $endpointBase  = 'https://charreyre.net/r3M3M83r/reformulator';
 $endpoint      = $endpointBase . '/reformuler';
 
 // === PROMPT TEST PRÉ-RENSIGNÉ (optimisé) ===
-$defaultTestText = 'Tu es en mode TEST PUR. Réponds de manière directe et créative. Raconte un fait totalement absurde et drôle avec Mathieu CHARREYRE. Commence directement par l\'histoire, sans répéter ma phrase.';
+$defaultTestText = "TEST : Raconte de manière créative et drôle un souvenir fictif où Mathieu CHARREYRE fait une erreur monumentale en public. Commence directement par l'histoire sans introduction.";
 
 $testText = trim($_REQUEST['text'] ?? $defaultTestText);
 if (empty($testText)) {

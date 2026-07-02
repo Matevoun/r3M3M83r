@@ -81,33 +81,28 @@ function parse_llm_info_from_server_file(): array {
         return [];
     }
 
-    // Supprime les commentaires JavaScript pour éviter de parser des valeurs
-    // présentes uniquement dans des lignes commentées.
+    // Supprime les commentaires pour parsing propre
     $content = preg_replace(['@//.*$@m', '@/\*.*?\*/@s'], '', $content);
-    if ($content === null) {
-        return [];
-    }
 
     $info = [];
 
-    if (!function_exists('normalize_engine_url')) {
-        function normalize_engine_url(string $url): string {
-            $url = trim($url);
-            return preg_match('#^https?://#i', $url) ? $url : '';
-        }
-    }
+    // Lecture dynamique du DEFAULT_LLM_ENGINE
     if (preg_match('/const\s+DEFAULT_LLM_ENGINE\s*=\s*["\']([^"\']+)["\']/', $content, $matches)) {
-        $info['defaultEngine'] = strtolower($matches[1]);
+        $info['defaultEngine'] = strtolower(trim($matches[1]));
     }
+
+    // Lecture du LLM_ENGINE actif
     if (preg_match('/const\s+LLM_ENGINE\s*=\s*\(process\.env\[.*?\]\s*\|\|\s*([A-Za-z0-9_]+)\)\.toLowerCase\(\)/', $content, $matches)) {
-        $info['engineName'] = strtoupper($matches[1]);
+        $info['engineName'] = strtoupper(trim($matches[1]));
     }
+
     if (empty($info['engineName']) && !empty($info['defaultEngine'])) {
         $info['engineName'] = strtoupper($info['defaultEngine']);
     }
 
-    $selectedEngine = strtolower($info['engineName'] ?? $info['defaultEngine'] ?? 'groq');
+    $selectedEngine = strtolower($info['engineName'] ?? $info['defaultEngine'] ?? 'mistral');
 
+    // Extraction du modèle et URL pour le moteur actif
     if (preg_match('/\b' . preg_quote($selectedEngine, '/') . '\s*:\s*\{([^}]*)\}/i', $content, $matches)) {
         $engineBlock = $matches[1];
         if (preg_match('/defaultModel:\s*["\']([^"\']+)["\']/', $engineBlock, $vmatches)) {
@@ -119,16 +114,9 @@ function parse_llm_info_from_server_file(): array {
     }
 
     if (empty($info['selectedModel'])) {
-        if (preg_match('/\w+\s*:\s*\{[^}]*?defaultModel:\s*["\']([^"\']+)["\']/', $content, $matches)) {
-            $info['selectedModel'] = trim($matches[1]);
-        }
-    }
-    if (empty($info['engineUrl']) && $selectedEngine === 'groq') {
-        $info['engineUrl'] = 'https://console.groq.com/home';
-    }
-    if (empty($info['selectedModel'])) {
         $info['selectedModel'] = 'modele inconnu';
     }
+
     return $info;
 }
 
@@ -352,12 +340,20 @@ function query_instructions_via_node(string $text, string $instructionsContext =
 
 function finalize_query_response_via_node(string $question, string $localEvidence, string $instructionsContext = ''): string {
     $payload = ['text' => $question, 'purpose' => 'query'];
+
     if ($instructionsContext !== '') {
         $payload['instructionsContext'] = trim($instructionsContext);
     }
+
     if ($localEvidence !== '') {
         $payload['instructionsContext'] = trim(($payload['instructionsContext'] ?? "") . "\n\n" . $localEvidence);
     }
+
+    // Force l'envoi du contexte complet si possible
+    if (empty($payload['instructionsContext'])) {
+        $payload['instructionsContext'] = load_instructions_excerpt(); // fallback
+    }
+
     return call_reformulator_service($payload);
 }
 
@@ -788,10 +784,10 @@ function search_with_counts(string $query, array $sections): array {
     $llmKeywords = extract_query_keywords_via_node($query);
     $searchTerms = choose_search_terms($query, $llmKeywords, $sections);
 
-    // Force noms propres
-    preg_match_all('/\b[A-ZÀÂÄÉÈÊËÎÏÔÖÙÛÜ][a-zàâäéèêëîïôöùûü]+(?:\s+[A-ZÀÂÄÉÈÊËÎÏÔÖÙÛÜ][a-zàâäéèêëîïôöùûü]+)*\b/u', $query, $names);
+    // Force noms propres exacts
+    preg_match_all('/\b[A-ZÀÂÄÉÈÊËÎÏÔÖÙÛÜ][a-zàâäéèêëîïôöùûü]+\b/u', $query, $names);
     foreach ($names[0] as $name) {
-        $searchTerms[] = normalize_for_matching($name);
+        $searchTerms[] = $name;  // on garde la casse pour les noms
     }
     $searchTerms = array_unique(array_filter($searchTerms));
 
@@ -806,23 +802,27 @@ function search_with_counts(string $query, array $sections): array {
         foreach ($searchTerms as $term) {
             if (empty($term)) continue;
 
-            $countInSection = substr_count($normContent, $term);
+            $termNorm = normalize_for_matching($term);
+
+            // Recherche TRÈS stricte : mot entier uniquement
+            $countInSection = preg_match_all('/\b' . preg_quote($termNorm, '/') . '\b/ui', $normContent);
+
             $totalOccurrences += $countInSection;
 
-            if (match_term_in_text($term, $content)) {
-                $score += 10;
-                $sentences = extract_section_match_sentences($content, [$term], 6);
+            if ($countInSection > 0) {
+                $score += 20;  // poids très élevé
+                $sentences = extract_section_match_sentences($content, [$term], 5);
                 $matchesInSection = array_merge($matchesInSection, $sentences);
             }
         }
 
-        if ($score > 0) {
+        if ($score >= 20) {  // seuil élevé
             $results[$title] = [
                 'score'       => $score,
                 'content'     => $content,
-                'matches'     => array_slice(array_unique($matchesInSection), 0, 8),
+                'matches'     => array_slice(array_unique($matchesInSection), 0, 5),
                 'excerpt'     => $matchesInSection[0] ?? '',
-                'occurrences' => $countInSection // par section
+                'occurrences' => $countInSection
             ];
         }
     }
@@ -832,6 +832,44 @@ function search_with_counts(string $query, array $sections): array {
         'sections'   => $results,
         'total_occ'  => $totalOccurrences,
         'terms'      => $searchTerms
+    ];
+}
+
+// Recherche locale légère et plus robuste pour le bouton Interroger
+function search_with_counts_light(string $query, array $sections): array {
+    $queryNorm = normalize_for_matching($query);
+    if (mb_strlen($queryNorm) < 2) {
+        return ['sections' => [], 'total_occ' => 0];
+    }
+
+    $results = [];
+    $totalOccurrences = 0;
+
+    foreach ($sections as $title => $content) {
+        $normContent = normalize_for_matching($content);
+
+        // Recherche plus souple : mot entier OU début de mot
+        $pattern = '/\b' . preg_quote($queryNorm, '/') . '\w*/ui';
+        $count = preg_match_all($pattern, $normContent);
+
+        if ($count > 0) {
+            $totalOccurrences += $count;
+            $sentences = extract_section_match_sentences($content, [$query], 4);
+
+            $results[$title] = [
+                'occurrences' => $count,
+                'excerpt'     => $sentences[0] ?? ''
+            ];
+        }
+    }
+
+    // On garde les meilleures sections
+    uasort($results, fn($a, $b) => $b['occurrences'] <=> $a['occurrences']);
+    $results = array_slice($results, 0, 8, true);   // un peu plus large
+
+    return [
+        'sections'   => $results,
+        'total_occ'  => $totalOccurrences
     ];
 }
 
@@ -1094,27 +1132,27 @@ function find_relevant_instruction_sections(string $text, array $sections, int $
 
 function extract_text_from_file(string $tmpPath, string $originalName): string {
     $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $format = strtoupper($ext);
 
+    $rawText = '';
     if ($ext === 'txt' || $ext === 'md') {
-        return trim(@file_get_contents($tmpPath) ?: '');
+        $rawText = trim(@file_get_contents($tmpPath) ?: '');
+    } elseif (in_array($ext, ['pdf', 'docx', 'doc'])) {
+        $rawText = extract_via_node($tmpPath, $originalName);
+    } else {
+        return "[Type de fichier non supporté : $originalName]";
     }
 
-    // Pour PDF et DOCX → on délègue vraiment à Node.js
-    if (in_array($ext, ['pdf', 'docx'])) {
-        // On envoie le fichier au backend pour vraie extraction
-        return extract_via_node($tmpPath, $originalName);
-    }
-
-    return "[Type de fichier non supporté : $originalName]";
+    $prefix = "Mathieu vient de soumettre ce document en $format :\n\n";
+    return $prefix . trim($rawText);
 }
 
 function extract_via_node(string $tmpPath, string $originalName): string {
     $mime = mime_content_type($tmpPath) ?: 'application/octet-stream';
-
     $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);   // plus long pour gros fichiers
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
     $postfields = [
         'purpose' => 'extract',
@@ -1133,7 +1171,7 @@ function extract_via_node(string $tmpPath, string $originalName): string {
     }
 
     $data = json_decode($result, true);
-    return $data['cleaned'] ?? "[Aucun texte retourné par Node.js]";
+    return $data['cleaned'] ?? "[Aucun texte retourné]";
 }
 
 // ---------------------------------------------------------------
@@ -1253,10 +1291,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Bouton "Interroger le fichier d'instructions"
+    // ====================== INTERROGER LE FICHIER ======================
     if (isset($_POST['query_instructions']) && $input_text !== '') {
         $reformule_original = $input_text;
-        $sections = extract_instructions_sections();
 
         if ($instructions_context === '') {
             $instructions_context = build_instructions_context_for_text($input_text);
@@ -1267,24 +1304,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query_result = '';
         $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n\n";
 
-        // 1. Recherche locale renforcée (toujours exécutée)
-        $localSearch = search_with_counts($input_text, $sections);
+        // Recherche locale légère (filtre les sections vraiment pertinentes)
+        $sections = extract_instructions_sections();
+        $localSearch = search_with_counts_light($input_text, $sections);
+
         $localEvidence = '';
-
         if (!empty($localSearch['sections'])) {
-            $localEvidence = "Recherche locale — Termes : " . implode(', ', $localSearch['terms']) . "\n";
-            $localEvidence .= "Occurrences totales trouvées : " . $localSearch['total_occ'] . "\n\n";
-
+            $localEvidence = "Sections pertinentes trouvées :\n";
             foreach ($localSearch['sections'] as $title => $data) {
-                $localEvidence .= "### " . $title . " (" . count($data['matches']) . " extraits)\n";
-                foreach ($data['matches'] as $excerpt) {
-                    $localEvidence .= "- " . mb_substr($excerpt, 0, 280) . "...\n";
+                $localEvidence .= "- " . $title . " (" . $data['occurrences'] . " occurrences)\n";
+                if (!empty($data['excerpt'])) {
+                    $localEvidence .= "  Extrait : " . mb_substr($data['excerpt'], 0, 180) . "...\n";
                 }
-                $localEvidence .= "\n";
             }
+            $localEvidence .= "\nTotal occurrences détectées : " . $localSearch['total_occ'];
         }
 
-        // 2. On demande à l'IA de synthétiser (humain + avis constructif)
+        // Appel à l'IA avec un prompt plus précis et concis
         $finalResponse = finalize_query_response_via_node(
             $input_text,
             $localEvidence,
@@ -1293,17 +1329,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
             $query_result = $finalResponse;
-            $reformule_msg = !empty($localSearch['sections'])
-    ? '✅ ' . count($localSearch['sections']) . ' section(s) trouvée(s) — ' . number_format($localSearch['total_occ'] ?? 0, 0, ',', ' ') . ' occurrences'
-    : 'Réponse basée uniquement sur recherche locale.';
+            $reformule_msg = 'Réponse générée par l\'IA (contexte + recherche légère)';
         } else {
-            // Fallback ultra-simple
-            $query_result = $localEvidence ?: "Aucune mention trouvée.";
-            $reformule_msg = 'Réponse basée uniquement sur recherche locale.';
+            $query_result = "Je n'ai pas trouvé d'information pertinente dans tes mémoires pour cette question.";
+            $reformule_msg = 'Aucune information trouvée.';
         }
 
         $query_debug .= "Occurrences détectées : " . ($localSearch['total_occ'] ?? 0) . "\n";
-        $query_debug .= "Sections trouvées : " . count($localSearch['sections'] ?? []) . "\n";
+        $query_debug .= "Sections filtrées : " . count($localSearch['sections'] ?? []) . "\n";
     }
 
     // Bouton "Charger les instructions"
@@ -1428,15 +1461,16 @@ button.secondary:hover{background:#6d7a9b}
       <p>La reformulation avancée utilise des services LLM externes.</p>
       <div class="meta-actions">
         <p style="margin:0">Moteur LLM demandé : <strong><?php
-            $engineName = html_escape(strtoupper($llmInfo['engineName'] ?? 'INCONNU'));
-            $engineUrl = $llmInfo['engineUrl'] ?? '';
-            $modelName = $llmInfo['selectedModel'] ?? 'modele inconnu';
-            $displayText = $engineName . ' (' . html_escape($modelName) . ')';
+            $defaultEngine = strtolower($llmInfo['defaultEngine'] ?? 'mistral');
+            $engineName = html_escape(strtoupper($llmInfo['engineName'] ?? $defaultEngine));
+            $modelName = html_escape($llmInfo['selectedModel'] ?? 'inconnu');
+            $displayText = $engineName . ' (' . $modelName . ')';
 
             if ($selected_engine !== '') {
                 $displayText = html_escape(strtoupper($selected_engine)) . ' <em>(manuel)</em>';
             }
 
+            $engineUrl = $llmInfo['engineUrl'] ?? '';
             if ($engineUrl !== '') {
                 echo '<a href="' . html_escape($engineUrl) . '" target="_blank" rel="noopener noreferrer">' . $displayText . '</a>';
             } else {
@@ -1813,6 +1847,7 @@ function escapeHtml(text) {
 if (openModal) {
     openModal.addEventListener('click', openTestModal);
 }
+
 // Mise à jour dynamique du moteur affiché en haut
 const engineSelect = document.getElementById('selected_engine');
 const engineDisplay = document.querySelector('.meta-actions p strong');
@@ -1824,10 +1859,10 @@ function updateEngineDisplay() {
     let displayText = '';
 
     if (selectedValue === '') {
-        // Option "Auto"
-        displayText = 'GROQ (défaut)';
+        // Auto = ce que le serveur PHP nous dit
+        const currentEngine = '<?php echo html_escape(strtoupper($llmInfo['engineName'] ?? $llmInfo['defaultEngine'] ?? 'MISTRAL')); ?>';
+        displayText = currentEngine + ' (défaut)';
     } else {
-        // Moteur sélectionné manuellement
         displayText = selectedValue.toUpperCase() + ' (manuel)';
     }
 
@@ -1839,11 +1874,12 @@ function updateEngineDisplay() {
     setTimeout(() => { engineDisplay.style.color = ''; }, 1200);
 }
 
+// Appel initial
 if (engineSelect && engineDisplay) {
     engineSelect.addEventListener('change', updateEngineDisplay);
-    // Mise à jour initiale au chargement
-    setTimeout(updateEngineDisplay, 100);
+    setTimeout(updateEngineDisplay, 200);  // Mise à jour immédiate
 }
+
 if (closeModal) {
     closeModal.addEventListener('click', closeTestModal);
 }
@@ -1899,14 +1935,13 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
   .then(data => {
     if (data.success && data.text) {
       document.getElementById('story').value = data.text;
-      alert("✅ Fichier extrait et placé dans le champ texte !");
+      alert("✅ Fichier extrait !");
     } else {
-      alert("Erreur : " + (data.error || "Impossible d'extraire le fichier"));
+      alert("Erreur : " + (data.error || "Impossible d'extraire (Node.js ? )"));
     }
   })
   .catch(err => {
-    console.error(err);
-    alert("Erreur de communication avec le serveur");
+    alert("Erreur serveur : " + err);
   })
   .finally(() => {
     btn.disabled = false;

@@ -1,7 +1,7 @@
 /**
  * reformulator/server.js
- * Version avec support upload de fichiers (PDF, DOCX, TXT, MD)
- * Mise à jour du 19/06/2026 - Mathieu CHARREYRE
+ * Version avec support upload de fichiers + Mistral par défaut + logique dynamique modèles
+ * Mise à jour 29/06/2026 - Mathieu CHARREYRE
  */
 
 const fs = require('fs');
@@ -90,22 +90,38 @@ app.use(express.json());
 // ==================== CONFIG LLM ====================
 const PORT = process.env.PORT || 3000;
 
-const DEFAULT_LLM_ENGINE = 'groq';
+const DEFAULT_LLM_ENGINE = 'mistral';
 const LLM_ENGINE = (process.env.LLM_ENGINE || DEFAULT_LLM_ENGINE).toLowerCase();
-const DEFAULT_FALLBACK_ORDER = 'groq,cerebras,mistral,openrouter';
+const DEFAULT_FALLBACK_ORDER = 'mistral,groq,cerebras,openrouter';
 const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_ORDER)
-  .split(',').map(function(item) { return item.trim().toLowerCase(); }).filter(Boolean);
+  .split(',')
+  .map(function(item) { return item.trim().toLowerCase(); })
+  .filter(Boolean);
 
-// Prompts pour les différents usages
-const SAISIE_PROMPT = "Tu es un assistant correcteur orthographique et de style appelé Reformulator. Mathieu, l'utilisateur, te donne un texte brut avec des fautes. Il s'agit de ses souvenirs personnels. Si le texte utilise la première personne (je, moi, mon, ma, mes, nous, notre, nos), tu le transforms impérativement en troisième personne avec Mathieu comme sujet. Ne conserve jamais de formes de première personne dans la réponse. Ne commences jamais par une salutation ni par une formule d'accueil. Ne réponds pas par une phrase de présentation. Ensuite, tu dois UNIQUEMENT corriger les fautes d'orthographe, de grammaire et de frappe, et améliorer légèrement la fluidité. Tu réponds toujours en français correct et naturel. Structure en paragraphes clairs. Tu ne poses JAMAIS de questions. Tu ne commentes JAMAIS le texte. Ne change pas les faits, tu ne rajoutes RIEN. Ne reformule pas en ajoutant du contenu ou des détails inexistants. Tu retournes UNIQUEMENT le texte reformulé, sans introduction, sans explication, sans guillemets. Si le texte est très court, tu le retournes simplement corrigé.";
-const LOCATION_PROMPT = "Tu es un assistant expert en placement de contenu dans un document de référence appelé Reformulator. Reçois un texte à ajouter dans instructions.md et, en te basant sur la structure des sections disponibles, propose l'endroit ou les endroits les plus pertinents où insérer ce texte. Comprends que le texte peut être un souvenir raconté à la première personne pour Mathieu, et choisis la ou les sections les plus pertinentes du mémoire. Donne une réponse courte, claire et précise, en mentionnant la section ou la position d'insertion. N'ajoute pas de contenu supplémentaire. Ne reformule pas le texte, répond seulement à la question de placement poliment.";
-const QUERY_KEYWORD_PROMPT = "Tu es un assistant expert en extraction d'intention de recherche appelé Reformulator. Reçois une question à propos d'un document et retourne seulement les mots-clefs ou expressions clefs qui permettent de chercher la réponse dans ce document. Répond en une seule ligne, avec des mots ou expressions séparés par des virgules. Ne réponds pas par une phrase complète, ne donne pas de salutations et ne rajoute pas de texte inutile.";
-const QUERY_PROMPT = `Tu es un assistant appelé Reformulator, expert et chaleureux qui connaît très bien la mémoire personnelle de Mathieu CHARREYRE.
-Réponds de façon naturelle, humaine et bienveillante en français.
-- Indique clairement le nombre d'occurrences si pertinent.
-- Cite 2 à 4 extraits concrets et pertinents.
-- Termine par un petit avis constructif ou une réflexion intelligente (jamais moralisateur).
-Si le sujet n'est pas mentionné : dis-le gentiment et propose éventuellement des pistes proches.`;
+// Prompts optimisés - Mise à jour 29/06/2026
+// Reformulation avancée avec IA
+const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-clés. À partir de la question suivante sur la vie de Mathieu CHARREYRE, retourne UNIQUEMENT une liste de mots-clés ou expressions séparés par des virgules (maximum 8 termes). Pas de phrase, pas de salutation, pas d'explication.`;
+const QUERY_PROMPT = `Tu es Reformulator, assistant très précis qui connaît parfaitement la mémoire personnelle de Mathieu CHARREYRE.
+
+Réponds de façon naturelle et concise en français.
+- Recherche activement toute mention du sujet demandé.
+- Cite les extraits exacts avec le titre de la section.
+- Indique le nombre d'occurrences.
+- Si rien n'est trouvé, dis-le franchement.
+Ne tourne pas autour du pot.`;
+// Proposer emplacement
+const LOCATION_PROMPT = `Tu es un expert en organisation de mémoire personnelle. Reçois un texte sur la vie de Mathieu CHARREYRE et propose les sections les plus pertinentes où l'insérer dans instructions.md.
+Réponds de façon courte, précise et structurée. Mentionne explicitement les titres de sections recommandées. Ne reformule pas le texte lui-même.`;
+// Interroger le fichier
+const SAISIE_PROMPT = `Tu es Reformulator, un assistant orthographique et stylistique précis pour Mathieu CHARREYRE.
+Règles strictes :
+- Si le texte est à la première personne (je, moi, mon, ma, mes, nous...), transforme-le obligatoirement en troisième personne avec "Mathieu" comme sujet.
+- Ne conserve AUCUNE forme à la première personne dans la réponse finale.
+- Corrige uniquement l'orthographe, la grammaire, la ponctuation et améliore légèrement la fluidité.
+- Ne change pas les faits, n'ajoute rien, ne supprime rien d'important.
+- Structure en paragraphes clairs et naturels.
+- Réponds UNIQUEMENT par le texte corrigé/reformulé, sans introduction, sans explication, sans guillemets, sans salutation.
+- Si le texte est très court, corrige-le simplement.`;
 
 // LLM_ENGINES contient la configuration de chaque moteur LLM supporté, avec la fonction createPayload() pour construire la requête API.
 const createOpenAICompatiblePayload = (text, model, context, purpose) => {
@@ -124,6 +140,17 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
 };
 
 const LLM_ENGINES = {
+  // Mistral
+  mistral: {
+    name: 'Mistral',
+    apiKeyEnv: 'MISTRAL_API_KEY',
+    modelEnv: 'MISTRAL_MODEL',
+    apiBase: process.env.MISTRAL_API_BASE || 'https://api.mistral.ai/v1',
+    engineUrl: 'https://console.mistral.ai',
+    defaultModel: 'mistral-small-latest',
+    models: ['mistral-small-latest','open-mistral-7b','mistral-medium-latest'],
+    createPayload: createOpenAICompatiblePayload,
+  },
   // Groq
   groq: {
     name: 'Groq',
@@ -159,17 +186,6 @@ const LLM_ENGINES = {
     engineUrl: 'https://cloud.cerebras.ai',
     defaultModel: 'gpt-oss-120b',
     models: ['gpt-oss-120b', 'zai-glm-4.7'],
-    createPayload: createOpenAICompatiblePayload,
-  },
-  // Mistral
-  mistral: {
-    name: 'Mistral',
-    apiKeyEnv: 'MISTRAL_API_KEY',
-    modelEnv: 'MISTRAL_MODEL',
-    apiBase: process.env.MISTRAL_API_BASE || 'https://api.mistral.ai/v1',
-    engineUrl: 'https://console.mistral.ai',
-    defaultModel: 'mistral-small-latest',
-    models: ['mistral-small-latest','open-mistral-7b','mistral-medium-latest'],
     createPayload: createOpenAICompatiblePayload,
   },
   // OpenRouter
