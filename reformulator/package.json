@@ -1,6 +1,6 @@
 {
   "name": "Reformulator",
-  "version": "1.2.5",
+  "version": "1.3.0",
   "private": true,
   "description": "Service local de reformulation de texte pour saisie.php. Envoie du texte vers un LLM via l'API Mistral/Groq/OpenAI et renvoie le texte corrige.",
   "author": "Mathieu CHARREYRE",
@@ -14,6 +14,7 @@
     "express": "^4.22.1",
     "pdf-parse": "^1.1.1",
     "mammoth": "^1.8.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "word-extractor": "^1.0.4"
   }
 }

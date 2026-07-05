@@ -39,6 +39,15 @@
  *   3. Le backend Node.js est géré par `reformulator/server.js`; ici, on reste interface.
  *   4. Toute nouvelle route ou dépendance externe doit être décrite dans les commentaires.
  *   5. En cas de panne du service, le code doit basculer proprement vers un fallback local.
+ *
+ * CORRECTIF 04/07/2026 (Mathieu CHARREYRE) :
+ *   - extract_via_node() et extract_text_from_file() renvoient desormais un
+ *     tableau structure ['success' => bool, 'text' => string, 'error' => string]
+ *     au lieu d'une chaine ou l'erreur etait detectee par recherche du mot
+ *     "Erreur" dans le texte (faux positifs si un vrai document contient ce
+ *     mot, et le detail de l'erreur reelle etait perdu). Toute extraction
+ *     ratee est desormais aussi tracee via error_log() (donc dans
+ *     reformulator/log/error.log).
  */
 
 define('SOURCE_FILE', __DIR__ . '/instructions.md');
@@ -1130,36 +1139,100 @@ function find_relevant_instruction_sections(string $text, array $sections, int $
     return $result;
 }
 
-function extract_text_from_file(string $tmpPath, string $originalName): string {
+/**
+ * Extrait le texte d'un fichier uploade (.txt, .md, .pdf, .docx, .doc).
+ *
+ * CORRECTIF 04/07/2026 : renvoie desormais un tableau structure
+ * ['success' => bool, 'text' => string, 'error' => string] au lieu d'une
+ * simple chaine. Avant ce correctif, une erreur d'extraction etait signalee
+ * en injectant le mot "Erreur" dans le texte lui-meme, ce qui produisait de
+ * faux positifs (un document contenant legitimement ce mot) et masquait le
+ * detail reel de l'echec. Voir aussi extract_via_node() ci-dessous.
+ */
+function extract_text_from_file(string $tmpPath, string $originalName): array {
     $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
     $format = strtoupper($ext);
 
-    $rawText = '';
     if ($ext === 'txt' || $ext === 'md') {
         $rawText = trim(@file_get_contents($tmpPath) ?: '');
-    } elseif (in_array($ext, ['pdf', 'docx', 'doc'])) {
-        $rawText = extract_via_node($tmpPath, $originalName);
-    } else {
-        return "[Type de fichier non supporté : $originalName]";
+        if ($rawText === '') {
+            $error = "Fichier texte vide ou illisible : $originalName";
+            error_log("EXTRACT_TEXT_FROM_FILE echec - $error");
+            return ['success' => false, 'text' => '', 'error' => $error];
+        }
+        $prefix = "Mathieu vient de soumettre ce document en $format :\n\n";
+        return ['success' => true, 'text' => $prefix . $rawText, 'error' => ''];
     }
 
-    $prefix = "Mathieu vient de soumettre ce document en $format :\n\n";
-    return $prefix . trim($rawText);
+    if (in_array($ext, ['pdf', 'docx', 'doc', 'rtf'], true)) {
+        $nodeResult = extract_via_node($tmpPath, $originalName);
+        if (!$nodeResult['success']) {
+            // Le detail complet est deja trace dans extract_via_node().
+            return $nodeResult;
+        }
+        if (trim($nodeResult['text']) === '') {
+            $error = "Le service Node.js n'a retourné aucun texte pour $originalName (document scanné, protégé, ou vide ?).";
+            error_log("EXTRACT_TEXT_FROM_FILE echec - $error");
+            return ['success' => false, 'text' => '', 'error' => $error];
+        }
+        $prefix = "Mathieu vient de soumettre ce document en $format :\n\n";
+        return ['success' => true, 'text' => $prefix . trim($nodeResult['text']), 'error' => ''];
+    }
+
+    $error = "Type de fichier non supporté : $originalName";
+    error_log("EXTRACT_TEXT_FROM_FILE echec - $error");
+    return ['success' => false, 'text' => '', 'error' => $error];
 }
 
-function extract_via_node(string $tmpPath, string $originalName): string {
+/**
+ * Envoie un fichier PDF/DOCX au service Node.js (route /reformuler, purpose=extract)
+ * pour extraction du texte.
+ *
+ * CORRECTIF 04/07/2026 : renvoie desormais un tableau structure au lieu d'une
+ * chaine contenant "[Erreur Node.js ...]" en cas d'echec. L'ancien format
+ * etait indetectable de maniere fiable par l'appelant (voir extract_text_from_file
+ * et le handler extract_only), et le detail de l'erreur curl / HTTP etait perdu
+ * sans etre journalise nulle part — d'ou l'absence totale de logs malgre des
+ * echecs systematiques sur les PDF/DOCX.
+ */
+function extract_via_node(string $tmpPath, string $originalName): array {
+    // CORRECTIF 05/07/2026 (v2) : l'ajout des en-tetes Accept/User-Agent n'a
+    // pas suffi -- le 406 persiste. Le blocage vient donc du multipart
+    // lui-meme (mod_security o2switch bloque probablement les requetes
+    // multipart/form-data contenant un fichier binaire vers cette route,
+    // avant meme d'atteindre Passenger/Node.js). On contourne entierement le
+    // multipart : le fichier est lu, encode en base64 et envoye en JSON,
+    // exactement comme les routes reformuler_via_node()/call_reformulator_service()
+    // qui, elles, passent sans probleme. Cote server.js, la route /reformuler
+    // doit lire req.body.fileData (base64) quand aucun fichier multipart
+    // n'est present. Voir CORRECTIF 05/07/2026 (v2) dans server.js.
     $mime = mime_content_type($tmpPath) ?: 'application/octet-stream';
+
+    $fileContent = @file_get_contents($tmpPath);
+    if ($fileContent === false) {
+        $details = "Impossible de lire le fichier temporaire local ($tmpPath) avant encodage base64.";
+        error_log("EXTRACT_VIA_NODE echec pour '$originalName' - $details");
+        return ['success' => false, 'text' => '', 'error' => $details];
+    }
+
+    $payload = [
+        'purpose'  => 'extract',
+        'fileName' => $originalName,
+        'fileMime' => $mime,
+        'fileData' => base64_encode($fileContent),
+    ];
+    unset($fileContent); // libere la memoire avant l'appel curl
+
     $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-
-    $postfields = [
-        'purpose' => 'extract',
-        'file'    => new CURLFile($tmpPath, $mime, $originalName)
-    ];
-
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 90); // un peu plus large : base64 + JSON est ~35% plus volumineux que le fichier brut
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Accept: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Reformulator-PHP-Client/1.0');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
 
     $result = curl_exec($ch);
     $error  = curl_error($ch);
@@ -1167,11 +1240,19 @@ function extract_via_node(string $tmpPath, string $originalName): string {
     close_curl_handle($ch);
 
     if ($error || $httpCode >= 400 || !$result) {
-        return "[Erreur Node.js (HTTP $httpCode) : $error]";
+        $details = $error !== '' ? $error : ('HTTP ' . $httpCode . ' - ' . substr((string) $result, 0, 300));
+        error_log("EXTRACT_VIA_NODE echec pour '$originalName' - $details");
+        return ['success' => false, 'text' => '', 'error' => $details];
     }
 
     $data = json_decode($result, true);
-    return $data['cleaned'] ?? "[Aucun texte retourné]";
+    if (!is_array($data) || !array_key_exists('cleaned', $data)) {
+        $details = 'Réponse JSON invalide (HTTP ' . $httpCode . ') : ' . substr((string) $result, 0, 300);
+        error_log("EXTRACT_VIA_NODE reponse invalide pour '$originalName' - $details");
+        return ['success' => false, 'text' => '', 'error' => $details];
+    }
+
+    return ['success' => true, 'text' => (string) ($data['cleaned'] ?? ''), 'error' => ''];
 }
 
 // ---------------------------------------------------------------
@@ -1221,19 +1302,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input_text = trim($_POST['story'] ?? '');
 
     // === EXTRACTION SEULE DU FICHIER (nouveau bouton) ===
+    // CORRECTIF 04/07/2026 : utilise desormais le tableau structure renvoye par
+    // extract_text_from_file() au lieu de chercher la sous-chaine "Erreur"
+    // dans le texte extrait (source de faux positifs et de details perdus).
+    // Chaque echec est aussi trace via error_log().
     if (isset($_GET['extract_only']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         if (!empty($_FILES['uploaded_file']) && $_FILES['uploaded_file']['error'] === UPLOAD_ERR_OK) {
             $tmpPath = $_FILES['uploaded_file']['tmp_name'];
             $fileName = $_FILES['uploaded_file']['name'];
-            $fileContent = extract_text_from_file($tmpPath, $fileName);
+            $extraction = extract_text_from_file($tmpPath, $fileName);
 
-            if ($fileContent && strpos($fileContent, 'Erreur') === false && strpos($fileContent, 'non extractible') === false) {
-                echo json_encode(['success' => true, 'text' => $fileContent]);
+            if ($extraction['success'] && trim($extraction['text']) !== '') {
+                echo json_encode(['success' => true, 'text' => $extraction['text']]);
             } else {
-                echo json_encode(['success' => false, 'error' => 'Impossible d\'extraire le texte du fichier']);
+                $errorDetail = $extraction['error'] !== '' ? $extraction['error'] : 'Impossible d\'extraire le texte du fichier';
+                error_log("EXTRACT_ONLY echec pour '$fileName' - $errorDetail");
+                echo json_encode(['success' => false, 'error' => $errorDetail]);
             }
         } else {
+            $uploadErrorCode = $_FILES['uploaded_file']['error'] ?? 'aucun fichier reçu';
+            error_log("EXTRACT_ONLY aucun fichier recu ou erreur upload PHP - code=" . $uploadErrorCode);
             echo json_encode(['success' => false, 'error' => 'Aucun fichier reçu']);
         }
         exit;
@@ -1549,12 +1638,12 @@ button.secondary:hover{background:#6d7a9b}
   <div class="card">
     <form method="post" action="" enctype="multipart/form-data">
       <label for="story"><strong>Texte libre</strong></label>
-      <textarea id="story" name="story" placeholder="Salut Mathieu, raconte donc ta vie à la première personne ; l'IA le transposera en experiences memorielles à la troisième personne." required><?php echo html_escape($input_text); ?></textarea>
+      <textarea id="story" name="story" placeholder="Salut Mathieu, raconte donc ta vie à la première personne ; l'IA le transposera en experiences memorielles à la troisième personne." required><?php echo html_escape($input_text); ?></textarea>
       <!-- === Upload de fichiers === -->
         <div style="margin: 15px 0 20px 0; padding: 12px; background: #f8f9ff; border: 1px solid #d0d8ef; border-radius: 8px;">
         <label><strong>Ou charger un fichier à analyser :</strong></label><br>
-        <input type="file" id="uploaded_file" name="uploaded_file" accept=".pdf,.docx,.txt,.md" style="margin-top:8px;">
-        <small style="color:#555; display:block; margin-top:4px;">(Optionnel) PDF, DOCX, TXT, MD — max 15 Mo</small>
+        <input type="file" id="uploaded_file" name="uploaded_file" accept=".pdf,.docx,.doc,.rtf,.txt,.md" style="margin-top:8px;">
+        <small style="color:#555; display:block; margin-top:4px;">(Optionnel) PDF, DOCX, DOC, RTF, TXT, MD — max 15 Mo</small>
         </div>
       <p class="notice">Le bouton "Reformulation avancee avec IA" corrige, reformule et transpose à la troisième personne, "Proposer emplacement" propose où ranger le souvenir dans le fichier d'instructions, et “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
       <input type="hidden" name="instructions_context" value="<?php echo html_escape($instructions_context); ?>">

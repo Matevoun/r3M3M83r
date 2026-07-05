@@ -1,7 +1,26 @@
 /**
  * reformulator/server.js
  * Version avec support upload de fichiers + Mistral par défaut + logique dynamique modèles
- * Mise à jour 29/06/2026 - Mathieu CHARREYRE
+ * Mise à jour 04/07/2026 - Mathieu CHARREYRE
+ *
+ * CORRECTIF 04/07/2026 :
+ *   - Le dossier `uploads/` (destination Multer) n'était jamais créé
+ *     explicitement. Sur o2switch/Passenger, s'il n'existait pas (ou n'avait
+ *     pas les droits d'écriture), Multer échouait AVANT d'entrer dans le
+ *     handler de la route /reformuler : `logRequest()` et tous les
+ *     `logError()` du handler n'étaient donc jamais exécutés, d'où l'absence
+ *     totale de traces dans les logs malgré des échecs systématiques sur les
+ *     PDF/DOCX (les .txt/.md ne passent pas par Multer, donc fonctionnaient).
+ *   - Ajout d'un middleware d'erreur dédié autour de `upload.single('file')`
+ *     sur /reformuler, qui logge l'échec Multer et répond en JSON (au lieu
+ *     de laisser Express retomber sur sa page d'erreur HTML par défaut).
+ *   - Ajout d'un middleware d'erreur Express global (4 arguments) en fin de
+ *     fichier, pour capter toute exception non gérée et toujours répondre en
+ *     JSON avec un log.
+ *   - La route de compatibilité `/r3M3M83r/reformulator/reformuler` appelait
+ *     `upload.single('file')` une seconde fois avant de redéléguer vers
+ *     `/reformuler` (qui l'applique déjà) : la requête aurait été analysée
+ *     deux fois. Elle se contente désormais de redéléguer.
  */
 
 const fs = require('fs');
@@ -14,11 +33,7 @@ const cors = require('cors');
 const multer = require('multer');
 const pdf = require('pdf-parse');
 const mammoth = require('mammoth');
-
-const upload = multer({
-  dest: 'uploads/',
-  limits: { fileSize: 15 * 1024 * 1024 }
-});
+const WordExtractor = require('word-extractor'); // CORRECTIF 05/07/2026 (v3) : support .doc
 
 dotenv.config();
 process.env.TZ = 'Europe/Paris';
@@ -85,7 +100,26 @@ process.on('unhandledRejection', (reason) => {
 // ==================== APP & UPLOAD ====================
 const app = express();
 app.use(cors());
-app.use(express.json());
+// CORRECTIF 05/07/2026 (v2) : la limite par defaut d'express.json() est 100kb,
+// beaucoup trop petite pour un fichier PDF/DOCX encode en base64 (~+35% de
+// volume par rapport au fichier brut). Necessaire pour le contournement du
+// blocage mod_security o2switch sur les uploads multipart (voir /reformuler).
+app.use(express.json({ limit: '25mb' }));
+
+// CORRECTIF 04/07/2026 : le dossier de destination Multer doit exister et
+// être inscriptible AVANT toute requête, sinon Multer échoue silencieusement
+// en dehors du handler de route (donc en dehors de logRequest()/logError()).
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+try {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+} catch (mkdirError) {
+  logError("Impossible de creer le dossier uploads (" + UPLOAD_DIR + ") : " + (mkdirError && mkdirError.stack ? mkdirError.stack : String(mkdirError)));
+}
+
+const upload = multer({
+  dest: UPLOAD_DIR,
+  limits: { fileSize: 15 * 1024 * 1024 }
+});
 
 // ==================== CONFIG LLM ====================
 const PORT = process.env.PORT || 3000;
@@ -456,6 +490,36 @@ async function extractTextFromFile(file) {
       return result.value.trim() || `[DOCX vide ou illisible : ${file.originalname}]`;
     }
 
+    // CORRECTIF 05/07/2026 (v3) : support .doc (ancien format binaire Word
+    // 97-2003, non lisible par mammoth qui ne gere que le .docx XML moderne).
+    // word-extractor est une lib pure JS, aucun binaire externe requis.
+    if (ext === '.doc') {
+      try {
+        const extractor = new WordExtractor();
+        const doc = await extractor.extract(file.path);
+        const extracted = (doc.getBody() || '').trim();
+        return extracted || `[DOC vide ou illisible : ${file.originalname}]`;
+      } catch (docError) {
+        logError(`Extraction DOC échouée pour ${file.originalname} : ${docError.message}`);
+        return `[Erreur extraction DOC ${file.originalname} — ${docError.message.substring(0, 100)}]`;
+      }
+    }
+
+    // CORRECTIF 05/07/2026 (v3) : support .rtf via extraction texte par regex
+    // (pas de parseur RTF Node leger et sans dependance systeme disponible
+    // sur hebergement mutualise). Fonctionne bien sur du RTF simple ; peut
+    // laisser des residus sur du RTF complexe (tableaux, objets OLE, images).
+    if (ext === '.rtf') {
+      try {
+        const raw = fs.readFileSync(file.path, 'latin1');
+        const extracted = extractPlainTextFromRtf(raw);
+        return extracted || `[RTF vide ou illisible : ${file.originalname}]`;
+      } catch (rtfError) {
+        logError(`Extraction RTF échouée pour ${file.originalname} : ${rtfError.message}`);
+        return `[Erreur extraction RTF ${file.originalname} — ${rtfError.message.substring(0, 100)}]`;
+      }
+    }
+
     if (ext === '.txt' || ext === '.md') {
       const content = fs.readFileSync(file.path, 'utf8').trim();
       return content || `[Fichier texte vide : ${file.originalname}]`;
@@ -469,8 +533,116 @@ async function extractTextFromFile(file) {
   }
 }
 
+// CORRECTIF 05/07/2026 (v3) : parseur a pile pour supprimer entierement les
+// groupes de destination non textuels (polices, couleurs, styles, objets...),
+// y compris lorsqu'ils sont imbriques (ex: {\fonttbl{\f0 Arial;}}) -- une
+// simple regex non gourmande sur [^{}]* echoue sur les accolades imbriquees.
+function stripRtfDestinationGroups(text, destinations) {
+  const destSet = new Set(destinations.map(function(d) { return d.toLowerCase(); }));
+  let result = '';
+  let i = 0;
+  const skipStack = [];
+  while (i < text.length) {
+    const ch = text[i];
+    if (ch === '{') {
+      let j = i + 1;
+      if (text[j] === '\\' && text[j + 1] === '*') {
+        j += 2;
+      }
+      let word = '';
+      if (text[j] === '\\') {
+        let k = j + 1;
+        while (k < text.length && /[a-zA-Z]/.test(text[k])) {
+          word += text[k];
+          k++;
+        }
+      }
+      const currentlySkipping = skipStack.length > 0 && skipStack[skipStack.length - 1];
+      const shouldSkip = currentlySkipping || destSet.has(word.toLowerCase());
+      skipStack.push(shouldSkip);
+      if (!shouldSkip) result += ch;
+      i++;
+      continue;
+    }
+    if (ch === '}') {
+      const wasSkipping = skipStack.length > 0 ? skipStack.pop() : false;
+      if (!wasSkipping) result += ch;
+      i++;
+      continue;
+    }
+    const currentlySkipping = skipStack.length > 0 && skipStack[skipStack.length - 1];
+    if (!currentlySkipping) result += ch;
+    i++;
+  }
+  return result;
+}
+
+function extractPlainTextFromRtf(rtfContent) {
+  let text = rtfContent;
+
+  // Suppression des groupes non textuels (imbrication geree correctement)
+  text = stripRtfDestinationGroups(text, [
+    'fonttbl', 'colortbl', 'stylesheet', 'pict', 'object', 'info',
+    'generator', 'xmlnstbl', 'listtable', 'listoverridetable',
+    'rsidtbl', 'themedata', 'colorschememapping', 'latentstyles', 'datastore'
+  ]);
+
+  // \uNNNN : caractere unicode (NNNN decimal, negatif pour les points de code hauts)
+  text = text.replace(/\\u(-?\d+)\s?/g, function(match, code) {
+    let codePoint = parseInt(code, 10);
+    if (codePoint < 0) codePoint += 65536;
+    try {
+      return String.fromCharCode(codePoint);
+    } catch (e) {
+      return '';
+    }
+  });
+
+  // \'xx : caractere encode en hexadecimal (latin1/cp1252 selon la police)
+  text = text.replace(/\\'([0-9a-fA-F]{2})/g, function(match, hex) {
+    try {
+      return Buffer.from([parseInt(hex, 16)]).toString('latin1');
+    } catch (e) {
+      return '';
+    }
+  });
+
+  text = text.replace(/\\par[d]?\b/g, '\n');
+  text = text.replace(/\\tab\b/g, '\t');
+  text = text.replace(/\\line\b/g, '\n');
+
+  // Mots de controle restants (ex: \rtf1, \ansi, \deff0, \f0, \fs24, \b, \i, \ul...)
+  text = text.replace(/\\[a-zA-Z]+-?\d*\s?/g, '');
+
+  // Accolades de regroupement restantes
+  text = text.replace(/[{}]/g, '');
+
+  // Nettoyage des espacements
+  text = text.replace(/\r?\n[ \t]*\r?\n+/g, '\n\n');
+  text = text.replace(/[ \t]+/g, ' ');
+  text = text.split('\n').map(function(line) { return line.trim(); }).join('\n');
+
+  return text.trim();
+}
+
+// CORRECTIF 04/07/2026 : middleware dédié qui encapsule upload.single('file')
+// pour intercepter proprement les erreurs Multer (dossier manquant, fichier
+// trop volumineux, type MIME rejeté, etc.). Sans ce middleware, une erreur
+// Multer fait tomber Express sur sa page d'erreur HTML par défaut, AVANT
+// d'atteindre le corps de la route -- donc avant logRequest()/logError().
+const handleFileUpload = function(req, res, next) {
+  upload.single('file')(req, res, function(multerError) {
+    if (multerError) {
+      var details = multerError.message || String(multerError);
+      logError('Erreur upload Multer sur ' + req.originalUrl + ' : ' + details);
+      return res.status(400).json({ error: 'Upload échoué', details: details, attempts: [] });
+    }
+    next();
+  });
+};
+
 // Route principale avec upload + mode extraction
-app.post('/reformuler', upload.single('file'), async function(req, res) {
+app.post('/reformuler', handleFileUpload, async function(req, res) {
   logRequest(req);
 
   let text = (req.body && req.body.text) || '';
@@ -479,13 +651,44 @@ app.post('/reformuler', upload.single('file'), async function(req, res) {
   // Récupération du purpose même en multipart
   const purpose = (req.body && req.body.purpose) ? req.body.purpose.toLowerCase() : 'rewrite';
 
-  console.log(`[ROUTE] Purpose reçu : ${purpose} | Fichier : ${file ? file.originalname : 'aucun'}`);
+  const hasBase64File = !file && req.body && typeof req.body.fileData === 'string' && req.body.fileData.trim() !== '';
+  console.log(`[ROUTE] Purpose reçu : ${purpose} | Fichier multipart : ${file ? file.originalname : 'aucun'} | Fichier base64 : ${hasBase64File ? (req.body.fileName || 'sans nom') : 'aucun'}`);
 
-  // === EXTRACTION DE FICHIER ===
+  // === EXTRACTION DE FICHIER (multipart historique) ===
   if (file) {
     const extracted = await extractTextFromFile(file);
     text = extracted + "\n\n" + text;
     try { fs.unlinkSync(file.path); } catch(e) {}
+  }
+
+  // === EXTRACTION DE FICHIER (base64 JSON) ===
+  // CORRECTIF 05/07/2026 (v2) : contournement du blocage mod_security o2switch
+  // sur les requetes multipart/form-data (HTTP 406 avant meme d'atteindre
+  // Passenger/Node.js). Le fichier arrive ici encode en base64 dans le JSON
+  // (voir extract_via_node() cote saisie.php). On le decode vers un fichier
+  // temporaire dans UPLOAD_DIR, puis on reutilise extractTextFromFile() sans
+  // la modifier -- elle attend juste un objet { path, originalname, size }.
+  if (hasBase64File) {
+    const originalName = String(req.body.fileName || 'fichier_sans_nom');
+    let tmpFilePath = null;
+    try {
+      const buffer = Buffer.from(req.body.fileData, 'base64');
+      const safeName = Date.now() + '_' + originalName.replace(/[^a-zA-Z0-9._-]/g, '_');
+      tmpFilePath = path.join(UPLOAD_DIR, safeName);
+      fs.writeFileSync(tmpFilePath, buffer);
+      const extracted = await extractTextFromFile({
+        path: tmpFilePath,
+        originalname: originalName,
+        size: buffer.length
+      });
+      text = extracted + "\n\n" + text;
+    } catch (b64Error) {
+      const details = b64Error && b64Error.stack ? b64Error.stack : String(b64Error);
+      logError('Erreur decodage fichier base64 (' + originalName + ') : ' + details);
+      return res.status(400).json({ error: 'Fichier base64 invalide', details: b64Error && b64Error.message ? b64Error.message : String(b64Error), attempts: [] });
+    } finally {
+      if (tmpFilePath) { try { fs.unlinkSync(tmpFilePath); } catch (e) {} }
+    }
   }
 
   // Mode extraction seule
@@ -520,9 +723,27 @@ app.post('/reformuler', upload.single('file'), async function(req, res) {
 });
 
 // Compatibilité ancienne route
-app.post('/r3M3M83r/reformulator/reformuler', upload.single('file'), function(req, res) {
+// CORRECTIF 04/07/2026 : ne rappelle plus upload.single('file') ici -- la
+// requête est redéléguée telle quelle vers /reformuler, qui applique déjà
+// handleFileUpload. L'appliquer deux fois aurait tenté de reparser un corps
+// multipart déjà consommé par le premier passage.
+app.post('/r3M3M83r/reformulator/reformuler', function(req, res) {
   req.url = '/reformuler';
   app.handle(req, res);
+});
+
+// CORRECTIF 04/07/2026 : middleware d'erreur Express global (4 arguments).
+// Filet de sécurité pour toute exception qui remonterait sans avoir été
+// interceptée par un try/catch local : on logge systématiquement et on
+// répond toujours en JSON plutôt qu'avec la page d'erreur HTML par défaut
+// d'Express (ce qui, côté PHP, ferait échouer json_decode() silencieusement).
+app.use(function(err, req, res, next) {
+  var details = err && err.stack ? err.stack : String(err);
+  logError('Erreur Express non interceptee sur ' + req.originalUrl + ' : ' + details);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({ error: 'Erreur serveur interne', details: err && err.message ? err.message : String(err) });
 });
 
 // ===================== LANCEMENT DU SERVEUR ======================
