@@ -79,6 +79,19 @@ define('CPANEL_URL', 'https://nombre.o2switch.net:2083');
 // BLOC 1 : Recuperation des informations LLM depuis le backend Node.js
 // -----------------------------------------------------------------------------
 
+// Normalise une URL de moteur LLM extraite de server.js (ajoute le schéma
+// si absent, retire le slash final) pour un affichage/lien propre.
+function normalize_engine_url(string $url): string {
+    $url = trim($url);
+    if ($url === '') {
+        return '';
+    }
+    if (!preg_match('#^https?://#i', $url)) {
+        $url = 'https://' . ltrim($url, '/');
+    }
+    return rtrim($url, '/');
+}
+
 function parse_llm_info_from_server_file(): array {
     $filePath = __DIR__ . '/reformulator/server.js';
     if (!is_file($filePath) || !is_readable($filePath)) {
