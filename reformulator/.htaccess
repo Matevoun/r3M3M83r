@@ -2,19 +2,15 @@
 <IfModule mod_authz_core.c>
     Require all granted
 </IfModule>
-
 # Bloque l'acces public au fichier .port (contient le port interne de Node.js).
 <Files ".port">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
 </Files>
-
 <IfModule mod_headers.c>
     Header always set Access-Control-Allow-Origin "*"
 </IfModule>
-
 RewriteEngine On
 RewriteRule ^(error_log|requests_log)$ log_proxy.php?name=$1 [L,QSA]
-
 Options -Indexes

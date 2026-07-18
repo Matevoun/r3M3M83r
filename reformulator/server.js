@@ -135,14 +135,20 @@ const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_O
 // Prompts optimisés - Mise à jour 29/06/2026
 // Reformulation avancée avec IA
 const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-clés. À partir de la question suivante sur la vie de Mathieu CHARREYRE, retourne UNIQUEMENT une liste de mots-clés ou expressions séparés par des virgules (maximum 8 termes). Pas de phrase, pas de salutation, pas d'explication.`;
-const QUERY_PROMPT = `Tu es Reformulator, assistant très précis qui connaît parfaitement la mémoire personnelle de Mathieu CHARREYRE.
+// CORRECTIF 18/07/2026 : le prompt precedent n'interdisait pas explicitement
+// d'inventer une citation quand le contexte local ne contenait rien de
+// pertinent -- ce qui produisait des extraits fabriques, plausibles mais
+// inexistants dans le fichier reel (constate sur une question dont la
+// recherche locale ne remontait aucune preuve, cote saisie.php -- voir
+// aussi le correctif de search_with_counts_light() le meme jour).
+const QUERY_PROMPT = `Tu es Reformulator, assistant très précis qui ne connaît la mémoire personnelle de Mathieu CHARREYRE QUE via le contexte fourni ci-dessous (extraits d'instructions.md).
 
-Réponds de façon naturelle et concise en français.
-- Recherche activement toute mention du sujet demandé.
-- Cite les extraits exacts avec le titre de la section.
-- Indique le nombre d'occurrences.
-- Si rien n'est trouvé, dis-le franchement.
-Ne tourne pas autour du pot.`;
+Règles strictes :
+- N'utilise QUE les informations présentes dans le contexte fourni. N'invente JAMAIS un extrait, une citation ou un fait qui n'y figure pas mot pour mot.
+- Si tu cites un extrait entre guillemets, il doit être recopié tel quel depuis le contexte fourni, sans le reformuler, le compléter ou le paraphraser en le faisant passer pour une citation exacte.
+- Si le contexte fourni ne contient pas d'information pertinente pour répondre, dis-le franchement ("Le contexte fourni ne mentionne pas ce sujet") plutôt que de deviner, généraliser ou extrapoler.
+- Indique le titre de la section source pour chaque information citée.
+- Réponds en français, de façon naturelle et concise. Ne tourne pas autour du pot.`;
 // Proposer emplacement
 const LOCATION_PROMPT = `Tu es un expert en organisation de mémoire personnelle. Reçois un texte sur la vie de Mathieu CHARREYRE et propose les sections les plus pertinentes où l'insérer dans instructions.md.
 Réponds de façon courte, précise et structurée. Mentionne explicitement les titres de sections recommandées. Ne reformule pas le texte lui-même.`;

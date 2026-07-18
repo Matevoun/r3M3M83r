@@ -73,7 +73,7 @@ function get_reformulator_base_url(): string {
 define('REFORMULATOR_BASE_URL', get_reformulator_base_url());
 
 // URL du panneau de controle o2switch (cPanel).
-define('CPANEL_URL', 'https://nombre.o2switch.net:2083');
+define('CPANEL_URL', 'https://nombre.o2switch.net:2083/cpsess2639929987/frontend/o2switch/lveversion/nodejs-selector.html.tt#/');
 
 // -----------------------------------------------------------------------------
 // BLOC 1 : Recuperation des informations LLM depuis le backend Node.js
@@ -145,23 +145,136 @@ function parse_llm_info_from_server_file(): array {
 // Appelle la route `/llm-info` exposée par reformulator/server.js pour récupérer
 // la configuration LLM active. Si le service Node.js n'est pas joignable, on bascule
 // sur un fallback local en lisant `reformulator/server.js` directement.
-function get_llm_info(): array {
-    $url = REFORMULATOR_BASE_URL . '/llm-info';
+// CORRECTIF 05/07/2026 (v4) : classifie precisement l'echec de /llm-info au
+// lieu de toujours afficher "Service Node.js inaccessible". Distingue :
+//   - 'down'      : panne reelle (timeout, connexion refusee) -> Node.js ne tourne pas
+//   - 'blocked'    : HTTP 406 -> tres probablement mod_security o2switch, PAS Node.js
+//   - 'route'      : HTTP 404 -> Node.js tourne mais la route /llm-info n'existe pas
+//   - 'app_error'  : HTTP 500+ -> Node.js tourne mais plante sur cette requete
+//                    (cause frequente : dependance npm manquante, ex: word-extractor
+//                    ajoutee a package.json sans avoir relance "npm install" sur o2switch)
+//   - 'malformed'  : HTTP 200 mais JSON invalide/incomplet
+//   - 'unknown'    : cas non categorise, on affiche quand meme le detail brut
+function classify_llm_info_failure(string $curlError, int $httpCode, string $rawResult): array {
+    $curlErrorLower = mb_strtolower($curlError, 'UTF-8');
+
+    $connectionKeywords = [
+        "couldn't connect", 'connection refused', 'connection timed out',
+        'resolve host', 'resolving timed out', 'operation timed out',
+        'ssl connect error', 'could not resolve', 'empty reply from server',
+        'failed to connect', 'network is unreachable', 'no route to host',
+    ];
+
+    $looksLikeConnectionFailure = ($httpCode === 0);
+    if (!$looksLikeConnectionFailure && $curlError !== '') {
+        foreach ($connectionKeywords as $keyword) {
+            if (strpos($curlErrorLower, $keyword) !== false) {
+                $looksLikeConnectionFailure = true;
+                break;
+            }
+        }
+    }
+
+    if ($looksLikeConnectionFailure) {
+        return [
+            'diagnosis' => 'down',
+            'detail'    => $curlError !== '' ? $curlError : 'Aucune réponse du serveur (connexion impossible).',
+        ];
+    }
+
+    // La connexion TCP a reussi (on a un code HTTP), le probleme est donc
+    // ailleurs : blocage WAF, route incorrecte, erreur applicative Node...
+    $snippet = trim(preg_replace('/\s+/', ' ', strip_tags(substr($rawResult, 0, 300))));
+
+    if ($httpCode === 406) {
+        return [
+            'diagnosis' => 'blocked',
+            'detail'    => 'HTTP 406 — requête bloquée avant Node.js (probable mod_security o2switch, pas un problème du service lui-même). ' . $snippet,
+        ];
+    }
+    if ($httpCode === 404) {
+        return [
+            'diagnosis' => 'route',
+            'detail'    => 'HTTP 404 — la route /llm-info est introuvable. Vérifier que server.js expose bien cette route et que REFORMULATOR_BASE_URL pointe au bon endroit. ' . $snippet,
+        ];
+    }
+    if ($httpCode >= 500) {
+        return [
+            'diagnosis' => 'app_error',
+            'detail'    => "HTTP $httpCode — Node.js a répondu mais a rencontré une erreur interne (ex : dépendance npm manquante après un déploiement — penser à relancer \"npm install\" côté o2switch). " . $snippet,
+        ];
+    }
+    if ($httpCode > 0) {
+        return [
+            'diagnosis' => 'unknown',
+            'detail'    => "HTTP $httpCode. " . $snippet,
+        ];
+    }
+
+    return [
+        'diagnosis' => 'down',
+        'detail'    => 'Réponse vide, aucun code HTTP reçu.',
+    ];
+}
+
+// CORRECTIF 18/07/2026 : execute une seule tentative de contact avec /llm-info.
+// Extrait de get_llm_info() pour permettre les tentatives repetees ci-dessous.
+function fetch_llm_info_once(string $url): array {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 8);        // augmenté
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); // nouveau
+    curl_setopt($ch, CURLOPT_TIMEOUT, 8);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
     $result = curl_exec($ch);
     $error  = curl_error($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     close_curl_handle($ch);
+    return ['result' => $result, 'error' => $error, 'httpCode' => $httpCode];
+}
+
+function get_llm_info(): array {
+    $url = REFORMULATOR_BASE_URL . '/llm-info';
+
+    // CORRECTIF 18/07/2026 : apres quelques jours d'inactivite, o2switch/Passenger
+    // met l'app Node en veille. La premiere requete qui la reveille peut echouer
+    // (404/502/503/504/timeout) le temps que le process redemarre (cold start) et
+    // que le mapping Passenger se re-branche. On retente automatiquement avant
+    // d'afficher une erreur, pour eviter un aller-retour manuel dans cPanel a
+    // chaque reprise d'utilisation apres une periode d'inactivite. On ne retente
+    // PAS sur un blocage WAF franc (406) ou une vraie erreur applicative (500 avec
+    // corps de reponse), qui ne se resoudront pas tout seuls en quelques secondes.
+    $maxAttempts = 3;
+    $retryDelaySeconds = 2;
+    $attempt = 0;
+    $lastAttempt = ['result' => false, 'error' => '', 'httpCode' => 0];
+
+    while ($attempt < $maxAttempts) {
+        $attempt++;
+        $lastAttempt = fetch_llm_info_once($url);
+        $transientFailure = ($lastAttempt['error'] !== '' || !$lastAttempt['result'] || $lastAttempt['httpCode'] >= 400);
+        if (!$transientFailure) {
+            break;
+        }
+        $classification = classify_llm_info_failure($lastAttempt['error'], $lastAttempt['httpCode'], (string) $lastAttempt['result']);
+        $worthRetrying = in_array($classification['diagnosis'], ['down', 'route'], true);
+        if (!$worthRetrying || $attempt >= $maxAttempts) {
+            break;
+        }
+        sleep($retryDelaySeconds);
+    }
+
+    $result   = $lastAttempt['result'];
+    $error    = $lastAttempt['error'];
+    $httpCode = $lastAttempt['httpCode'];
 
     if ($error || !$result || $httpCode >= 400) {
-        error_log("LLM-INFO unreachable - HTTP $httpCode - $error"); // pour debug
+        error_log("LLM-INFO unreachable apres $attempt tentative(s) - HTTP $httpCode - $error");
+        $classification = classify_llm_info_failure($error, $httpCode, (string) $result);
         $fallback = parse_llm_info_from_server_file();
         $fallback['reachable'] = false;
         $fallback['last_error'] = $error ?: "HTTP $httpCode";
+        $fallback['diagnosis'] = $classification['diagnosis'];
+        $fallback['diagnosis_detail'] = $classification['detail'];
         return $fallback;
     }
 
@@ -169,6 +282,9 @@ function get_llm_info(): array {
     if (!is_array($data) || empty($data['engineName'])) {
         $fallback = parse_llm_info_from_server_file();
         $fallback['reachable'] = false;
+        $fallback['diagnosis'] = 'malformed';
+        $snippet = trim(preg_replace('/\s+/', ' ', strip_tags(substr((string) $result, 0, 300))));
+        $fallback['diagnosis_detail'] = 'Réponse HTTP 200 mais JSON invalide ou incomplet — ' . $snippet;
         return $fallback;
     }
 
@@ -379,7 +495,7 @@ function finalize_query_response_via_node(string $question, string $localEvidenc
     return call_reformulator_service($payload);
 }
 
-function close_curl_handle($ch): void {
+function close_curl_handle(mixed $ch): void {
     if (function_exists('curl_close')) {
         call_user_func('curl_close', $ch);
     }
@@ -819,6 +935,7 @@ function search_with_counts(string $query, array $sections): array {
     foreach ($sections as $title => $content) {
         $score = 0;
         $matchesInSection = [];
+        $countInSection = 0;
         $normContent = normalize_for_matching($content);
 
         foreach ($searchTerms as $term) {
@@ -858,9 +975,33 @@ function search_with_counts(string $query, array $sections): array {
 }
 
 // Recherche locale légère et plus robuste pour le bouton Interroger
+// CORRECTIF 18/07/2026 : la version precedente traitait toute la question
+// comme UNE SEULE chaine litterale a rechercher (ex: la phrase normalisee
+// entiere "qui est ma cousine et qui est notifie..."), ce qui ne correspond
+// quasiment jamais a du texte reel pour une question en langage naturel.
+// Consequence concrete observee : la recherche locale ne trouvait rien,
+// aucune preuve n'etait transmise au LLM, qui finissait par inventer une
+// citation plausible plutot que d'admettre l'absence de resultat.
+// On decoupe desormais la question en mots-cles significatifs (comme le fait
+// deja search_with_counts()/search_instructions_sections_by_terms) et on
+// cherche chaque terme independamment, en sous-chaine normalisee (accents et
+// casse ignores) -- ce qui permet par exemple de retrouver "cousine" a
+// l'interieur de "petite-cousine".
 function search_with_counts_light(string $query, array $sections): array {
-    $queryNorm = normalize_for_matching($query);
-    if (mb_strlen($queryNorm) < 2) {
+    $terms = extract_keywords($query);
+
+    // Ajoute les mots commencant par une majuscule meme courts (noms propres,
+    // ex: "Edith"), qu'extract_keywords() seul ne privilegie pas specifiquement.
+    $rawQueryWords = preg_split('/\s+/u', $query, -1, PREG_SPLIT_NO_EMPTY);
+    foreach ($rawQueryWords as $word) {
+        $cleanWord = preg_replace('/[^\p{L}\p{N}]/u', '', $word);
+        if ($cleanWord !== '' && preg_match('/^\p{Lu}/u', $cleanWord) && mb_strlen($cleanWord, 'UTF-8') >= 3) {
+            $terms[] = $cleanWord;
+        }
+    }
+    $terms = array_values(array_unique(array_filter($terms, function ($t) { return trim($t) !== ''; })));
+
+    if (empty($terms)) {
         return ['sections' => [], 'total_occ' => 0];
     }
 
@@ -869,17 +1010,25 @@ function search_with_counts_light(string $query, array $sections): array {
 
     foreach ($sections as $title => $content) {
         $normContent = normalize_for_matching($content);
+        $sectionOccurrences = 0;
+        $matchedTerms = [];
 
-        // Recherche plus souple : mot entier OU début de mot
-        $pattern = '/\b' . preg_quote($queryNorm, '/') . '\w*/ui';
-        $count = preg_match_all($pattern, $normContent);
+        foreach ($terms as $term) {
+            $termNorm = normalize_for_matching($term);
+            if ($termNorm === '') continue;
+            $count = substr_count($normContent, $termNorm);
+            if ($count > 0) {
+                $sectionOccurrences += $count;
+                $matchedTerms[] = $term;
+            }
+        }
 
-        if ($count > 0) {
-            $totalOccurrences += $count;
-            $sentences = extract_section_match_sentences($content, [$query], 4);
+        if ($sectionOccurrences > 0) {
+            $totalOccurrences += $sectionOccurrences;
+            $sentences = extract_section_match_sentences($content, $matchedTerms, 4);
 
             $results[$title] = [
-                'occurrences' => $count,
+                'occurrences' => $sectionOccurrences,
                 'excerpt'     => $sentences[0] ?? ''
             ];
         }
@@ -1584,13 +1733,39 @@ button.secondary:hover{background:#6d7a9b}
     </div>
   </div>
 
-  <?php if (!($llmInfo['reachable'] ?? true)): ?>
+  <?php if (!($llmInfo['reachable'] ?? true)):
+        $diagnosis = $llmInfo['diagnosis'] ?? 'down';
+        $diagnosisDetail = $llmInfo['diagnosis_detail'] ?? ($llmInfo['last_error'] ?? '');
+  ?>
   <div class="msg-err" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;margin-bottom:.3rem;">
-    <span>&#9888;&#65039; <strong>Service Node.js inaccessible.</strong> La reformulation IA ne fonctionnera pas tant que le service n&rsquo;est pas d&eacute;marr&eacute;.</span>
-    <a href="<?php echo html_escape(CPANEL_URL); ?>" target="_blank" rel="noopener noreferrer" style="background:#0a3d62;color:#fff;padding:.45rem .85rem;border-radius:6px;text-decoration:none;white-space:nowrap;font-size:.9rem;font-weight:bold;">Ouvrir cPanel o2switch &#8594;</a>
+    <?php if ($diagnosis === 'blocked'): ?>
+      <span>&#9888;&#65039; <strong>Requête bloquée avant d'atteindre Node.js</strong> (probable filtre mod_security o2switch) — le service tourne peut-être normalement.</span>
+    <?php elseif ($diagnosis === 'route'): ?>
+      <span>&#9888;&#65039; <strong>Route /llm-info introuvable.</strong> Node.js tourne peut-être, mais cette route n'existe pas côté serveur.</span>
+    <?php elseif ($diagnosis === 'app_error'): ?>
+      <span>&#9888;&#65039; <strong>Node.js a répondu avec une erreur interne.</strong> Le service tourne, mais plante sur cette requête.</span>
+    <?php elseif ($diagnosis === 'malformed'): ?>
+      <span>&#9888;&#65039; <strong>Réponse inattendue du service.</strong> Node.js a répondu (HTTP 200) mais le contenu n'est pas exploitable.</span>
+    <?php elseif ($diagnosis === 'unknown'): ?>
+      <span>&#9888;&#65039; <strong>Échec non catégorisé.</strong> Voir le détail technique ci-dessous.</span>
+      <a href="<?php echo html_escape(CPANEL_URL); ?>" target="_blank" rel="noopener noreferrer" style="background:#0a3d62;color:#fff;padding:.45rem .85rem;border-radius:6px;text-decoration:none;white-space:nowrap;font-size:.9rem;font-weight:bold;">Ouvrir cPanel o2switch &#8594;</a>
+    <?php else: ?>
+      <span>&#9888;&#65039; <strong>Service Node.js inaccessible.</strong> La reformulation IA ne fonctionnera pas tant que le service n&rsquo;est pas d&eacute;marr&eacute;.</span>
+      <a href="<?php echo html_escape(CPANEL_URL); ?>" target="_blank" rel="noopener noreferrer" style="background:#0a3d62;color:#fff;padding:.45rem .85rem;border-radius:6px;text-decoration:none;white-space:nowrap;font-size:.9rem;font-weight:bold;">Ouvrir cPanel o2switch &#8594;</a>
+    <?php endif; ?>
   </div>
   <div class="msg-err" style="font-size:.9rem;margin-top:-.4rem;margin-bottom:.8rem;">
-    Dans cPanel &#8594; <strong>Node.js Apps</strong> &#8594; chercher l&rsquo;application <strong>reformulator</strong> &#8594; bouton <strong>Restart</strong>. Si l&rsquo;app n&rsquo;appara&icirc;t pas, elle a peut-&ecirc;tre &eacute;t&eacute; arr&ecirc;t&eacute;e ou d&eacute;sactiv&eacute;e.
+    <?php if ($diagnosis === 'down'): ?>
+      Dans cPanel &#8594; <strong>Node.js Apps</strong> &#8594; chercher l&rsquo;application <strong>reformulator</strong> &#8594; bouton <strong>Restart</strong>. Si l&rsquo;app n&rsquo;appara&icirc;t pas, elle a peut-&ecirc;tre &eacute;t&eacute; arr&ecirc;t&eacute;e ou d&eacute;sactiv&eacute;e.
+      <?php if ($diagnosisDetail !== ''): ?>
+        <br><span style="color:#555;">Détail technique : <?php echo html_escape($diagnosisDetail); ?></span>
+      <?php endif; ?>
+    <?php elseif ($diagnosis === 'app_error'): ?>
+      <strong>Détail technique :</strong> <?php echo html_escape($diagnosisDetail); ?>
+      <br>Piste fréquente : une dépendance npm ajoutée à <code>package.json</code> sans avoir relancé <strong>"Run NPM Install"</strong> côté cPanel &#8594; Node.js Apps, avant de redémarrer.
+    <?php else: ?>
+      <strong>Détail technique :</strong> <?php echo html_escape($diagnosisDetail); ?>
+    <?php endif; ?>
   </div>
   <?php endif; ?>
 
