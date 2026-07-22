@@ -50,3 +50,7 @@ L'URL `https://mathieu.charreyre.net/r3M3M83r/sections` liste toutes les section
 
 - [Interface de saisie](https://mathieu.charreyre.net/r3M3M83r/saisie.php): Interface pour alimenter le fichier (reformulation via GROQ/LLM)
 - [Index des sections](https://mathieu.charreyre.net/r3M3M83r/sections): Navigation interactive par section pour humains et IAs
+
+## Dépôt Github public
+
+- https://github.com/Matevoun/r3M3M83r
