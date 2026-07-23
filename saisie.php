@@ -974,20 +974,24 @@ function search_with_counts(string $query, array $sections): array {
     ];
 }
 
-// -----------------------------------------------------------------------------
-// CORRECTIF 18/07/2026 (v2) : recherche locale "legere" scindee en deux
-// fonctions reutilisables : le calcul des termes de recherche locaux, et la
-// recherche par sous-chaine sur un jeu de termes deja calcule. Ca permet
-// d'injecter en amont des termes elargis par le LLM (voir le handler
-// query_instructions plus bas) sans dupliquer la logique de scan.
-// -----------------------------------------------------------------------------
-
-// Calcule les termes de recherche locaux (sans IA) a partir d'une question en
-// langage naturel : mots-cles significatifs (extract_keywords) + mots
-// commencant par une majuscule meme courts (noms propres, ex: "Edith").
-function compute_local_search_terms(string $query): array {
+// Recherche locale légère et plus robuste pour le bouton Interroger
+// CORRECTIF 18/07/2026 : la version precedente traitait toute la question
+// comme UNE SEULE chaine litterale a rechercher (ex: la phrase normalisee
+// entiere "qui est ma cousine et qui est notifie..."), ce qui ne correspond
+// quasiment jamais a du texte reel pour une question en langage naturel.
+// Consequence concrete observee : la recherche locale ne trouvait rien,
+// aucune preuve n'etait transmise au LLM, qui finissait par inventer une
+// citation plausible plutot que d'admettre l'absence de resultat.
+// On decoupe desormais la question en mots-cles significatifs (comme le fait
+// deja search_with_counts()/search_instructions_sections_by_terms) et on
+// cherche chaque terme independamment, en sous-chaine normalisee (accents et
+// casse ignores) -- ce qui permet par exemple de retrouver "cousine" a
+// l'interieur de "petite-cousine".
+function search_with_counts_light(string $query, array $sections): array {
     $terms = extract_keywords($query);
 
+    // Ajoute les mots commencant par une majuscule meme courts (noms propres,
+    // ex: "Edith"), qu'extract_keywords() seul ne privilegie pas specifiquement.
     $rawQueryWords = preg_split('/\s+/u', $query, -1, PREG_SPLIT_NO_EMPTY);
     foreach ($rawQueryWords as $word) {
         $cleanWord = preg_replace('/[^\p{L}\p{N}]/u', '', $word);
@@ -995,13 +999,8 @@ function compute_local_search_terms(string $query): array {
             $terms[] = $cleanWord;
         }
     }
-    return array_values(array_unique(array_filter($terms, function ($t) { return trim($t) !== ''; })));
-}
+    $terms = array_values(array_unique(array_filter($terms, function ($t) { return trim($t) !== ''; })));
 
-// Recherche par sous-chaine normalisee (accents/casse ignores), terme par
-// terme, sur un jeu de termes deja calcule -- ce qui permet par exemple de
-// retrouver "cousine" a l'interieur de "petite-cousine".
-function search_sections_by_terms_light(array $terms, array $sections): array {
     if (empty($terms)) {
         return ['sections' => [], 'total_occ' => 0];
     }
@@ -1035,20 +1034,14 @@ function search_sections_by_terms_light(array $terms, array $sections): array {
         }
     }
 
+    // On garde les meilleures sections
     uasort($results, fn($a, $b) => $b['occurrences'] <=> $a['occurrences']);
-    $results = array_slice($results, 0, 8, true);
+    $results = array_slice($results, 0, 8, true);   // un peu plus large
 
     return [
         'sections'   => $results,
         'total_occ'  => $totalOccurrences
     ];
-}
-
-// Recherche locale légère et plus robuste pour le bouton Interroger (sans
-// elargissement IA -- conservee pour compatibilite / usage autonome).
-function search_with_counts_light(string $query, array $sections): array {
-    $terms = compute_local_search_terms($query);
-    return search_sections_by_terms_light($terms, $sections);
 }
 
 function extract_section_match_sentences(string $content, array $terms, int $maxSentences = 12): array {
@@ -1562,22 +1555,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query_result = '';
         $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n\n";
 
+        // Recherche locale légère (filtre les sections vraiment pertinentes)
         $sections = extract_instructions_sections();
-
-        // CORRECTIF 18/07/2026 (v2) : en plus des mots-cles locaux, on demande
-        // au LLM d'elargir semantiquement la recherche (synonymes, liens de
-        // parente, noms de famille probables, etc.) -- ex: une question sur
-        // "cousins" doit aussi pouvoir ramener "cousine", "oncle", "tante".
-        // Sans ca, la recherche locale reste purement litterale et ne "comprend"
-        // jamais un concept absent mot pour mot de la question. Si le service
-        // LLM est indisponible, on continue quand meme avec les seuls termes
-        // locaux (degradation propre, pas de blocage de la fonctionnalite).
-        $localTerms = compute_local_search_terms($input_text);
-        $llmExpandedRaw = extract_query_keywords_via_node($input_text, $instructions_context);
-        $llmTerms = $llmExpandedRaw !== '' ? build_query_terms_from_llm($llmExpandedRaw) : [];
-        $mergedTerms = array_values(array_unique(array_merge($localTerms, $llmTerms)));
-
-        $localSearch = search_sections_by_terms_light($mergedTerms, $sections);
+        $localSearch = search_with_counts_light($input_text, $sections);
 
         $localEvidence = '';
         if (!empty($localSearch['sections'])) {
@@ -1600,14 +1580,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
             $query_result = $finalResponse;
-            $reformule_msg = 'Réponse générée par l\'IA (contexte + recherche élargie)';
+            $reformule_msg = 'Réponse générée par l\'IA (contexte + recherche légère)';
         } else {
             $query_result = "Je n'ai pas trouvé d'information pertinente dans tes mémoires pour cette question.";
             $reformule_msg = 'Aucune information trouvée.';
         }
 
-        $query_debug .= "Termes locaux : " . implode(', ', $localTerms) . "\n";
-        $query_debug .= "Termes élargis (IA) : " . implode(', ', $llmTerms) . "\n";
         $query_debug .= "Occurrences détectées : " . ($localSearch['total_occ'] ?? 0) . "\n";
         $query_debug .= "Sections filtrées : " . count($localSearch['sections'] ?? []) . "\n";
     }
