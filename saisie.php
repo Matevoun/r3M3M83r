@@ -1,5 +1,5 @@
 <?php
-    include_once __DIR__ . '/functions.php';
+    include_once __DIR__ . '/reformulator/functions.php';
 ?>
 
 <!DOCTYPE html>
@@ -288,7 +288,7 @@
         <pre id="test-output" style="margin:0; padding:1rem; background:#f7f9ff; color:#111; overflow:auto; min-height:240px; white-space:pre-wrap; word-break:break-word;">Chargement du benchmark en cours ...</pre>
       </div>
       <div class="modal-footer" id="modal-footer" style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
-        <span style="font-size:.9rem;">Si le chargement n&rsquo;aboutit pas : <a id="modal-fallback" href="test_curl.php" target="_blank" rel="noopener noreferrer" style="color:#0f1f4a;text-decoration:underline;">Ouvrir dans un nouvel onglet</a></span>
+        <span style="font-size:.9rem;">Si le chargement n&rsquo;aboutit pas : <a id="modal-fallback" href="reformulator/test_curl.php" target="_blank" rel="noopener noreferrer" style="color:#0f1f4a;text-decoration:underline;">Ouvrir dans un nouvel onglet</a></span>
         <button id="copy-test-output" type="button" style="background:#374e8c;color:#fff;border:none;padding:.4rem .85rem;border-radius:5px;cursor:pointer;font-size:.9rem;flex-shrink:0;">Copier le rapport</button>
       </div>
     </div>
@@ -365,7 +365,7 @@ function openTestModal() {
             engineParam = '?engine=' + encodeURIComponent(engineSelect.value);
         }
 
-        fetch('./test_curl.php' + engineParam, {
+        fetch('./reformulator/test_curl.php' + engineParam, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'text/plain'

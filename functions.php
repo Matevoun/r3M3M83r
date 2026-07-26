@@ -1,6 +1,6 @@
 <?php
     /**
-     * saisie.php - Interface de saisie locale pour instructions.md
+     * functions.php - Interface de saisie locale pour instructions.md
      *
      * Ce fichier fournit une page HTML simple pour saisir un texte libre
      * et le faire analyser localement. Il ne modifie pas automatiquement
@@ -48,6 +48,23 @@
      *     mot, et le detail de l'erreur reelle etait perdu). Toute extraction
      *     ratee est desormais aussi tracee via error_log() (donc dans
      *     reformulator/log/error.log).
+     *
+     * CORRECTIF 20/07/2026 (v3) : la recherche du bouton "Interroger" souffrait
+     * de deux limites cumulees :
+     *   1. Le contexte envoye au LLM restait quasi-systematiquement l'extrait
+     *      GENERIQUE des ~2000 premiers caracteres du fichier (charge une
+     *      seule fois au demarrage de la page et renvoye tel quel dans le
+     *      champ cache a chaque soumission), car la condition
+     *      "if ($instructions_context === '')" n'etait quasiment jamais vraie
+     *      -- ce contexte generique n'a aucune raison de contenir la section
+     *      reellement pertinente pour une question donnee.
+     *   2. Meme quand une section pertinente etait identifiee, son contenu
+     *      etait tronque a 800-1200 caracteres, et les "preuves" locales
+     *      n'incluaient qu'UNE SEULE phrase par section (180 caracteres max)
+     *      -- d'ou des reponses qui semblent "tronquees a l'endroit
+     *      interessant", quel que soit le moteur LLM utilise (le probleme
+     *      est en amont du LLM, pas dans le LLM lui-meme).
+     * Voir le handler query_instructions plus bas pour le detail du correctif.
      */
 
     define('SOURCE_FILE', __DIR__ . '/instructions.md');
@@ -468,6 +485,20 @@
         return call_reformulator_service($payload);
     }
 
+    // CORRECTIF 20/07/2026 (v3) : distinct de extract_query_keywords_via_node()
+    // ci-dessus, qui ne fait qu'extraire les mots deja presents dans la
+    // question. Celle-ci demande au LLM de deviner des termes ABSENTS de la
+    // question mais lies semantiquement (voir QUERY_EXPAND_PROMPT cote
+    // server.js) -- necessaire pour qu'une question sur "mes cousins" trouve
+    // aussi "oncle", "tante", "branche paternelle", etc. dans le fichier.
+    function expand_query_terms_via_node(string $text, string $instructionsContext = ''): string {
+        $payload = ['text' => $text, 'purpose' => 'query-expand'];
+        if ($instructionsContext !== '') {
+            $payload['instructionsContext'] = $instructionsContext;
+        }
+        return call_reformulator_service($payload);
+    }
+
     function query_instructions_via_node(string $text, string $instructionsContext = ''): string {
         $payload = ['text' => $text, 'purpose' => 'query'];
         if ($instructionsContext !== '') {
@@ -666,6 +697,12 @@
         return is_array($lines) ? count($lines) : 0;
     }
 
+    // CORRECTIF 20/07/2026 (v3) : limites de troncature relevees de 800/1200 a
+    // 2500 caracteres par section. Ces fonctions ne sont appelees qu'avec un
+    // petit nombre de sections deja jugees pertinentes (2-3 max), donc le
+    // volume total transmis au LLM reste raisonnable meme avec des sections
+    // plus longues -- l'objectif est justement d'eviter de couper pile a
+    // l'endroit interessant.
     function build_instructions_context_for_text(string $text): string {
         $outline = extract_instructions_outline();
         $excerpt = load_instructions_excerpt();
@@ -688,8 +725,8 @@
         }
         foreach ($selectedSections as $sectionTitle => $sectionContent) {
             $sectionContent = trim(preg_replace('/\s+/', ' ', $sectionContent));
-            if (mb_strlen($sectionContent, 'UTF-8') > 800) {
-                $sectionContent = mb_substr($sectionContent, 0, 800, 'UTF-8') . '...';
+            if (mb_strlen($sectionContent, 'UTF-8') > 2500) {
+                $sectionContent = mb_substr($sectionContent, 0, 2500, 'UTF-8') . '...';
             }
             $context .= ' Section pertinente : ' . $sectionTitle . '. Contenu de la section : ' . $sectionContent;
         }
@@ -703,8 +740,8 @@
         }
         if ($sectionTitle !== '' && $sectionContent !== '') {
             $sectionContent = trim(preg_replace('/\s+/', ' ', $sectionContent));
-            if (mb_strlen($sectionContent, 'UTF-8') > 1200) {
-                $sectionContent = mb_substr($sectionContent, 0, 1200, 'UTF-8') . '...';
+            if (mb_strlen($sectionContent, 'UTF-8') > 2500) {
+                $sectionContent = mb_substr($sectionContent, 0, 2500, 'UTF-8') . '...';
             }
             $context .= ' Section probable : ' . $sectionTitle . '. Contenu de la section : ' . $sectionContent;
         }
@@ -987,16 +1024,28 @@
     // cherche chaque terme independamment, en sous-chaine normalisee (accents et
     // casse ignores) -- ce qui permet par exemple de retrouver "cousine" a
     // l'interieur de "petite-cousine".
-    function search_with_counts_light(string $query, array $sections): array {
-        $terms = extract_keywords($query);
+    //
+    // CORRECTIF 20/07/2026 (v3) : accepte desormais un jeu de termes DEJA
+    // CALCULE en parametre optionnel ($precomputedTerms), pour permettre au
+    // handler query_instructions de fusionner mots-cles locaux + mots-cles LLM
+    // + termes elargis semantiquement avant la recherche (voir plus bas). Ne
+    // garde qu'une seule phrase "excerpt" par section pour compatibilite
+    // ascendante, mais expose aussi 'excerpts' (plusieurs phrases) et
+    // 'content' (contenu integral de la section) pour un contexte plus riche.
+    function search_with_counts_light(string $query, array $sections, ?array $precomputedTerms = null): array {
+        if ($precomputedTerms !== null) {
+            $terms = $precomputedTerms;
+        } else {
+            $terms = extract_keywords($query);
 
-        // Ajoute les mots commencant par une majuscule meme courts (noms propres,
-        // ex: "Edith"), qu'extract_keywords() seul ne privilegie pas specifiquement.
-        $rawQueryWords = preg_split('/\s+/u', $query, -1, PREG_SPLIT_NO_EMPTY);
-        foreach ($rawQueryWords as $word) {
-            $cleanWord = preg_replace('/[^\p{L}\p{N}]/u', '', $word);
-            if ($cleanWord !== '' && preg_match('/^\p{Lu}/u', $cleanWord) && mb_strlen($cleanWord, 'UTF-8') >= 3) {
-                $terms[] = $cleanWord;
+            // Ajoute les mots commencant par une majuscule meme courts (noms propres,
+            // ex: "Edith"), qu'extract_keywords() seul ne privilegie pas specifiquement.
+            $rawQueryWords = preg_split('/\s+/u', $query, -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($rawQueryWords as $word) {
+                $cleanWord = preg_replace('/[^\p{L}\p{N}]/u', '', $word);
+                if ($cleanWord !== '' && preg_match('/^\p{Lu}/u', $cleanWord) && mb_strlen($cleanWord, 'UTF-8') >= 3) {
+                    $terms[] = $cleanWord;
+                }
             }
         }
         $terms = array_values(array_unique(array_filter($terms, function ($t) { return trim($t) !== ''; })));
@@ -1025,11 +1074,17 @@
 
             if ($sectionOccurrences > 0) {
                 $totalOccurrences += $sectionOccurrences;
-                $sentences = extract_section_match_sentences($content, $matchedTerms, 4);
+                // CORRECTIF 20/07/2026 (v3) : jusqu'a 6 phrases matchees (au
+                // lieu d'1 seule), plus le contenu integral de la section pour
+                // permettre au handler d'inclure des sections entieres dans
+                // le contexte final envoye au LLM.
+                $sentences = extract_section_match_sentences($content, $matchedTerms, 6);
 
                 $results[$title] = [
                     'occurrences' => $sectionOccurrences,
-                    'excerpt'     => $sentences[0] ?? ''
+                    'excerpt'     => $sentences[0] ?? '',
+                    'excerpts'    => $sentences,
+                    'content'     => $content,
                 ];
             }
         }
@@ -1543,29 +1598,77 @@
         }
 
         // ====================== INTERROGER LE FICHIER ======================
+        // CORRECTIF 20/07/2026 (v3) : voir l'entete du fichier pour le detail
+        // des deux limites corrigees (contexte generique jamais reconstruit +
+        // extraits tronques a une seule phrase). Ce bloc reconstruit desormais
+        // TOUJOURS un contexte riche pour ce bouton specifiquement, fusionne
+        // trois sources de termes de recherche (locaux + LLM-extraits +
+        // LLM-elargis semantiquement), et transmet le contenu INTEGRAL
+        // (tronque a 2500 caracteres, pas 180) des sections les plus
+        // pertinentes au LLM final.
         if (isset($_POST['query_instructions']) && $input_text !== '') {
             $reformule_original = $input_text;
 
-            if ($instructions_context === '') {
-                $instructions_context = build_instructions_context_for_text($input_text);
-                $instructions_loaded = true;
-                $instructions_line_count = count_instructions_lines();
-            }
+            // On ignore volontairement le contexte generique deja present dans
+            // le champ cache (charge une fois au demarrage de la page) : il
+            // n'a aucune raison de contenir la section pertinente pour CETTE
+            // question precise.
+            $instructions_context = build_instructions_context_for_text($input_text);
+            $instructions_loaded = true;
+            $instructions_line_count = count_instructions_lines();
 
             $query_result = '';
             $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n\n";
 
-            // Recherche locale légère (filtre les sections vraiment pertinentes)
             $sections = extract_instructions_sections();
-            $localSearch = search_with_counts_light($input_text, $sections);
 
+            // Trois sources de termes fusionnees :
+            //   1. localTerms   : mots-cles significatifs extraits de la question elle-meme
+            //   2. keywordTerms : mots-cles extraits PAR LE LLM depuis la question
+            //   3. expandedTerms: termes ABSENTS de la question mais lies semantiquement
+            //                     (synonymes, degres de parente, branches familiales...)
+            // Si le service LLM est indisponible, on continue avec les seuls
+            // termes locaux (degradation propre, pas de blocage de la fonctionnalite).
+            $localTerms = extract_keywords($input_text);
+            $rawQueryWords = preg_split('/\s+/u', $input_text, -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($rawQueryWords as $word) {
+                $cleanWord = preg_replace('/[^\p{L}\p{N}]/u', '', $word);
+                if ($cleanWord !== '' && preg_match('/^\p{Lu}/u', $cleanWord) && mb_strlen($cleanWord, 'UTF-8') >= 3) {
+                    $localTerms[] = $cleanWord;
+                }
+            }
+
+            $llmKeywordsRaw = extract_query_keywords_via_node($input_text, $instructions_context);
+            $keywordTerms = $llmKeywordsRaw !== '' ? build_query_terms_from_llm($llmKeywordsRaw) : [];
+
+            $llmExpandedRaw = expand_query_terms_via_node($input_text, $instructions_context);
+            $expandedTerms = $llmExpandedRaw !== '' ? build_query_terms_from_llm($llmExpandedRaw) : [];
+
+            $mergedTerms = array_values(array_unique(array_merge($localTerms, $keywordTerms, $expandedTerms)));
+
+            $localSearch = search_with_counts_light($input_text, $sections, $mergedTerms);
+
+            // Le contenu INTEGRAL (tronque a 2500 caracteres) des 3 sections
+            // les plus pertinentes est transmis, pas une seule phrase isolee
+            // -- pour que le LLM puisse repondre meme quand l'info utile est
+            // formulee autrement que via les termes de recherche exacts.
             $localEvidence = '';
             if (!empty($localSearch['sections'])) {
-                $localEvidence = "Sections pertinentes trouvées :\n";
+                $localEvidence = "Sections pertinentes trouvées (contenu intégral, tronqué si besoin) :\n";
+                $sectionIndex = 0;
                 foreach ($localSearch['sections'] as $title => $data) {
-                    $localEvidence .= "- " . $title . " (" . $data['occurrences'] . " occurrences)\n";
-                    if (!empty($data['excerpt'])) {
-                        $localEvidence .= "  Extrait : " . mb_substr($data['excerpt'], 0, 180) . "...\n";
+                    $sectionIndex++;
+                    $localEvidence .= "\n--- Section : " . $title . " (" . $data['occurrences'] . " occurrences) ---\n";
+                    if ($sectionIndex <= 3 && !empty($data['content'])) {
+                        $sectionContent = trim(preg_replace('/\s+/', ' ', $data['content']));
+                        if (mb_strlen($sectionContent, 'UTF-8') > 2500) {
+                            $sectionContent = mb_substr($sectionContent, 0, 2500, 'UTF-8') . '...';
+                        }
+                        $localEvidence .= $sectionContent . "\n";
+                    } elseif (!empty($data['excerpts'])) {
+                        foreach ($data['excerpts'] as $sentence) {
+                            $localEvidence .= "  Extrait : " . mb_substr($sentence, 0, 200) . "\n";
+                        }
                     }
                 }
                 $localEvidence .= "\nTotal occurrences détectées : " . $localSearch['total_occ'];
@@ -1580,12 +1683,15 @@
 
             if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
                 $query_result = $finalResponse;
-                $reformule_msg = 'Réponse générée par l\'IA (contexte + recherche légère)';
+                $reformule_msg = 'Réponse générée par l\'IA (contexte riche + recherche élargie)';
             } else {
                 $query_result = "Je n'ai pas trouvé d'information pertinente dans tes mémoires pour cette question.";
                 $reformule_msg = 'Aucune information trouvée.';
             }
 
+            $query_debug .= "Termes locaux : " . implode(', ', $localTerms) . "\n";
+            $query_debug .= "Termes LLM (extraits) : " . implode(', ', $keywordTerms) . "\n";
+            $query_debug .= "Termes LLM (élargis) : " . implode(', ', $expandedTerms) . "\n";
             $query_debug .= "Occurrences détectées : " . ($localSearch['total_occ'] ?? 0) . "\n";
             $query_debug .= "Sections filtrées : " . count($localSearch['sections'] ?? []) . "\n";
         }
@@ -1610,4 +1716,3 @@
     if (isset($_GET['test_error_log'])) {
         trigger_error('Erreur de test volontaire pour vérifier error.log', E_USER_WARNING);
     }
-?>
