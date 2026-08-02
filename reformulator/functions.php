@@ -67,7 +67,17 @@
      * Voir le handler query_instructions plus bas pour le detail du correctif.
      */
 
-    define('SOURCE_FILE', __DIR__ . '/instructions.md');
+    // CORRECTIF 23/07/2026 (v4) : functions.php vit desormais dans /reformulator/
+    // (deplace lors du refactor saisie.php/functions.php). Tous les chemins
+    // bases sur __DIR__ qui supposaient etre a la racine du projet doivent
+    // etre corriges en consequence -- SOURCE_FILE en particulier, qui
+    // pointait vers .../reformulator/instructions.md (inexistant) au lieu de
+    // .../instructions.md (racine, un niveau au-dessus). Consequence concrete
+    // observee : toutes les fonctions de lecture du fichier renvoyaient du
+    // vide, le contexte transmis au LLM etait vide, et le LLM repondait -- a
+    // raison, vu ce qu'il recevait -- "Le contexte fourni ne mentionne pas ce
+    // sujet" pour absolument toutes les questions.
+    define('SOURCE_FILE', dirname(__DIR__) . '/instructions.md');
 
     // Calcule l'URL de base du service reformulator.
     // Priorite 1 : connexion directe via 127.0.0.1:PORT (lit le fichier .port ecrit par Node.js
@@ -110,7 +120,11 @@
     }
 
     function parse_llm_info_from_server_file(): array {
-        $filePath = __DIR__ . '/reformulator/server.js';
+        // CORRECTIF 23/07/2026 (v4) : server.js est desormais un fichier
+        // FRERE de functions.php (tous deux dans /reformulator/), plus un
+        // sous-dossier imbrique -- l'ancien chemin pointait vers
+        // .../reformulator/reformulator/server.js (inexistant).
+        $filePath = __DIR__ . '/server.js';
         if (!is_file($filePath) || !is_readable($filePath)) {
             return [];
         }
@@ -309,12 +323,15 @@
         return $data;
     }
 
+    // CORRECTIF 23/07/2026 (v4) : idem SOURCE_FILE et server.js -- log/ est un
+    // sous-dossier direct du dossier ou vit desormais functions.php, pas d'un
+    // sous-dossier "reformulator" imbrique.
     function get_requests_log_path(): string {
-        return __DIR__ . '/reformulator/log/requests.log';
+        return __DIR__ . '/log/requests.log';
     }
 
     function get_error_log_path(): string {
-        return __DIR__ . '/reformulator/log/error.log';
+        return __DIR__ . '/log/error.log';
     }
 
     function ensure_reformulator_log_file(string $filePath): void {
@@ -352,7 +369,7 @@
 
     if (function_exists('ini_set')) {
         // Redirige les erreurs PHP vers le fichier error.log (et non error_log !)
-        @ini_set('error_log', __DIR__ . '/reformulator/log/error.log');
+        @ini_set('error_log', __DIR__ . '/log/error.log');
         @ini_set('log_errors', '1');
         ensure_reformulator_log_file(get_error_log_path());
     }
@@ -1598,102 +1615,80 @@
         }
 
         // ====================== INTERROGER LE FICHIER ======================
-        // CORRECTIF 20/07/2026 (v3) : voir l'entete du fichier pour le detail
-        // des deux limites corrigees (contexte generique jamais reconstruit +
-        // extraits tronques a une seule phrase). Ce bloc reconstruit desormais
-        // TOUJOURS un contexte riche pour ce bouton specifiquement, fusionne
-        // trois sources de termes de recherche (locaux + LLM-extraits +
-        // LLM-elargis semantiquement), et transmet le contenu INTEGRAL
-        // (tronque a 2500 caracteres, pas 180) des sections les plus
-        // pertinentes au LLM final.
+        // CORRECTIF 23/07/2026 (v4) : simplification radicale demandee par
+        // Mathieu. L'ancienne version enchainait 3 appels LLM en cascade
+        // avant meme de repondre a la question :
+        //   1. extraction de mots-cles depuis la question
+        //   2. elargissement semantique de ces mots-cles (autre appel LLM)
+        //   3. recherche locale par sous-chaine avec ces termes
+        //   4. seulement ENSUITE, un 4e appel LLM pour repondre, nourri
+        //      uniquement des extraits que la recherche locale avait trouves
+        // Chaque etage est un point de fragilite (comme le bug SOURCE_FILE
+        // vu plus haut, qui rendait TOUT vide sans qu'aucun etage ne s'en
+        // rende compte). Un humain a qui on donnerait le document et la
+        // question chercherait et comprendrait lui-meme -- on fait
+        // desormais pareil : la question et le contenu reel du fichier sont
+        // transmis en UN SEUL appel au LLM choisi, avec un prompt qui lui
+        // demande explicitement de chercher lui-meme dans TOUT ce qu'on lui
+        // donne. Chaque moteur du menu peut ainsi apporter sa propre lecture,
+        // comme demande.
+        //
+        // Garde-fou de taille : le fichier instructions.md peut depasser la
+        // fenetre de contexte de certains moteurs (notamment les modeles
+        // gratuits Groq/OpenRouter). En dessous du seuil ci-dessous, on
+        // envoie le fichier INTEGRAL. Au-dela, on bascule sur les sections
+        // les plus pertinentes (calcul purement local par recouvrement de
+        // mots-cles, find_relevant_instruction_sections -- AUCUN appel LLM
+        // prealable), mais on ne fait toujours qu'UN SEUL appel LLM final.
         if (isset($_POST['query_instructions']) && $input_text !== '') {
             $reformule_original = $input_text;
 
-            // On ignore volontairement le contexte generique deja present dans
-            // le champ cache (charge une fois au demarrage de la page) : il
-            // n'a aucune raison de contenir la section pertinente pour CETTE
-            // question precise.
-            $instructions_context = build_instructions_context_for_text($input_text);
+            $sections = extract_instructions_sections();
+            $fullDocument = load_instructions_content();
+            $fullDocumentLength = mb_strlen($fullDocument, 'UTF-8');
+            $fullDocumentSizeLimit = 60000; // ~15-18k tokens, sûr pour tous les moteurs geres
+
+            if ($fullDocumentLength > 0 && $fullDocumentLength <= $fullDocumentSizeLimit) {
+                $instructions_context = "Voici le contenu INTÉGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
+                $query_debug_mode = 'fichier intégral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caractères)';
+            } else {
+                $relevantSections = find_relevant_instruction_sections($input_text, $sections, 6);
+                if (empty($relevantSections)) {
+                    // Aucune section ne matche par recouvrement de mots-cles :
+                    // on transmet quand meme les premieres sections du fichier
+                    // plutot que de laisser le LLM sans aucune matiere.
+                    $relevantSections = array_slice($sections, 0, 6, true);
+                }
+                $outline = extract_instructions_outline();
+                $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n";
+                foreach ($relevantSections as $title => $content) {
+                    $sectionContent = trim(preg_replace('/\s+/', ' ', $content));
+                    if (mb_strlen($sectionContent, 'UTF-8') > 4000) {
+                        $sectionContent = mb_substr($sectionContent, 0, 4000, 'UTF-8') . '...';
+                    }
+                    $instructions_context .= "\n--- Section : $title ---\n" . $sectionContent . "\n";
+                }
+                $query_debug_mode = count($relevantSections) . ' section(s) les plus pertinentes (fichier trop volumineux pour être envoyé intégralement : '
+                    . number_format($fullDocumentLength, 0, ',', ' ') . ' caractères > seuil de ' . number_format($fullDocumentSizeLimit, 0, ',', ' ') . ')';
+            }
+
             $instructions_loaded = true;
             $instructions_line_count = count_instructions_lines();
 
-            $query_result = '';
-            $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n\n";
+            $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n";
+            $query_debug .= "Contexte transmis : " . $query_debug_mode . "\n";
 
-            $sections = extract_instructions_sections();
-
-            // Trois sources de termes fusionnees :
-            //   1. localTerms   : mots-cles significatifs extraits de la question elle-meme
-            //   2. keywordTerms : mots-cles extraits PAR LE LLM depuis la question
-            //   3. expandedTerms: termes ABSENTS de la question mais lies semantiquement
-            //                     (synonymes, degres de parente, branches familiales...)
-            // Si le service LLM est indisponible, on continue avec les seuls
-            // termes locaux (degradation propre, pas de blocage de la fonctionnalite).
-            $localTerms = extract_keywords($input_text);
-            $rawQueryWords = preg_split('/\s+/u', $input_text, -1, PREG_SPLIT_NO_EMPTY);
-            foreach ($rawQueryWords as $word) {
-                $cleanWord = preg_replace('/[^\p{L}\p{N}]/u', '', $word);
-                if ($cleanWord !== '' && preg_match('/^\p{Lu}/u', $cleanWord) && mb_strlen($cleanWord, 'UTF-8') >= 3) {
-                    $localTerms[] = $cleanWord;
-                }
-            }
-
-            $llmKeywordsRaw = extract_query_keywords_via_node($input_text, $instructions_context);
-            $keywordTerms = $llmKeywordsRaw !== '' ? build_query_terms_from_llm($llmKeywordsRaw) : [];
-
-            $llmExpandedRaw = expand_query_terms_via_node($input_text, $instructions_context);
-            $expandedTerms = $llmExpandedRaw !== '' ? build_query_terms_from_llm($llmExpandedRaw) : [];
-
-            $mergedTerms = array_values(array_unique(array_merge($localTerms, $keywordTerms, $expandedTerms)));
-
-            $localSearch = search_with_counts_light($input_text, $sections, $mergedTerms);
-
-            // Le contenu INTEGRAL (tronque a 2500 caracteres) des 3 sections
-            // les plus pertinentes est transmis, pas une seule phrase isolee
-            // -- pour que le LLM puisse repondre meme quand l'info utile est
-            // formulee autrement que via les termes de recherche exacts.
-            $localEvidence = '';
-            if (!empty($localSearch['sections'])) {
-                $localEvidence = "Sections pertinentes trouvées (contenu intégral, tronqué si besoin) :\n";
-                $sectionIndex = 0;
-                foreach ($localSearch['sections'] as $title => $data) {
-                    $sectionIndex++;
-                    $localEvidence .= "\n--- Section : " . $title . " (" . $data['occurrences'] . " occurrences) ---\n";
-                    if ($sectionIndex <= 3 && !empty($data['content'])) {
-                        $sectionContent = trim(preg_replace('/\s+/', ' ', $data['content']));
-                        if (mb_strlen($sectionContent, 'UTF-8') > 2500) {
-                            $sectionContent = mb_substr($sectionContent, 0, 2500, 'UTF-8') . '...';
-                        }
-                        $localEvidence .= $sectionContent . "\n";
-                    } elseif (!empty($data['excerpts'])) {
-                        foreach ($data['excerpts'] as $sentence) {
-                            $localEvidence .= "  Extrait : " . mb_substr($sentence, 0, 200) . "\n";
-                        }
-                    }
-                }
-                $localEvidence .= "\nTotal occurrences détectées : " . $localSearch['total_occ'];
-            }
-
-            // Appel à l'IA avec un prompt plus précis et concis
-            $finalResponse = finalize_query_response_via_node(
-                $input_text,
-                $localEvidence,
-                $instructions_context
-            );
+            // Un seul appel LLM : la question et le contenu reel du fichier
+            // sont transmis ensemble, le moteur cherche et repond lui-meme.
+            $finalResponse = finalize_query_response_via_node($input_text, '', $instructions_context);
 
             if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
                 $query_result = $finalResponse;
-                $reformule_msg = 'Réponse générée par l\'IA (contexte riche + recherche élargie)';
+                $reformule_msg = 'Réponse générée par l\'IA (' . $query_debug_mode . ')';
             } else {
                 $query_result = "Je n'ai pas trouvé d'information pertinente dans tes mémoires pour cette question.";
                 $reformule_msg = 'Aucune information trouvée.';
             }
-
-            $query_debug .= "Termes locaux : " . implode(', ', $localTerms) . "\n";
-            $query_debug .= "Termes LLM (extraits) : " . implode(', ', $keywordTerms) . "\n";
-            $query_debug .= "Termes LLM (élargis) : " . implode(', ', $expandedTerms) . "\n";
-            $query_debug .= "Occurrences détectées : " . ($localSearch['total_occ'] ?? 0) . "\n";
-            $query_debug .= "Sections filtrées : " . count($localSearch['sections'] ?? []) . "\n";
         }
 
         // Bouton "Charger les instructions"
