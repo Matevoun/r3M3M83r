@@ -33,12 +33,23 @@
      *   - `reformulator/log/requests.log` (requêtes)
      *   - `reformulator/log/error.log` (erreurs PHP)
      *
-     * RÈGLES D'OR POUR `saisie.php` :
-     *   1. Toute modification doit être documentée clairement dans ce fichier.
-     *   2. Ne pas déplacer la logique métier vers `reformulator/server.js` sans note.
-     *   3. Le backend Node.js est géré par `reformulator/server.js`; ici, on reste interface.
-     *   4. Toute nouvelle route ou dépendance externe doit être décrite dans les commentaires.
+     * REGLES D'OR (immuables - a relire avant toute modification) :
+     *   1. Toute modification doit etre documentee clairement dans ce fichier.
+     *   2. Ne pas deplacer la logique metier vers reformulator/server.js sans note.
+     *   3. Le backend Node.js est gere par reformulator/server.js ; ici on reste interface.
+     *   4. Toute nouvelle route ou dependance externe doit etre decrite dans les commentaires.
      *   5. En cas de panne du service, le code doit basculer proprement vers un fallback local.
+     *   6. Orthographe archaique OBLIGATOIRE dans le code et les commentaires :
+     *      - ecrire CLEF (jamais "cle" ni "clés"), NENUPHAR (jamais "nenufar"),
+     *        soeurs avec O et E separes (jamais la ligature oe).
+     *      - Pas de tiret cadratin, pas d'emoji en dur, pas de glyphe special.
+     *   7. Objectif du bouton Interroger : comprendre l'INTENTION de la question
+     *      (combien, ai-je eu, parle-moi de...) et repondre a partir du fichier
+     *      instructions.md, pas se contenter de compter les occurrences d'un mot.
+     *      La recherche locale (search_with_counts_light + expansion de synonymes)
+     *      alimente le LLM ; le LLM doit synthetiser, lister, decompter.
+     *   8. La meme exigence de comprehension s'applique a tous les boutons
+     *      (Interroger, Proposer emplacement, Reformulation, Extraction).
      *
      * CORRECTIF 04/07/2026 (Mathieu CHARREYRE) :
      *   - extract_via_node() et extract_text_from_file() renvoient desormais un
@@ -543,6 +554,202 @@
         return call_reformulator_service($payload);
     }
 
+    /**
+     * CORRECTIF 03/08/2026 : apres extraction d'un fichier importe, compare
+     * le texte extrait avec le plan / extraits d'instructions.md et propose
+     * une fusion (chevauchements, nouveautes, sections cibles).
+     */
+    function merge_check_via_node(string $importedText, string $instructionsContext = ''): string {
+        $text = trim($importedText);
+        if ($text === '') {
+            return '';
+        }
+        // Limiter la taille envoyee pour rester sous les quotas des tiers gratuits
+        if (mb_strlen($text, 'UTF-8') > 12000) {
+            $text = mb_substr($text, 0, 12000, 'UTF-8') . "\n...[texte tronque pour analyse de fusion]...";
+        }
+        $payload = [
+            'text'    => $text,
+            'purpose' => 'merge-check',
+        ];
+        if ($instructionsContext !== '') {
+            $payload['instructionsContext'] = $instructionsContext;
+        } else {
+            $outline = extract_instructions_outline();
+            $excerpt = load_instructions_excerpt();
+            $payload['instructionsContext'] = "Plan des sections : " . implode(' ; ', $outline) . "\n\nExtraits :\n" . $excerpt;
+        }
+        return call_reformulator_service($payload);
+    }
+
+    /**
+     * CORRECTIF 03/08/2026 (suite) : construit un extrait intelligent d'une section
+     * pour une question donnee. Priorite aux phrases/paragraphes contenant les
+     * termes de la question, puis complete avec le debut de la section jusqu'a
+     * la limite. Evite de perdre les passages au milieu ou en fin de section
+     * (ex. cousins VILLIERS dans la section Famille).
+     */
+    function build_section_excerpt_for_query(string $content, array $terms, int $maxChars = 7000): string {
+        $content = trim($content);
+        if ($content === '') {
+            return '';
+        }
+        if (mb_strlen($content, 'UTF-8') <= $maxChars) {
+            return $content;
+        }
+
+        // Detection du cote familial demande (maternel vs paternel)
+        // CORRECTIF 03/08/2026 : eviter que les paragraphes PAULY (paternel)
+        // monopolisent l'extrait quand la question porte sur le cote maternel
+        // (VILLIERS / MONTJOL) et inversement.
+        $termsJoined = mb_strtolower(implode(' ', $terms), 'UTF-8');
+        $wantsMaternal = (strpos($termsJoined, 'maternel') !== false || strpos($termsJoined, 'montjol') !== false || strpos($termsJoined, 'villiers') !== false);
+        $wantsPaternal = (strpos($termsJoined, 'paternel') !== false || strpos($termsJoined, 'pauly') !== false);
+
+        $maternalMarkers = ['maternel', 'montjol', 'villiers', 'dominique montjol', 'tante maternelle', 'coté maternel', 'côté maternel'];
+        $paternalMarkers = ['paternel', 'pauly', 'élisabeth', 'elisabeth', 'tante paternelle', 'coté paternel', 'côté paternel'];
+
+        // Decoupage grossier en paragraphes
+        $paragraphs = preg_split('/\n\s*\n/', $content);
+        $scored = [];
+        foreach ($paragraphs as $idx => $para) {
+            $para = trim($para);
+            if ($para === '') {
+                continue;
+            }
+            $score = 0;
+            $normalized = normalize_for_matching($para);
+
+            foreach ($terms as $term) {
+                if ($term === '') {
+                    continue;
+                }
+                if (strpos($normalized, $term) !== false) {
+                    $score += 3;
+                }
+            }
+
+            // Bonus / malus fort selon le cote familial demande
+            $hasMaternal = false;
+            $hasPaternal = false;
+            foreach ($maternalMarkers as $m) {
+                if (strpos($normalized, normalize_for_matching($m)) !== false) {
+                    $hasMaternal = true;
+                    break;
+                }
+            }
+            foreach ($paternalMarkers as $m) {
+                if (strpos($normalized, normalize_for_matching($m)) !== false) {
+                    $hasPaternal = true;
+                    break;
+                }
+            }
+
+            if ($wantsMaternal && !$wantsPaternal) {
+                if ($hasMaternal) {
+                    $score += 12;
+                }
+                if ($hasPaternal && !$hasMaternal) {
+                    $score -= 8; // fortement deprioritiser le cote oppose
+                }
+            } elseif ($wantsPaternal && !$wantsMaternal) {
+                if ($hasPaternal) {
+                    $score += 12;
+                }
+                if ($hasMaternal && !$hasPaternal) {
+                    $score -= 8;
+                }
+            }
+
+            // Bonus leger pour les premiers paragraphes (contexte introductif)
+            if ($idx < 3) {
+                $score += 1;
+            }
+            $scored[] = ['score' => $score, 'text' => $para, 'idx' => $idx];
+        }
+
+        // Trier par score desc, puis par ordre d'apparition
+        usort($scored, function ($a, $b) {
+            if ($b['score'] !== $a['score']) {
+                return $b['score'] <=> $a['score'];
+            }
+            return $a['idx'] <=> $b['idx'];
+        });
+
+        $selected = [];
+        $totalLen = 0;
+        foreach ($scored as $item) {
+            // Ignorer les paragraphes fortement malusés (score negatif)
+            if ($item['score'] < 0 && !empty($selected)) {
+                continue;
+            }
+            $len = mb_strlen($item['text'], 'UTF-8');
+            if ($totalLen + $len > $maxChars && !empty($selected)) {
+                break;
+            }
+            $selected[] = $item;
+            $totalLen += $len + 2;
+        }
+
+        // Remettre dans l'ordre d'apparition original pour la lisibilite
+        usort($selected, function ($a, $b) {
+            return $a['idx'] <=> $b['idx'];
+        });
+
+        $parts = array_map(function ($item) {
+            return $item['text'];
+        }, $selected);
+
+        $excerpt = implode("\n\n", $parts);
+        if (mb_strlen($excerpt, 'UTF-8') > $maxChars) {
+            $excerpt = mb_substr($excerpt, 0, $maxChars, 'UTF-8') . '...';
+        }
+        return $excerpt;
+    }
+
+    /**
+     * CORRECTIF 03/08/2026 : selection semantique des sections par le LLM
+     * (a partir des titres uniquement). Remplace le simple recouvrement de
+     * mots-cles local qui echouait sur les questions conceptuelles
+     * (ex. "cousins cote paternel").
+     */
+    function select_relevant_sections_via_node(string $question, array $outline): array {
+        if (empty($outline)) {
+            return [];
+        }
+        $titlesList = implode("\n", $outline);
+        $payloadText = "Question : " . $question . "\n\nTitres de sections disponibles :\n" . $titlesList;
+        $payload = [
+            'text'    => $payloadText,
+            'purpose' => 'query-select',
+        ];
+        $raw = call_reformulator_service($payload);
+        $selected = [];
+
+        if ($raw !== '' && strtoupper(trim($raw)) !== 'AUCUNE') {
+            // Garder uniquement les titres qui existent dans l'outline
+            $candidates = array_map('trim', preg_split('/[,;\n]+/', $raw));
+            foreach ($candidates as $cand) {
+                $cand = trim($cand, " \t\"'");
+                if ($cand === '') {
+                    continue;
+                }
+                foreach ($outline as $title) {
+                    $titleNorm = mb_strtolower($title, 'UTF-8');
+                    $candNorm  = mb_strtolower($cand, 'UTF-8');
+                    if ($titleNorm === $candNorm
+                        || mb_strpos($titleNorm, $candNorm) !== false
+                        || mb_strpos($candNorm, $titleNorm) !== false
+                        || similar_text($titleNorm, $candNorm) > (mb_strlen($titleNorm) * 0.7)) {
+                        $selected[] = $title;
+                        break;
+                    }
+                }
+            }
+        }
+        return array_values(array_unique($selected));
+    }
+
     function close_curl_handle(mixed $ch): void {
         if (function_exists('curl_close')) {
             call_user_func('curl_close', $ch);
@@ -616,17 +823,62 @@
     }
 
     function extract_keywords(string $text): array {
-        $text = normalize_for_matching($text);
-        $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
-        $stopwords = ['et','la','le','les','des','du','de','un','une','pour','avec','dans','sur','au','aux','par','plus','se','qui','que','est','pas','ou','son','sa','ses','a','au','il','elle','ils','elles','ne','pas','ce','cette','ces','etre','avoir','sous','entre','sans','donc','mais','comme','car','afin','lors','tres','deja','parle','parlé','jai','tu','tui','te','toi','toi-même','moi'];
+        $normalized = normalize_for_matching($text);
+        $words = preg_split('/\s+/', $normalized, -1, PREG_SPLIT_NO_EMPTY);
+        $stopwords = ['et','la','le','les','des','du','de','un','une','pour','avec','dans','sur','au','aux','par','plus','se','qui','que','est','pas','ou','son','sa','ses','a','il','elle','ils','elles','ne','ce','cette','ces','etre','avoir','sous','entre','sans','donc','mais','comme','car','afin','lors','tres','deja','parle','jai','tu','te','toi','moi','combien','avais','avait','ai','eu','ete'];
         $keywords = [];
         foreach ($words as $word) {
-            if (mb_strlen($word, 'UTF-8') < 4) continue;
+            if (mb_strlen($word, 'UTF-8') < 3) continue;
             if (in_array($word, $stopwords, true)) continue;
             $keywords[$word] = ($keywords[$word] ?? 0) + 1;
         }
         arsort($keywords);
-        return array_keys($keywords);
+        $base = array_keys($keywords);
+        // Expansion de synonymes / entites frequentes de la memoire Mathieu.
+        // CORRECTIF 03/08/2026 : "j'ai eu des chiens ?" doit aussi chercher Luna ;
+        // "combien de voitures" doit aussi chercher 2CV, Titine, etc.
+        return expand_query_synonyms($base, $normalized);
+    }
+
+    /**
+     * Expansion legere de synonymes et d'entites connues.
+     * Ne remplace pas une vraie comprehension, mais evite les faux negatifs
+     * sur les questions courantes (animaux, vehicules, famille...).
+     * Orthographe archaique obligatoire dans ce fichier : Clef (pas cle),
+     * Nenuphar (pas nenufar), soeurs avec OE separes (pas de ligature).
+     */
+    function expand_query_synonyms(array $terms, string $normalizedQuery): array {
+        $expanded = $terms;
+        $synonymMap = [
+            'chien'   => ['luna', 'chiens', 'chienne'],
+            'chiens'  => ['luna', 'chien', 'chienne'],
+            'chat'    => ['ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chats'],
+            'chats'   => ['ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chat'],
+            'animal'  => ['luna', 'ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chien', 'chat'],
+            'animaux' => ['luna', 'ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chien', 'chat'],
+            'voiture'  => ['2cv', 'titine', 'vehicule', 'auto', 'automobile', 'permis'],
+            'voitures' => ['2cv', 'titine', 'vehicule', 'auto', 'automobile', 'permis'],
+            'vehicule' => ['voiture', '2cv', 'titine', 'auto'],
+            'auto'     => ['voiture', '2cv', 'titine'],
+            'cousin'   => ['cousins', 'cousine', 'villiers', 'pauly', 'montjol'],
+            'cousins'  => ['cousin', 'cousine', 'villiers', 'pauly', 'montjol'],
+            'maternel' => ['montjol', 'villiers', 'dominique'],
+            'paternel' => ['pauly', 'charreyre', 'elisabeth'],
+        ];
+        foreach ($terms as $t) {
+            if (isset($synonymMap[$t])) {
+                foreach ($synonymMap[$t] as $syn) {
+                    $expanded[] = $syn;
+                }
+            }
+        }
+        if (preg_match('/\b(chien|chiens|chat|chats|animal|animaux|luna)\b/', $normalizedQuery)) {
+            $expanded = array_merge($expanded, ['luna', 'ankou', 'spotty', 'elvira', 'morticia', 'sabbath']);
+        }
+        if (preg_match('/\b(voiture|voitures|vehicule|auto|2cv|titine)\b/', $normalizedQuery)) {
+            $expanded = array_merge($expanded, ['2cv', 'titine', 'voiture', 'permis']);
+        }
+        return array_values(array_unique(array_filter($expanded)));
     }
 
     function rewrite_paragraph(string $text): string {
@@ -1404,13 +1656,25 @@
                 // Le detail complet est deja trace dans extract_via_node().
                 return $nodeResult;
             }
-            if (trim($nodeResult['text']) === '') {
-                $error = "Le service Node.js n'a retourné aucun texte pour $originalName (document scanné, protégé, ou vide ?).";
+            $rawNode = trim($nodeResult['text']);
+            if ($rawNode === '') {
+                $error = "Le service Node.js n'a retourne aucun texte pour $originalName (document scanne, protege, ou vide ?).";
                 error_log("EXTRACT_TEXT_FROM_FILE echec - $error");
                 return ['success' => false, 'text' => '', 'error' => $error];
             }
+            // CORRECTIF 03/08/2026 : PDF scanne / structure invalide / OCR inutile
+            // -> message clair (ne plus pretendre que le fichier est exploitable).
+            if (strpos($rawNode, 'NON_EXPLOITABLE:') === 0
+                || stripos($rawNode, 'texte non extractible') !== false
+                || stripos($rawNode, 'Invalid PDF structure') !== false
+                || preg_match('/^\[Erreur extraction\b/i', $rawNode)) {
+                $error = "Fichier non exploitable : PDF scanne, protege ou structure invalide (OCR insuffisant). "
+                    . "Fournis un PDF texte, un DOCX, ou un document deja OCR-ise. ($originalName)";
+                error_log("EXTRACT_TEXT_FROM_FILE non exploitable - $originalName - " . mb_substr($rawNode, 0, 120));
+                return ['success' => false, 'text' => '', 'error' => $error];
+            }
             $prefix = "Mathieu vient de soumettre ce document en $format :\n\n";
-            return ['success' => true, 'text' => $prefix . trim($nodeResult['text']), 'error' => ''];
+            return ['success' => true, 'text' => $prefix . $rawNode, 'error' => ''];
         }
 
         $error = "Type de fichier non supporté : $originalName";
@@ -1548,7 +1812,19 @@
                 $extraction = extract_text_from_file($tmpPath, $fileName);
 
                 if ($extraction['success'] && trim($extraction['text']) !== '') {
-                    echo json_encode(['success' => true, 'text' => $extraction['text']]);
+                    // Passage LLM de controle : chevauchements avec instructions.md
+                    // et proposition de fusion (n'echoue pas l'extraction si le LLM est HS).
+                    $mergeSuggestion = '';
+                    try {
+                        $mergeSuggestion = merge_check_via_node($extraction['text']);
+                    } catch (Throwable $e) {
+                        error_log('MERGE_CHECK echec apres extract : ' . $e->getMessage());
+                    }
+                    echo json_encode([
+                        'success' => true,
+                        'text' => $extraction['text'],
+                        'merge_suggestion' => $mergeSuggestion,
+                    ], JSON_UNESCAPED_UNICODE);
                 } else {
                     $errorDetail = $extraction['error'] !== '' ? $extraction['error'] : 'Impossible d\'extraire le texte du fichier';
                     error_log("EXTRACT_ONLY echec pour '$fileName' - $errorDetail");
@@ -1615,61 +1891,107 @@
         }
 
         // ====================== INTERROGER LE FICHIER ======================
-        // CORRECTIF 23/07/2026 (v4) : simplification radicale demandee par
-        // Mathieu. L'ancienne version enchainait 3 appels LLM en cascade
-        // avant meme de repondre a la question :
-        //   1. extraction de mots-cles depuis la question
-        //   2. elargissement semantique de ces mots-cles (autre appel LLM)
-        //   3. recherche locale par sous-chaine avec ces termes
-        //   4. seulement ENSUITE, un 4e appel LLM pour repondre, nourri
-        //      uniquement des extraits que la recherche locale avait trouves
-        // Chaque etage est un point de fragilite (comme le bug SOURCE_FILE
-        // vu plus haut, qui rendait TOUT vide sans qu'aucun etage ne s'en
-        // rende compte). Un humain a qui on donnerait le document et la
-        // question chercherait et comprendrait lui-meme -- on fait
-        // desormais pareil : la question et le contenu reel du fichier sont
-        // transmis en UN SEUL appel au LLM choisi, avec un prompt qui lui
-        // demande explicitement de chercher lui-meme dans TOUT ce qu'on lui
-        // donne. Chaque moteur du menu peut ainsi apporter sa propre lecture,
-        // comme demande.
+        // CORRECTIF 03/08/2026 (v3) : selection par CATEGORIES (LLM sur titres)
+        // puis contenu des sections, puis un seul appel final avec raisonnement
+        // en deux lectures (faits explicites + resolution d'alias / liens).
+        // La recherche par mots-cles (search_with_counts_light) n'est plus le
+        // coeur : elle ne sert qu'en secours si la selection LLM echoue.
+        // Objectif : comprendre l'intention, cibler Famille / Domaine / etc.,
+        // puis laisser le LLM synthetiser et relier (ex. fille de la tante = cousine).
         //
-        // Garde-fou de taille : le fichier instructions.md peut depasser la
-        // fenetre de contexte de certains moteurs (notamment les modeles
-        // gratuits Groq/OpenRouter). En dessous du seuil ci-dessous, on
-        // envoie le fichier INTEGRAL. Au-dela, on bascule sur les sections
-        // les plus pertinentes (calcul purement local par recouvrement de
-        // mots-cles, find_relevant_instruction_sections -- AUCUN appel LLM
-        // prealable), mais on ne fait toujours qu'UN SEUL appel LLM final.
+        // Garde-fou de taille : en dessous du seuil on envoie le fichier INTEGRAL.
         if (isset($_POST['query_instructions']) && $input_text !== '') {
             $reformule_original = $input_text;
 
             $sections = extract_instructions_sections();
             $fullDocument = load_instructions_content();
             $fullDocumentLength = mb_strlen($fullDocument, 'UTF-8');
-            $fullDocumentSizeLimit = 60000; // ~15-18k tokens, sûr pour tous les moteurs geres
+            $fullDocumentSizeLimit = 60000; // ~15-18k tokens, sur pour la plupart des moteurs
 
             if ($fullDocumentLength > 0 && $fullDocumentLength <= $fullDocumentSizeLimit) {
-                $instructions_context = "Voici le contenu INTÉGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
-                $query_debug_mode = 'fichier intégral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caractères)';
+                $instructions_context = "Voici le contenu INTEGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
+                $query_debug_mode = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)';
             } else {
-                $relevantSections = find_relevant_instruction_sections($input_text, $sections, 6);
-                if (empty($relevantSections)) {
-                    // Aucune section ne matche par recouvrement de mots-cles :
-                    // on transmet quand meme les premieres sections du fichier
-                    // plutot que de laisser le LLM sans aucune matiere.
-                    $relevantSections = array_slice($sections, 0, 6, true);
-                }
                 $outline = extract_instructions_outline();
-                $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n";
-                foreach ($relevantSections as $title => $content) {
-                    $sectionContent = trim(preg_replace('/\s+/', ' ', $content));
-                    if (mb_strlen($sectionContent, 'UTF-8') > 4000) {
-                        $sectionContent = mb_substr($sectionContent, 0, 4000, 'UTF-8') . '...';
+                // 1) Selection semantique des sections (categories) par le LLM
+                $selectedTitles = select_relevant_sections_via_node($input_text, $outline);
+
+                $relevantSections = [];
+                if (!empty($selectedTitles)) {
+                    foreach ($selectedTitles as $title) {
+                        if (isset($sections[$title])) {
+                            $relevantSections[$title] = $sections[$title];
+                        }
                     }
-                    $instructions_context .= "\n--- Section : $title ---\n" . $sectionContent . "\n";
                 }
-                $query_debug_mode = count($relevantSections) . ' section(s) les plus pertinentes (fichier trop volumineux pour être envoyé intégralement : '
-                    . number_format($fullDocumentLength, 0, ',', ' ') . ' caractères > seuil de ' . number_format($fullDocumentSizeLimit, 0, ',', ' ') . ')';
+
+                // 2) Secours : recherche locale par termes si le LLM n'a rien renvoye
+                if (empty($relevantSections)) {
+                    $localSearch = search_with_counts_light($input_text, $sections);
+                    foreach (($localSearch['sections'] ?? []) as $title => $info) {
+                        if (isset($sections[$title])) {
+                            $relevantSections[$title] = $sections[$title];
+                        }
+                    }
+                }
+
+                // 3) Dernier recours : premieres sections du fichier
+                if (empty($relevantSections)) {
+                    $relevantSections = array_slice($sections, 0, 3, true);
+                }
+
+                // 4) Garantir au moins 3 sections quand possible (evite les reponses
+                // partiales quand le LLM n'en a renvoye qu'une seule).
+                // On complete d'abord via recherche locale, puis via sections
+                // voisines de l'outline (Famille + Chronologie + Entites souvent utiles).
+                $minSections = 3;
+                $maxSections = 5;
+                if (count($relevantSections) < $minSections) {
+                    $localSearch = search_with_counts_light($input_text, $sections);
+                    foreach (($localSearch['sections'] ?? []) as $title => $info) {
+                        if (count($relevantSections) >= $minSections) {
+                            break;
+                        }
+                        if (isset($sections[$title]) && !isset($relevantSections[$title])) {
+                            $relevantSections[$title] = $sections[$title];
+                        }
+                    }
+                }
+                if (count($relevantSections) < $minSections) {
+                    foreach ($outline as $title) {
+                        if (count($relevantSections) >= $minSections) {
+                            break;
+                        }
+                        $tNorm = mb_strtolower($title, 'UTF-8');
+                        $useful = (mb_strpos($tNorm, 'exp') !== false && mb_strpos($tNorm, 'person') !== false)
+                            || mb_strpos($tNorm, 'chronologie') !== false
+                            || mb_strpos($tNorm, 'entit') !== false
+                            || mb_strpos($tNorm, 'defis') !== false
+                            || mb_strpos($tNorm, 'défis') !== false
+                            || mb_strpos($tNorm, 'introduction') !== false;
+                        if ($useful && isset($sections[$title]) && !isset($relevantSections[$title])) {
+                            $relevantSections[$title] = $sections[$title];
+                        }
+                    }
+                }
+
+                // Contenu des sections selectionnees (troncature douce par section)
+                $perSectionLimit = 8000;
+                $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
+
+                $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
+                $instructions_context .= "Contenu des sections les plus pertinentes pour la question (a lire en deux passes : faits explicites, puis liens/alias) :\n";
+                foreach ($relevantSections as $title => $content) {
+                    $block = trim($content);
+                    if (mb_strlen($block, 'UTF-8') > $perSectionLimit) {
+                        // Preferer un extrait centre sur les termes de la question si possible
+                        $queryTerms = extract_keywords($input_text);
+                        $block = build_section_excerpt_for_query($content, $queryTerms, $perSectionLimit);
+                    }
+                    $instructions_context .= "\n--- Section : $title ---\n" . $block . "\n";
+                }
+                $query_debug_mode = count($relevantSections) . ' section(s) par categories LLM (fichier trop volumineux : '
+                    . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres > seuil de ' . number_format($fullDocumentSizeLimit, 0, ',', ' ') . ')';
             }
 
             $instructions_loaded = true;
@@ -1678,7 +2000,7 @@
             $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n";
             $query_debug .= "Contexte transmis : " . $query_debug_mode . "\n";
 
-            // Un seul appel LLM : la question et le contenu reel du fichier
+            // Appel LLM final : la question et le contenu reel (integral ou sections selectionnees)
             // sont transmis ensemble, le moteur cherche et repond lui-meme.
             $finalResponse = finalize_query_response_via_node($input_text, '', $instructions_context);
 

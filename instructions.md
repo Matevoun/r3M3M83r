@@ -89,17 +89,20 @@ Mais ce fichier existe quand même. Parce qu'il doit exister.
 
 Pionnier du web Français — présent sur Internet bien avant son ouverture au grand public (1993), entré chez Club-Internet fin 1995 (6e hotlineur, Mac, PC, OS/2), cosignataire de la première Netiquette francophone (1996) — il a passé plus de vingt ans dans l'informatique professionnelle avant de se consacrer entièrement à la préservation et restauration numérique, à la photographie Artistique et à la gestion de son patrimoine.
 
-**Fondateur de la WDA (Winter Development Association)** Début de collection en 1988, à 12 ans, par conviction pour la sauvegarde du patrimoine numérique : la WDA est aujourd'hui la 4e plus grande collection du patrimoine numérique en France (6e en Europe), 480 m³ de matériel répartis sur 4 antennes nationales, en collaboration avec le CNAM, la BNF, le CNRS et la Cité des Sciences. L'association doit son nom au pseudo de programmation BASIC "David WINTER" qu'il utilisait depuis l'enfance.
+**Fondateur de la WDA (Winter Development Association)** Début de collection en 1988, à 12 ans, par conviction pour la sauvegarde du patrimoine numérique : la WDA est aujourd'hui la 3e ou 4e plus grande collection du patrimoine numérique en France (6e en Europe), 480 m³ de matériel répartis sur 4 antennes nationales, en collaboration avec le CNAM, la BNF, le CNRS et la Cité des Sciences. L'association doit son nom au pseudo de programmation BASIC "David WINTER" qu'il utilisait depuis l'enfance.
 
-**Héritier et gardien** du Domaine Saint-Antonin (route de Vauvenargues, Jouques, 13490) — 89 ha 28 a 24 ca, acquis le 26 septembre 1636 par Annibal THUS et transmis de génération en génération jusqu'à lui (14e propriétaire) — il gère ce patrimoine bénévolement via l'Association TOUN (loi 1901, JO 24/06/2017). Sanctuaire animalier (refuge ASPAS/LPO depuis 2019), zone Natura 2000 et ZSC, hospitalité aux ruches de deux apiculteurs depuis 2017, commodats d'exploitation : vision résolument non prédatrice et écologique. L'autre moitié du Domaine est en indivision conflictuelle depuis 2009 avec ses cousins VILLIERS (héritiers de sa tante maternelle Dominique MONTJOL, ex-épouse VILLIERS, décédée le 25 mars 2009).
+**Héritier et gardien** du Domaine Saint-Antonin (route de Vauvenargues, Jouques, 13490) — 89 ha 28 a 24 ca, acquis le 26 septembre 1636 par Annibal THUS et transmis de génération en génération jusqu'à lui (14e propriétaire) — il gère ce patrimoine bénévolement via l'Association TOUN (loi 1901, JO 24/06/2017). Sanctuaire animalier (refuge ASPAS/LPO depuis 2019), zone Natura 2000 et ZSC, hospitalité aux ruches d'apiculteurs depuis 2017, commodats d'exploitation : Vision résolument non prédatrice et écologique. L'autre moitié du Domaine est en indivision conflictuelle depuis 2009 avec ses cousins VILLIERS (héritiers de sa tante maternelle Dominique MONTJOL, ex-épouse VILLIERS, décédée le 25 mars 2009).
 
-Sa compagne est **Anne-Sophie LESAGE-MÜNCH** (née le 10/02/1982 à Liège, journaliste pour Connaissance des Arts, surnommée AnSo). Sa fille **Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 07/06/2015, dans le même hôpital que son père, Pitié-Salpêtrière) s'est vue léguer le studio de la Villa Jacquemont (3 villa Jacquemont, 75017 Paris), entièrement rénové entre mars et juillet 2025 (> 25 000 €) et loué en AirBnB sous l'enseigne "La Villa Le Reliquaire" depuis septembre 2025, Mathieu en conservant l'usufruit. Leur foyer parisien accueille 4 chats (Ankou, Spotty, Elvira) et un chien Luna (née 01/08/2018, adoptée en 2024 après la tragédie de Jonathan RABINO, ancien chevrier du Domaine). Sabbath est décédée le 27 mars 2026 à la clinique Les Vétos Parisiens (145 rue de la Pompe, 75116 Paris), d'une insuffisance rénale, et Morticia le 23 Juillet 2026 dés suite de son cancer, au Domaine Saint-Antonin.
+Sa compagne est **Anne-Sophie LESAGE-MÜNCH** (née le 10/02/1982 à Liège, journaliste pour Connaissance des Arts, surnommée AnSo).
+Sa fille **Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 07/06/2015, dans le même hôpital que son père, Pitié-Salpêtrière) s'est vue léguer le studio de la Villa Jacquemont (3 villa Jacquemont, 75017 Paris), entièrement rénové entre mars et juillet 2025 (> 25 000 €) et loué en AirBnB sous l'enseigne "La Villa Le Reliquaire" depuis septembre 2025, Mathieu en conservant l'usufruit. Leur foyer parisien accueille 4 chats (Ankou, Spotty, Elvira) et un chien Luna (née 01/08/2018, adoptée en 2024 après la tragédie de Jonathan RABINO, ancien chevrier du Domaine). Sabbath est décédée le 27 mars 2026 à la clinique Les Vétos Parisiens (145 rue de la Pompe, 75116 Paris), d'une insuffisance rénale, et Morticia le 23 Juillet 2026 dés suite de son cancer, au Domaine Saint-Antonin.
 
 Photographe Artistique professionnel (PhotoMat, AGESSA, SIRET 519 384 226 00014, APE 90.03A), il saisit le monde avec un regard singulier, plus par conviction que pour la gloire ou l'argent. Passionné de jeux vidéo (WoW Alliance depuis 2005, guilde propre ; No Man's Sky backer originel ; Hogwarts Legacy), de musique rock et garage (The Hives en tête, AC/DC, Guns N' Roses, Kavinsky, Nirvana, Fever Ray), de cinéma (Subway vu 600+ fois, WarGames, Retour vers le Futur volet 2, Wayne's World) et d'observation de la faune sauvage sur le Domaine.
 
 Ses épreuves majeures : le conflit d'indivision sur le Domaine Saint-Antonin depuis 2009, la perte de son père Henri (2017) puis de sa mère Anne (2023), et la pose d'un pacemaker en 2025 (arythmie congénitale aggravée par le stress prolongé du conflit ; bicuspidie aortique découverte lors de l'opération). Il gère ces défis seul, avec rigueur et humour autodérisoire.
 
-Son pseudonyme principal est **Matevoun** (Mathieu en provençal, lié à ses racines maternelles provençales). Domicilié au 44 rue de la Faisanderie, 75116 Paris depuis 2021. Son téléphone mobile est inchangé depuis 1995 : **06.11.53.30.69**.
+Son pseudonyme principal est **Matevoun** (Mathieu en provençal, lié à ses racines maternelles provençales) ou **Casio** (lié à sa passion digitale et rétro-numérique).
+Il est Domicilié au 44 rue de la Faisanderie, 75116 Paris depuis 2021.
+Son téléphone mobile est inchangé depuis 1995 : **06.11.53.30.69**.
 
 ---
 
@@ -445,14 +448,14 @@ Elle a un caractère intransigeant et peu conciliant, et s'exprime souvent de ma
 
 - **Anne PAULY** (née le **31/03/1959**) — distinction nationale : plus jeune femme juge de France au moment de sa nomination. Mariée le **18/07/1992** avec **Félix SCHNITZLER** (né le **12/06/1949**) — que le père de Mathieu, Henri, surnommait *"le Boche"*. Trois enfants. **Relation actuelle : nulle.** Elle se fout de Mathieu totalement. Aucune nouvelle.
 
-- **Edith PAULY** (née le **30/03/1962**) — journaliste pigiste. Célibataire. Mathieu l'aimait bien dans sa jeunesse : une grande soeur sympathique, un peu paumée mais attachante. Mais lorsque la mère de Mathieu, Anne, a commencé à décliner et à être alitée rue de la Faisanderie, Edith et Élisabeth ont monté Anne contre Mathieu — comme si elles avaient voulu détourner l'héritage, le faire passer pour un incapable dont sa mère n'aurait dû compter que sur elles deux. Edith est une fille influençable, sous l'emprise de sa mère. **Relation actuelle : coupée.**. Décédée le **28 juin 2026** aux alentours de 08h30). Malgré les liens coupés et la trahison familiale, Mathieu garde un souvenir contrasté mais attendri d'elle : Il l'aimait bien enfant et elle fut son premier crush physique (notamment pour sa coupe de cheveux). Funérailles le 04 juillet 2026 : Messe à Saint-Eustache à 10h30, puis crémation au Père-Lachaise. Elle est la seconde des PAULY (après Dominique PAULY) connue par Mathieu à décéder.
+- **Edith PAULY** (née le **30/03/1962**) — journaliste pigiste. Célibataire. Mathieu l'aimait bien dans sa jeunesse : une grande soeur sympathique, un peu paumée mais attachante. Mais lorsque la mère de Mathieu, Anne, a commencé à décliner et à être alitée rue de la Faisanderie, Edith et Élisabeth ont monté Anne contre Mathieu — comme si elles avaient voulu détourner l'héritage, le faire passer pour un incapable dont sa mère n'aurait dû compter que sur elles deux. Edith est une fille influençable, sous l'emprise de sa mère. **Relation actuelle : coupée.**. Décédée le **28 juin 2026** aux alentours de 08h30). Malgré les liens coupés et la trahison familiale, Mathieu garde un souvenir contrasté mais attendri d'elle : Il l'aimait bien enfant et elle fut son premier crush physique (notamment pour sa coupe de cheveux). Funérailles le 04 juillet 2026 : Messe à Saint-Eustache à 10h30, puis crémation au Père-Lachaise. Mathieu n'y est pas allé. Elle est la seconde des PAULY (après Dominique PAULY) connue par Mathieu à décéder.
 
 - **Frédérique PAULY** (né le **28/09/1966**), surnommé **"Fred"** — ancien photographe professionnel. Marié avec **Catherine PERRIN** (née le **18/10/1968** aussi photographe). Deux enfants. Personnalité pédante, prétentieux, se prend pour une sorte de super-tuteur de Mathieu et traite celui-ci comme s'il était débile. Il ne parle plus à Mathieu depuis qu'il a annulé une invitation à déjeuner au prétexte que Mathieu avait 30 minutes de retard — comme si c'était lui qui rendait service à Mathieu en l'invitant. Sa femme Catherine est du même bois. **Dernier contact** : enterrement d'Henri (2017), aux obsèques à Saint-Honoré d'Eylau — Fred donnait des ordres visuels secs à Mathieu pour la procession (allumage des cierges, placement, etc.) comme s'il avait 3 ans. Un abruti pédant et trop sûr de lui. Anecdote révélatrice du caractère d'Élisabeth : à une époque, après sa carrière de photographe (sa femme Catherine était également photographe), Fred a ouvert un bar dans le **93** (département exact inconnu). Élisabeth est venue voir Henri à la Faisanderie et a lâché tout haut, sans retenue : *"Non, mais tu te rends compte ? Quelle honte, son propre fils, garçon de bar !"* À noter : lorsque Mathieu était petit, Henri faisait appel à Fred (et Philippe) pour le baby-sitter, car les deux frères PAULY étaient perpétuellement en galère de thunes — Henri leur glissait de l'argent en échange, officialisant le truc.
 Autre Anecdote : Quand Mathieu devait avoir 15 ou 16 ans, Frédéric l'a emmené passer une petite semaine de vacances en Bretagne dans la maison familiale de vacances des PAULY. Mathieu se souvient qu'il dormait dans une chambre située au premier étage, juste à droite de l'escalier. Cette chambre était envahie de bandes dessinées de tous genres et beaucoup de **Marvel**. C'est là que Mathieu a découvert que Fred aimait les bandes dessinées. Cette expérience lui a également donné l'envie de collectionner à son tour les bandes dessinées et les Strange. Fred était en mode grand frère, surveillant tout ce que Mathieu faisait. Mathieu a passé une assez mauvaise semaine, ressentant une certaine contrainte. Comme si Fred rendait service à ses parents en le gardant pour lui apprendre la vie. Mathieu se souvient d'une fois, ayant une bonne ouie, l'avoir entendu monter l'escalier discrètement pour l'espionner. Mathieu a alors ouvert brusquement la porte de la chambre, faisant mine d'aller aux toilettes. Fred a été surpris et est descendu au rez-de-chaussée comme si de rien n'était.
 
-- **Mathilde PAULY** (née le **07/11/1972**) — mariée avec **Yannick YSTIN** (breton, militant écologiste, étiqueté "gaucho"). Couple installé en Bretagne. **Relation actuelle : nulle.** Elle se fout de Mathieu totalement. Aucune nouvelle.
+- **Philippe PAULY** (né le **22/09/1967**), surnommé **"PipiAuLit"** par Mathieu et AnSo (Philippe PAULY sonne exactement pareil) — le seul cousin de la fratrie PAULY avec qui Mathieu a gardé de vrais bons souvenirs. Membre actif des Alcooliques Anonymes (AA) — bientôt 20 ans d'abstinence de tout produit modifiant le comportement (mis à jour avril 2026 d'après Philippe lui-même, qui précise ne plus être "ancien AA" mais toujours membre actif). Plus sous traitement lithium ni autre traitement pour bipolaire depuis très longtemps (idem, confirmé par lui en avril 2026). Globalement cool avec Mathieu, bien que la communication reste désormais sporadique et teintée d'une certaine condescendance de la part de Philippe. Mathieu a le sentiment que même Philippe, le plus sympa de la bande, le prend un peu pour un demeuré au fond. Quand Mathieu était gosse, Philippe (comme Fred ponctuellement) faisait du baby-sitting : Henri les payait car les frangins PAULY étaient toujours en galère de thunes. Philippe aurait aussi donné des cours de maths à Mathieu enfant. D'abord marié avec **Françoise PROST** en **1998** (trois enfants). Après un burn-out, il s'est mis avec **Trang DO VIET QUYNH** (née le **15/03/1987**). A vécu 8 ans au Cambodge (Siem Reap), puis est parti au Vietnam où il vit depuis 8 ans : 2 ans à Saigon, puis 6 ans à Hoi An (situation en avril 2026).
 
-- **Philippe PAULY** (né le **22/09/1976**), surnommé **"PipiAuLit"** par Mathieu et AnSo (Philippe PAULY sonne exactement pareil) — le seul cousin de la fratrie PAULY avec qui Mathieu a gardé de vrais bons souvenirs. Membre actif des Alcooliques Anonymes (AA) — bientôt 20 ans d'abstinence de tout produit modifiant le comportement (mis à jour avril 2026 d'après Philippe lui-même, qui précise ne plus être "ancien AA" mais toujours membre actif). Plus sous traitement lithium ni autre traitement pour bipolaire depuis très longtemps (idem, confirmé par lui en avril 2026). Globalement cool avec Mathieu, bien que la communication reste désormais sporadique et teintée d'une certaine condescendance de la part de Philippe. Mathieu a le sentiment que même Philippe, le plus sympa de la bande, le prend un peu pour un demeuré au fond. Quand Mathieu était gosse, Philippe (comme Fred ponctuellement) faisait du baby-sitting : Henri les payait car les frangins PAULY étaient toujours en galère de thunes. Philippe aurait aussi donné des cours de maths à Mathieu enfant. D'abord marié avec **Françoise PROST** en **1998** (trois enfants). Après un burn-out, il s'est mis avec **Trang DO VIET QUYNH** (née le **15/03/1987**). A vécu 8 ans au Cambodge (Siem Reap), puis est parti au Vietnam où il vit depuis 8 ans : 2 ans à Saigon, puis 6 ans à Hoi An (situation en avril 2026).
+- **Mathilde PAULY** (née le **07/11/1972**) — mariée avec **Yannick YSTIN** (breton, militant écologiste, étiqueté "gaucho"). Couple installé en Bretagne. **Relation actuelle : nulle.** Elle se fout de Mathieu totalement. Aucune nouvelle.
 
   C'est via Philippe que Mathieu a découvert les Talking Heads (~1991, plage d'Héraclée, La Croix-Valmer) : Philippe lui a confié sa cassette *Little Creatures* qu'il écoutait alors sur son walkman AIWA.
 
@@ -911,9 +914,9 @@ Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structu
 **AUBREE Yvette**
 - **Date** : 06 octobre 2017 (mais en fait elle et son mari Jean-Jacques DANGLARD sont arrivés en 1984)
 - **Adresse** : Gardienne du Domaine Saint-Antonin, 13490 Jouques
-- **Activité** : Gardiennage du domaine + lieu de vie
+- **Activité** : Gardiennage du Domaine + lieu de vie
 - **Biens** : Appartement des gardiens, situé dans la ferme sur la parcelle 000/00/0086
-- **Durée** : Caduque — Yvette partie en 2023. Elle est en maison de retraite.
+- **Durée** : Caduque — Yvette partie en 2023 en maison de retraite. Jean-Jacques décédé en 2009 d'un arret cardiaque dans la ferme du Domaine.
 - **Note** : Présence effective depuis 1984 avec son mari Jean-Jacques DANGLARD. Formalisation tardive du commodat en 2017.
 
 **FRIEDMANN Jean-Michel**
@@ -952,7 +955,7 @@ Depuis 2017, tous les commodats sont gérés par l'Association TOUN. La durée s
 - **Activité** : Élevage caprin laitier BIO + transformation fromagère
 - **Parcelles** : Poulailler (ancien clapier + soue) sur D-001-086 (extrémité Ouest) + D-001-121 (« Les Vignes du Roi »)
 - **Durée** : 9 ans (renouvelable tacitement)
-- **Statut** : **Terminé le 21 juin 2024**, suite au meurtre accidentel de sa compagne Julie ALLEGRO. Jonathan a été emprisonné pour homicide involontaire (3 ans) a Luynes. Luna, leur chienne, a été adoptée définitivement par Mathieu après que la mère de Jonathan ait voulu la faire euthanasier.
+- **Statut** : **Terminé le 21 juin 2024**, suite au meurtre accidentel de sa compagne Julie ALLEGRO. Jonathan a été emprisonné pour homicide involontaire (3 ans) a Luynes. Luna, leur chienne, a été adoptée définitivement par Mathieu après que la mère de Jonathan ait voulu la faire euthanasier en 2024.
 
 **SAMSON Christopher** — *Apiculture*
 - **Date** : Contrat juin 2019, validation officielle 28 mars 2020
@@ -1194,7 +1197,8 @@ La couleur préférée d'Ambre est le bleu, et son chiffre le 3.
 La couleur préférée d'Anne-Sophie est le noir.
 
 ### Vie Quotidienne
-Partagée entre Paris 16e Nord (75116), et 17ème (75017) (vie urbaine) et Jouques 13490 (Provence). Style décontracté, pas de chichis. Exigeant avec lui-même, allergique au bullshit, mais doux et sensible. Utilise humour et analyse comme armure.
+Partagée entre Paris 16e Nord (75116), et 17ème (75017) (vie urbaine et gestion immobilière du studio) et Jouques 13490 (Provence).
+Style décontracté, pas de chichis. Exigeant avec lui-même, allergique au bullshit, mais doux et sensible. Utilise humour et analyse comme armure.
 
 ### Gestion Financière
 Mathieu s'intéresse aux nouvelles banques comme Deblock et CanB. Il a des comptes chez N26, Sumeria (anciennement Lydia), Revolut, CanB, Deblock, Blockchain, Crypto.com, PayPal, Binance, Bunq, SumUp, Curve, Bitstack ...
@@ -1202,7 +1206,7 @@ Mathieu s'intéresse aux nouvelles banques comme Deblock et CanB. Il a des compt
 ### Tatouage
 Mathieu a un petit tatouage monochrome sur l'omoplate gauche qu'il s'est fait en 1995 ou 1996. Ce tatouage a été réalisé rapidement en environ vingt minutes pour rassurer un ami qui avait peur de se faire tatouer. Il l'a dessiné en cinq minutes et l'a payé 700 francs. Il a fait ce tatouage chez un tatoueur situé près des Abesses, non loin de chez Tintin, un tatoueur assez connu à l'époque. Il pense que le nom du tatoueur était probablement Bruno. Avant de se faire tatouer, il se souvient qu'une jeune fille portant un jean voulait se faire tatouer un dauphin bleu sur le bas-ventre. Elle a eu trop mal et est tombée dans les vapes. Le tatoueur l'a prise dans les bras pour la déposer sur un fauteuil de tatoueur à l'arrière avant de faire passer Mathieu directement pour son tatouage. Pendant la séance, Mathieu était installé dans un box, ventre contre le dossier d'un fauteuil, torse nu, avec le tatoueur dans son dos utilisant un ancien système à aiguilles. Il ne se souvient plus si la fille qui s'était évanouie avait repris ses esprits avant qu'il commence. Une fois le tatouage effectué, le tatoueur a donné à Mathieu une pommade et lui a conseillé de changer le sparadrap tous les soirs en appliquant un peu de pommade pendant environ dix jours. Cependant, à l'époque, Mathieu travaillait chez Club Internet et le soir, il était DJ ('passe-disque') au rez-de-chaussée de la boîte de nuit La Locomotive, dans la section appelée 'Central', où il mixait du rock sur vinyles. Avec la chaleur des projecteurs et la sueur due aux 5 à 6 heures de mix, le sparadrap s'est décollé, et il n'a finalement pas remis de sparadrap ni appliqué la crème, ce qui a provoqué une légère irritation, laissant les contours du tatouage en relief.
 
-### Vacances d'été : Hauts de Gigaro / La Croix-Valmer
+### Souvenirs de Vacances d'été enfant : Hauts de Gigaro / La Croix-Valmer
 Chaque année, pendant les grandes vacances estivales, la famille CHARREYRE partageait l'été entre **juillet au Domaine Saint-Antonin** et **août à La Croix-Valmer** — ce rituel dura environ une dizaine d'années de la vie de Mathieu. L'appartement était situé dans les **hauts de Gigaro** (n° 2708 sur la D93), loué par son père Henri à l'un de ses confrères médecins. Un lieu légèrement reculé dans la forêt, à 1 km de la plage — pinèdes, cactus, végétation provençale, mer au loin. Mathieu adorait.
 
 **L'appartement** : moderne mais agréable à vivre. Le propriétaire laissait des pots-pourris partout — *"ça puait grave"*. Un salon donnant sur la forêt en hauteur ; une chambre pour ses parents (c'est là que Mathieu a lu *Le Désert des Tartares* pour l'école — *"quelle galère"*) ; une chambre avec canapés-lits où dormaient Mathieu et, certaines années, sa grand-mère Fanette ; la cuisine dans l'entrée ; salle de bains et toilettes séparées.
@@ -1224,7 +1228,7 @@ Henri CHARREYRE avait passé le permis bateau cotier. De temps en temps, Mathieu
 
 Mathieu aimerait acheter un petit pied-à-terre à La Croix-Valmer.
 
-### Vacances d'hiver : Les 3 Vallées / Méribel
+### Souvenirs de Vacances d'hiver : Les 3 Vallées / Méribel
 
 Les sports d'hiver constituent un fil conducteur de toute la vie de Mathieu — de la très petite enfance avec ses parents jusqu'à aujourd'hui avec Ambre — tradition familiale ininterrompue depuis les années 1980.
 
@@ -1262,7 +1266,7 @@ Après plusieurs années sans, Méribel revient avec son ex-compagne **Eva SALOM
 
 **Méribel avec Ambre (depuis mars 2019)**
 
-Le retour aux 3 Vallées se fait en **mars 2019** — et c'est la **première fois d'Ambre**. Elle est interloquée par la quantité de neige. Mathieu a les photos. Elle est mise directement aux cours ESF.
+Le retour aux 3 Vallées se fait en **mars 2019** — et c'est la **première fois d'Ambre**. Elle est interloquée par la quantité de neige. Mathieu a les photos. Elle est mise directement aux cours ESF (Piou-Piou).
 
 L'ESF a depuis refondu son cursus jeunesse. Mathieu trouve la chose discutable : il a eu le Flocon directement à 3-4 ans, et désormais les enfants passent d'abord par les niveaux **Piou-Piou** (avec médailles intermédiaires) jusqu'à 5-6 ans — *"Connerie ça."* Ambre progresse à raison d'**une médaille par an** : **Piou-Piou → Flocon → 1ère étoile → 2ème étoile → 3ème étoile** (difficile : elle n'écoutait pas les consignes, Mathieu a dû insister pour qu'on la lui donne) **→ Flèche de Bronze**. Depuis la Flèche de Bronze, c'est la **deuxième année** qu'elle skie en autonomie complète avec Mathieu, toute la journée. Dans l'esprit de Mathieu : *"à partir de la troisième étoile, on sait skier."* À moins qu'elle envisage la compétition — peu probable vu son caractère — le cursus de médailles est terminé.
 
@@ -1685,9 +1689,9 @@ Emmené rue de l'Opéra puis rue Cardinale à Aix, puis laissé à Saint-Antonin
 Collectionneur depuis l'enfance, Mathieu a accumulé une quantité impressionnante de matériel informatique personnel au fil des ans, souvent récupéré, assemblé ou acheté pour ses besoins professionnels et personnels. Voici la liste exhaustive de ses machines, consoles et mobiles, telle que présentée sur le forum WDA (https://forum.wda-fr.org/viewtopic.php?t=761), avec dates, spécifications et contextes d'acquisition.
 
 #### Machines (Ordinateurs)
-- **1984** : Un Oric-Atmos offert par un oncle fortuné. Avec quelques bouquins de BASIC, quelques jeux en cassettes ("FLIPPER", "CHESS"), un moniteur monochrome Zenith Model ZVM-123-EA de chez "General", et un lecteur de cassettes lambda noir. C'est à cause de cette bestiole que Mathieu est tombé dans la marmite du numérique.
+- **1984** : Un Oric-Atmos offert par Stéphane VILLIERS. Avec quelques bouquins de BASIC, quelques jeux en cassettes ("FLIPPER", "CHESS"), un moniteur monochrome Zenith Model ZVM-123-EA de chez "General", et un lecteur de cassettes lambda noir. C'est à cause de cette bestiole que Mathieu est tombé dans la marmite du numérique.
 - **1989** : Un Commodore PC 40 III (Desktop 80286-12 Mhz / 1 Mo RAM / 40 Mo HDD en carte Winchester (ISA 16 Bits)), complet, avec Clavier/souris et moniteur VGA (s'il vous plait) d'origine. Le tout acheté par son paternel à la FNAC (donc très cher... plus de 25.000 Frs de l'époque). Il tournait initialement avec un MS-DOS 4.01 et Geoworks Ensemble 2.0.
-- **1992** : Un TARGA Series II (en grande tour) plus ou moins assemblé en magasin sur mesure, grâce à son cher Eric LANGOU et sa fameuse boutique "Computer Workshop" de la rue des Petits Hôtels, 75010 Paris (Une grande tour 80486dx2-66 Mhz / 32 Mo RAM / 250 Mo HDD IDE, et un lecteur CD Creative), pour la bagatelle de 14.990 Frs de l'époque. Il tournait initialement sous MS-DOS 5.00 et MS-Windows 3.1.
+- **1992** : Un TARGA Series II (en grande tour) plus ou moins assemblé en magasin sur mesure, grâce à son cher Eric LANGOU et sa fameuse boutique "Computer Workshop" du 3 rue des Petits Hôtels, 75010 Paris (Une grande tour 80486dx2-66 Mhz / 32 Mo RAM / 250 Mo HDD IDE, et un lecteur CD Creative), pour la bagatelle de 14.990 Frs de l'époque. Il tournait initialement sous MS-DOS 5.00 et MS-Windows 3.1. Mathieu cherche à refaire cette config.
 - **1996 (21 Juin 1996 exactement)** : Création de l'association WDA avec Zurmff & Karl, histoire d'officialiser un peu leur petite collection du moment, débutée en 1988.
 - **2001 (23/03/2001)** : Un portable SONY VAIO PCG-FX101 Model. PCG-955C (portable Céléron - 600 Mhz / 256 Mo RAM / 10 Go HDD IDE / Lecteur CD / Modem 56K), initialement sous MS Windows 98 SE, puis passé rapidement sous MS Windows XP Pro. avec 256 Mo de RAM supp. (Acheté le 23/03/2001 pour 10.990 Frs à la FNAC d'Orléans, pour aller squatter chez TiChat.)
 - **2002** : Un portable DELL Latitude CPxJ Model. PPX (portable Pentium-III - 650 Mhz / 512 Mo RAM / 20 Go HDD IDE / Lecteur DVD), récupéré au travail, il tournait sous MS Windows XP Pro. sans problème.
@@ -1769,6 +1773,53 @@ Mathieu déploie un nombre important de caméras IP sur l'ensemble de ses propri
 - **Domaine Saint-Antonin** : 26 caméras extérieures (marques Ctronics, iMOU, Foscam — certaines WiFi, certaines filaires, certaines 4G/solaire ou WiFi+solaire) + 11 caméras intérieures (iMOU principalement). Soit un total de 37 caméras sur le seul Domaine. En forêt, Mathieu avait auparavant déployé plus de 25 **caméras de chasse** autonomes (piles + carte SD, ~100 € pièce) — mais les chasseurs lui en ont volé **18 rien qu'en 2024**. Il les remplace progressivement par des **Ctronics 4G solaires** : si elles sont volées, il a en temps réel la tête des voleurs sur son mobile.
 
 Toutes les caméras (Domaine Saint-Antonin, Villa Jacquemont, Faisanderie) poussent photos et vidéos en **FTP en temps réel** sur un **NAS Synology DS214** déployé à la Faisanderie, équipé de 2 × 6 To en **RAID miroir** (6 To utiles, redondants), jamais éteint. Ainsi, même en cas de vol ou de déconnexion d'une caméra (notamment lors d'un cambriolage), les dernières images sont déjà sauvegardées à Paris et consultables à distance via les applications Android Synology.
+
+### Matériel HiFi Personnel
+#### Villa Jacquemont
+- Téléviseur Sony Bravia KDL-40W5710 fonctionnel
+
+#### Faisanderie
+**Salon**
+- Amplificateur Yamaha
+- Platine CD Marantz
+- 2 Enceintes Cabasse Sloop 321-1 Suspensions HS
+- Téléviseur Sony Bravia KDL 40W fonctionnel
+
+#### Saint-Antonin (Jouques)
+**Bureau**
+- Amplificateur Pioneer VSX-505RDS fonctionnel
+- Platine CD Sony CDP-309 fonctionnelle
+- Platine Cassette Sony TC-K630ES fonctionelle
+- Platine Vinyle Garrard GT35P-1 fonctionnelle
+- 2 Enceintes Lonpoo LP-42 fonctionnellles
+**Chambre 3**
+- Amplificateur Pioneer VSX-709RDS fonctionnel (mais bouton du volume à réparer et télécommande HS)
+- Platine Blu-ray Panasonic DMP-BDT460 fonctionnelle
+- 2 Enceintes Canon S-50 fonctionnelles
+- 2 Enceintes Canon 200 DH (je pense) fonctionnelles
+- Enceinte Celestion IMPACT C1 fonctionnelle
+- Caisson Pioneer S-W200 fonctionnel
+- Videoprojecteur ViewSonic PX701HD fonctionnel
+**Chambre Bleue**
+- Téléviseur Blaupunkt 32/233I-WW-5W2FHP-EU
+**Studio**
+- Platine Blu-ray Panasonic DMP-BDT310EF fonctionnelle
+- Téléviseur Sony Bravia KDL-40W5500 fonctionnel
+**Marie-Louise**
+- Platine Blu-ray Panasonic DMP-BDT360EF sans télécommande
+- Platine CD Technics SL-PG490 Non testée et sans télécommande
+- Platine CD Sony CDP-M25 Non testée, manuel présent
+- Manuel de la platine Cassette Technics RS-BX404
+- Platine Cassette Technics M205 non testée
+- Platine MiniDisc Sony MDS-JE320 qui ne s’allume pas et sans télécommande
+- Tuner Sony ST-V902 non testé
+- 2 Platines DVD Toshiba SD-2109 mais une seule télécommande
+- Platine DVD Thomson DTH195 non testée
+- Platine DVD Sony DVP-LS785V Fonctionnelle
+- Amplificateur Nikko TRM-600 non testé
+- 2 Enceintes Denon USC-60 a réviser (suspensions HS)
+- 2 Enceintes Braun AG L620/1 Abîmées
+- Videoprojecteur Optoma EH330UST fonctionnel
 
 ### Philosophie Tech
 Anti-obsolescence, performance, légèreté. "Savoir ce qui se passe sous le capot". Déteste l'incompétence déguisée en autorité.

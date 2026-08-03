@@ -1,26 +1,26 @@
 /**
  * reformulator/server.js
- * Version avec support upload de fichiers + Mistral par défaut + logique dynamique modèles
- * Mise à jour 04/07/2026 - Mathieu CHARREYRE
+ * Version avec support upload de fichiers + Mistral par defaut + logique dynamique modeles
+ * Mise a jour 03/08/2026 - Mathieu CHARREYRE
+ *
+ * REGLES D'OR (a relire avant toute modification) :
+ *   1. Documenter chaque correctif dans ce fichier (commentaires sans accents
+ *      ni caracteres speciaux pour eviter les bugs d'encodage).
+ *   2. Orthographe archaique obligatoire : CLEF (jamais "cle"), NENUPHAR
+ *      (jamais "nenufar"), soeurs avec O et E separes (jamais ligature oe).
+ *      Pas de tiret cadratin, pas d'emoji en dur dans le code source.
+ *   3. Le prompt QUERY doit faire comprendre l'INTENTION de la question
+ *      (synthese, decompte, liste) et non se contenter de compter un mot.
+ *      Luna est un chien ; une 2CV est une voiture. Les noms propres comptent.
+ *   4. Les modeles OpenRouter :free tournent souvent (HTTP 404). Preferer
+ *      openrouter/free ou verifier la disponibilite avant de changer le defaut.
+ *   5. Ne jamais laisser une erreur Multer ou Express renvoyer du HTML :
+ *      toujours repondre en JSON et logger dans reformulator/log/error.log.
  *
  * CORRECTIF 04/07/2026 :
- *   - Le dossier `uploads/` (destination Multer) n'était jamais créé
- *     explicitement. Sur o2switch/Passenger, s'il n'existait pas (ou n'avait
- *     pas les droits d'écriture), Multer échouait AVANT d'entrer dans le
- *     handler de la route /reformuler : `logRequest()` et tous les
- *     `logError()` du handler n'étaient donc jamais exécutés, d'où l'absence
- *     totale de traces dans les logs malgré des échecs systématiques sur les
- *     PDF/DOCX (les .txt/.md ne passent pas par Multer, donc fonctionnaient).
- *   - Ajout d'un middleware d'erreur dédié autour de `upload.single('file')`
- *     sur /reformuler, qui logge l'échec Multer et répond en JSON (au lieu
- *     de laisser Express retomber sur sa page d'erreur HTML par défaut).
- *   - Ajout d'un middleware d'erreur Express global (4 arguments) en fin de
- *     fichier, pour capter toute exception non gérée et toujours répondre en
- *     JSON avec un log.
- *   - La route de compatibilité `/r3M3M83r/reformulator/reformuler` appelait
- *     `upload.single('file')` une seconde fois avant de redéléguer vers
- *     `/reformuler` (qui l'applique déjà) : la requête aurait été analysée
- *     deux fois. Elle se contente désormais de redéléguer.
+ *   - Creation explicite du dossier uploads/ avant Multer.
+ *   - Middleware d'erreur Multer + middleware Express global (reponse JSON).
+ *   - Route de compatibilite sans double parse multipart.
  */
 
 const fs = require('fs');
@@ -29,6 +29,7 @@ const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const { execFileSync } = require('child_process');
 
 const multer = require('multer');
 const pdf = require('pdf-parse');
@@ -141,14 +142,50 @@ const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-clés. À pa
 // inexistants dans le fichier reel (constate sur une question dont la
 // recherche locale ne remontait aucune preuve, cote saisie.php -- voir
 // aussi le correctif de search_with_counts_light() le meme jour).
-const QUERY_PROMPT = `Tu es Reformulator, assistant très précis qui ne connaît la mémoire personnelle de Mathieu CHARREYRE QUE via le contexte fourni ci-dessous (extraits d'instructions.md).
+// CORRECTIF 03/08/2026 (v3) : raisonnement en deux lectures (faits puis alias).
+const QUERY_PROMPT = `Tu es Reformulator. Tu ne connais la memoire de Mathieu CHARREYRE QUE via le contexte fourni (extraits d'instructions.md).
 
-Règles strictes :
-- N'utilise QUE les informations présentes dans le contexte fourni. N'invente JAMAIS un extrait, une citation ou un fait qui n'y figure pas mot pour mot.
-- Si tu cites un extrait entre guillemets, il doit être recopié tel quel depuis le contexte fourni, sans le reformuler, le compléter ou le paraphraser en le faisant passer pour une citation exacte.
-- Si le contexte fourni ne contient pas d'information pertinente pour répondre, dis-le franchement ("Le contexte fourni ne mentionne pas ce sujet") plutôt que de deviner, généraliser ou extrapoler.
-- Indique le titre de la section source pour chaque information citée.
-- Réponds en français, de façon naturelle et concise. Ne tourne pas autour du pot.`;
+Methode obligatoire (deux lectures mentales) :
+1. Premiere lecture : releve uniquement les faits EXPLICITEMENT indiques qui repondent a la question.
+2. Seconde lecture : resols les alias et liens. Exemples :
+   - Si Anne PAULY est fille d'Elisabeth et qu'Elisabeth est la tante de Mathieu, alors Anne est sa cousine.
+   - Si Luna est presentee comme le chien du foyer, elle compte pour "ai-je eu des chiens".
+   - Une 2CV ou Titine compte comme voiture meme si le mot "voiture" n'est pas repete a cote.
+   Applique le meme raisonnement a tout domaine (famille, Domaine, vehicules, animaux, parcelles, dates...).
+
+Regles :
+- N'invente aucun fait absent du contexte.
+- Comprends l'INTENTION (combien, ai-je eu, liste, apres telle date...) : synthetise, decomptes, structure.
+- Ne te contente JAMAIS de dire "le mot apparait N fois".
+- N'invente JAMAIS un degre de parente ou une qualification relationnelle non ecrite (ex. "cousins eloignes", "germains", "au second degre"). Si le texte dit seulement "enfants de la soeur de sa mere" ou "cousins", reprends cela sans ajouter un label plus precis.
+- Ambiguite temporelle : si la question ne precise pas "actuel" ni "historique" (ex. "combien de proprietaires"), presente clairement les deux niveaux quand le contexte les contient (historique d'un cote, situation recente / indivision de l'autre), sans les fondre dans un seul total.
+- Distingue les branches familiales (maternel MONTJOL/VILLIERS vs paternel CHARREYRE/PAULY) uniquement quand le contexte le permet.
+- Indique la section source pour chaque point important.
+- Si vraiment rien de pertinent : dis-le franchement. Sinon reponds avec ce qui est disponible.
+- Francais clair, structure, concis.`;
+// Selection des categories / sections a partir des titres (appel leger).
+const QUERY_SELECT_PROMPT = `Tu choisis les sections d'un fichier memoire (instructions.md de Mathieu CHARREYRE) les plus utiles pour repondre a une question.
+
+On te donne la liste des titres et la question. Comprends l'intention (famille, Domaine Saint-Antonin, vehicules, animaux, sante, pro, chronologie, conflits...).
+
+Regles :
+- Reponds UNIQUEMENT par 2 a 5 titres EXACTS separes par des virgules.
+- Aucun texte, numero ou guillemet en plus.
+- Si aucun titre ne convient : AUCUNE.
+- Respecte l'orthographe exacte des titres fournis.`;
+// Apres extraction d'un fichier importe : chevauchements + proposition de fusion.
+const MERGE_CHECK_PROMPT = `Tu compares un TEXTE FRAICHEMENT EXTRAIT d'un document importe avec le plan / extraits du fichier memoire instructions.md de Mathieu CHARREYRE.
+
+Objectif : detecter si le nouveau texte contient des infos deja presentes, complementaires ou contradictoires, et proposer une fusion.
+
+Reponds en francais, structure clair :
+1. Chevauchements (sujets deja traites dans instructions.md)
+2. Informations nouvelles (a integrer)
+3. Contradictions eventuelles
+4. Proposition de fusion : pour chaque bloc utile, section cible (titre exact si possible) et action (completer / remplacer / ignorer)
+5. Si peu ou pas de lien avec la memoire : dis-le franchement
+
+Ne reformule pas tout le document. Sois concis et actionnable. N'invente pas de sections inexistantes.`;
 // Proposer emplacement
 const LOCATION_PROMPT = `Tu es un expert en organisation de mémoire personnelle. Reçois un texte sur la vie de Mathieu CHARREYRE et propose les sections les plus pertinentes où l'insérer dans instructions.md.
 Réponds de façon courte, précise et structurée. Mentionne explicitement les titres de sections recommandées. Ne reformule pas le texte lui-même.`;
@@ -168,14 +205,21 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   const messages = [];
   if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
   else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
+  else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
   else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
+  else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
   else messages.push({ role: 'system', content: SAISIE_PROMPT });
   if (context) messages.push({ role: 'system', content: 'Contexte instructions : ' + context });
-  const userContent = purpose === 'query'
+  const userContent = (purpose === 'query')
     ? 'Recherche dans instructions.md : ' + text
-    : 'Texte a reformuler pour le memoire : ' + text;
+    : (purpose === 'query-select')
+      ? text
+      : (purpose === 'merge-check')
+        ? 'Texte importe a comparer avec la memoire :\n' + text
+        : 'Texte a reformuler pour le memoire : ' + text;
   messages.push({ role: 'user', content: userContent });
-  const temperature = (purpose === 'rewrite' || purpose === 'location') ? 0.2 : purpose === 'query-keywords' ? 0.0 : 0.4;
+  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'merge-check') ? 0.2
+    : purpose === 'query-keywords' ? 0.0 : 0.4;
   return { model: model, messages: messages, temperature: temperature, max_tokens: 1500 };
 };
 
@@ -206,14 +250,21 @@ const LLM_ENGINES = {
       const messages = [];
       if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
       else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
+      else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
       else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
+      else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
       else messages.push({ role: 'system', content: SAISIE_PROMPT });
       if (context) messages.push({ role: 'system', content: 'Contexte instructions : ' + context });
-      const userContent = purpose === 'query'
+      const userContent = (purpose === 'query')
         ? 'Recherche dans instructions.md : ' + text
-        : 'Texte à reformuler pour le mémoire : ' + text;
+        : (purpose === 'query-select')
+          ? text
+          : (purpose === 'merge-check')
+            ? 'Texte importe a comparer avec la memoire :\n' + text
+            : 'Texte a reformuler pour le memoire : ' + text;
       messages.push({ role: 'user', content: userContent });
-      const temperature = (purpose === 'rewrite' || purpose === 'location') ? 0.2 : purpose === 'query-keywords' ? 0.0 : 0.4;
+      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'merge-check') ? 0.2
+        : purpose === 'query-keywords' ? 0.0 : 0.4;
       return { model: model, messages: messages, temperature: temperature, max_tokens: 1500 };
     }
   },
@@ -229,17 +280,21 @@ const LLM_ENGINES = {
     createPayload: createOpenAICompatiblePayload,
   },
   // OpenRouter
+  // CORRECTIF 03/08/2026 : les slugs :free tournent tres souvent (404).
+  // On privilegie openrouter/free (auto-route vers un modele gratuit disponible).
   openrouter: {
     name: 'OpenRouter',
     apiKeyEnv: 'OPENROUTER_API_KEY',
     modelEnv: 'OPENROUTER_MODEL',
     apiBase: process.env.OPENROUTER_API_BASE || 'https://openrouter.ai/api/v1',
     engineUrl: 'https://openrouter.ai',
-    defaultModel: 'meta-llama/llama-3.3-70b-instruct:free',
+    defaultModel: 'openrouter/free',
     models: [
-      'meta-llama/llama-3.3-70b-instruct:free',
-      'google/gemma-2-9b-it:free',
-      'openai/gpt-oss-120b:free',
+      'openrouter/free',
+      'meta-llama/llama-3.3-8b-instruct:free',
+      'google/gemma-3-27b-it:free',
+      'meta-llama/llama-4-scout:free',
+      'openai/gpt-oss-120b',
     ],
     createPayload: createOpenAICompatiblePayload,
   },
@@ -472,21 +527,101 @@ const registerReformulationRoute = function(routePath) {
 };
 
 // ====================== GESTION UPLOAD FICHIERS ======================
+// CORRECTIF 03/08/2026 : OCR de secours pour PDF scannes (pdf-parse ne lit
+// que la couche texte). Pipeline : pdftoppm (pages -> PNG) puis tesseract.
+// Langue dispo sur l'hebergeur : eng uniquement (pas de pack fra). Mieux que
+// rien pour un scan ; si echec total, message clair NON_EXPLOITABLE.
+const OCR_MAX_PAGES = 12;
+const OCR_MIN_CHARS = 30;
+
+function ocrPdfWithTesseract(pdfPath, originalName) {
+  const workDir = path.join(UPLOAD_DIR, 'ocr_' + Date.now());
+  fs.mkdirSync(workDir, { recursive: true });
+  try {
+    // Rasteriser les premieres pages (150 DPI : compromis taille / lisibilite)
+    execFileSync('pdftoppm', [
+      '-png', '-r', '150', '-f', '1', '-l', String(OCR_MAX_PAGES),
+      pdfPath, path.join(workDir, 'page')
+    ], { timeout: 120000, maxBuffer: 20 * 1024 * 1024 });
+
+    const pages = fs.readdirSync(workDir)
+      .filter(function (f) { return /^page-\d+\.png$/i.test(f); })
+      .sort();
+    if (pages.length === 0) {
+      console.log('[OCR] Aucune page rasterisee pour ' + originalName);
+      return '';
+    }
+
+    var texts = [];
+    for (var i = 0; i < pages.length; i++) {
+      var imgPath = path.join(workDir, pages[i]);
+      try {
+        var out = execFileSync('tesseract', [imgPath, 'stdout', '-l', 'eng', '--psm', '3'], {
+          timeout: 60000,
+          maxBuffer: 10 * 1024 * 1024,
+          encoding: 'utf8'
+        });
+        out = (out || '').trim();
+        if (out) texts.push(out);
+      } catch (pageErr) {
+        console.log('[OCR] Echec page ' + pages[i] + ' : ' + (pageErr.message || pageErr));
+      }
+    }
+    return texts.join('\n\n').trim();
+  } catch (err) {
+    console.log('[OCR] Echec global pour ' + originalName + ' : ' + (err.message || err));
+    return '';
+  } finally {
+    try {
+      fs.readdirSync(workDir).forEach(function (f) {
+        try { fs.unlinkSync(path.join(workDir, f)); } catch (e) {}
+      });
+      fs.rmdirSync(workDir);
+    } catch (e) {}
+  }
+}
+
 async function extractTextFromFile(file) {
   try {
     const ext = path.extname(file.originalname).toLowerCase();
     console.log(`[EXTRACTION] Fichier : ${file.originalname} (${ext}) - taille ${file.size} octets`);
 
     if (ext === '.pdf') {
-      const dataBuffer = fs.readFileSync(file.path);
-      const data = await pdf(dataBuffer);
-      let extracted = data.text ? data.text.trim() : '';
+      let extracted = '';
+      let usedOcr = false;
+      let parseError = null;
 
-      if (extracted.length < 30) {
-        extracted = "[PDF chargé : " + file.originalname + " — texte non extractible (PDF scanné ou protégé)]";
-        console.log(`[WARN] PDF trop court ou vide (${extracted.length} caractères)`);
+      // 1) Couche texte native (peut planter sur PDF mal formes / "Invalid PDF structure")
+      try {
+        const dataBuffer = fs.readFileSync(file.path);
+        const data = await pdf(dataBuffer);
+        extracted = data.text ? data.text.trim() : '';
+      } catch (pdfErr) {
+        parseError = pdfErr && pdfErr.message ? pdfErr.message : String(pdfErr);
+        console.log('[WARN] pdf-parse echec pour ' + file.originalname + ' : ' + parseError);
+        extracted = '';
+      }
+
+      // 2) OCR si couche texte absente OU parseur plante (scan / structure invalide)
+      if (extracted.length < OCR_MIN_CHARS) {
+        console.log('[WARN] Tentative OCR tesseract pour ' + file.originalname + (parseError ? ' (apres echec pdf-parse)' : ' (texte trop court)'));
+        const ocrText = ocrPdfWithTesseract(file.path, file.originalname);
+        if (ocrText && ocrText.length >= OCR_MIN_CHARS) {
+          extracted = ocrText;
+          usedOcr = true;
+          console.log('[SUCCESS] OCR tesseract : ' + extracted.length + ' caracteres pour ' + file.originalname);
+        } else {
+          extracted = 'NON_EXPLOITABLE: PDF scanné, protégé ou structure invalide, OCR insuffisant ('
+            + file.originalname + ')'
+            + (parseError ? ' [pdf-parse: ' + parseError.substring(0, 80) + ']' : '')
+            + '. Fournis un PDF texte, un DOCX, ou un document deja OCR-ise.';
+          console.log('[WARN] PDF non exploitable apres OCR : ' + file.originalname);
+        }
       } else {
-        console.log(`[SUCCESS] PDF extrait avec succès : ${extracted.length} caractères`);
+        console.log('[SUCCESS] PDF extrait (couche texte) : ' + extracted.length + ' caracteres');
+      }
+      if (usedOcr) {
+        extracted = '[Texte obtenu par OCR — qualite variable]\n\n' + extracted;
       }
       return extracted;
     }
