@@ -2308,6 +2308,8 @@ Continuum génétique Français / Ibérique / Germanique Ouest
 
 #### Ambre
 **Nom complet : Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 7 juin 2015, Pitié-Salpêtrière, Paris 13e)
+**Pseudonymes** : "Lilou" (dixit AnSo), "Kiwi" (dixit Henri CHARREYRE), "CafardKiwi" (jeux vidéos), ou simplement "Cafard" (à cause de son caractère).
+**Anecdotes** : Son premier mot à été : "NON".
 
 **Origine de chaque prénom et nom :**
 - **Ambre** : Choix de Mathieu et AnSo, trouvé chacun de leur côté — coïncidence totale, ils avaient la même idée.
@@ -2364,7 +2366,7 @@ Continuum génétique Français / Ibérique / Germanique Ouest
 ##### Jeux vidéo d'Ambre (2025-2026)
 Ambre joue beaucoup, aussi bien à Paris (sur son propre ordinateur) qu'à Saint-Antonin (sur son 2e PC dédié là-bas, Switch ou Xbox).
 
-- **Sea of Thieves** : Joue en co-op avec Mathieu — lui sur Xbox Series X à Paris ou Xbox One à Saint-Antonin, elle sur son PC. Ils font des "virées pirates" en duo. Jeu privilégié père-fille du moment.
+- **Sea of Thieves** : Joue en co-op avec Mathieu — lui sur Xbox Series X à Paris ou Xbox One à Saint-Antonin, elle sur son PC. Ils font des "virées pirates" en duo. Jeu privilégié père-fille du moment. Ambre a une peur du vide abyssal​​​, donc ne veut pas jouer seule à SoT.
 - **Goat Simulator 3** : Beaucoup joué, sur Switch ou Xbox. Un de ses chouchous.
 - **World of Warcraft** : Pratiquement depuis toujours. Elle est devenue une **vraie pro du lore WoW** — elle connaît l'histoire de l'univers mieux que Mathieu. Au moins **10 personnages répartis sur 2 serveurs différents**. Joue sur ses PCs de Paris et de Saint-Antonin.
 - **Cat Quest** : Joue sur Switch ou Xbox. Jeu de type RPG avec des chats — dans ses cordes.
