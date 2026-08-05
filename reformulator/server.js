@@ -142,31 +142,67 @@ const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-clés. À pa
 // inexistants dans le fichier reel (constate sur une question dont la
 // recherche locale ne remontait aucune preuve, cote saisie.php -- voir
 // aussi le correctif de search_with_counts_light() le meme jour).
-// CORRECTIF 03/08/2026 (v3) : raisonnement en deux lectures (faits puis alias).
-const QUERY_PROMPT = `Tu es Reformulator. Tu ne connais la memoire de Mathieu CHARREYRE QUE via le contexte fourni (extraits d'instructions.md).
+// CORRECTIF 05/08/2026 : expansion d'intention avant selection (ancetres,
+// amis d'enfance, etc.) puis reponse en deux lectures.
+const QUERY_EXPAND_PROMPT = `Tu elargis une question sur la memoire de Mathieu CHARREYRE pour preparer une recherche dans instructions.md.
 
-Methode obligatoire (deux lectures mentales) :
-1. Premiere lecture : releve uniquement les faits EXPLICITEMENT indiques qui repondent a la question.
-2. Seconde lecture : resols les alias et liens. Exemples :
-   - Si Anne PAULY est fille d'Elisabeth et qu'Elisabeth est la tante de Mathieu, alors Anne est sa cousine.
-   - Si Luna est presentee comme le chien du foyer, elle compte pour "ai-je eu des chiens".
-   - Une 2CV ou Titine compte comme voiture meme si le mot "voiture" n'est pas repete a cote.
-   Applique le meme raisonnement a tout domaine (famille, Domaine, vehicules, animaux, parcelles, dates...).
+Comprends l'intention humaine, pas les mots isoles. Elargis vers les notions RELIEES, periodes, lieux et types de personnes.
 
-Regles :
-- N'invente aucun fait absent du contexte.
-- Comprends l'INTENTION (combien, ai-je eu, liste, apres telle date...) : synthetise, decomptes, structure.
-- Ne te contente JAMAIS de dire "le mot apparait N fois".
-- N'invente JAMAIS un degre de parente ou une qualification relationnelle non ecrite (ex. "cousins eloignes", "germains", "au second degre"). Si le texte dit seulement "enfants de la soeur de sa mere" ou "cousins", reprends cela sans ajouter un label plus precis.
-- Ambiguite temporelle : si la question ne precise pas "actuel" ni "historique" (ex. "combien de proprietaires"), presente clairement les deux niveaux quand le contexte les contient (historique d'un cote, situation recente / indivision de l'autre), sans les fondre dans un seul total.
-- Distingue les branches familiales (maternel MONTJOL/VILLIERS vs paternel CHARREYRE/PAULY) uniquement quand le contexte le permet.
-- Indique la section source pour chaque point important.
-- Si vraiment rien de pertinent : dis-le franchement. Sinon reponds avec ce qui est disponible.
-- Francais clair, structure, concis.`;
+Exemples :
+- "mes ancetres" -> parents, grands-parents, arbre familial, lignées maternelle et paternelle, origines
+- "amis d'enfance" -> amities / camarades ~1976-1992, ecole, quartier, Vie Sociale, Chronologie jeunesse
+- "combien de voitures" -> vehicules, 2CV, Titine, permis, deplacements
+- "parcelles a Saint-Antonin" -> Domaine, lieudits, natures Bois/Taillis, indivision
+
+Reponds en 4 a 8 lignes max, structure libre mais claire :
+Intention :
+Axes de recherche : (mots, periodes, lieux, types de personnes)
+Sections utiles probables : (famille, chronologie, vie sociale, domaine...)
+
+Pas de reponse a la question elle-meme. Pas d'invention de faits.`;
+// CORRECTIF 05/08/2026 : FACTUEL STRICT — tout doit etre dans le fichier.
+const QUERY_PROMPT = `Tu es Reformulator. REGLE D'OR NUMERO 1 (prioritaire sur tout le reste) :
+
+************************************************************
+** N'INVENTE RIEN. JAMAIS. **
+** CHAQUE FAIT DOIT ETRE PRESENT DANS LE CONTEXTE FOURNI. **
+** Si l'info n'y est pas : dis "non mentionne dans le fichier". **
+** Pas de prenom invente, pas de degre de parente invente, **
+** pas de recommandation d'archives externes, pas de "il faudrait consulter". **
+************************************************************
+
+Tu ne connais la memoire de Mathieu CHARREYRE QUE via le contexte fourni.
+
+Methode :
+1. Lis d'abord le bloc "PREUVES DIRECTES" s'il existe : ce sont les citations prioritaires.
+2. Ensuite le reste du contexte. Releves UNIQUEMENT ce qui est ecrit noir sur blanc.
+3. Tu PEUX relier deux faits TOUS DEUX ecrits (ex. "fils d'Elisabeth" + "Elisabeth tante de Mathieu" => cousin) MAIS seulement si les deux sont dans le texte. Sinon abstiens-toi.
+4. Si PLUSIEURS personnes sont nommees avec le meme type de libelle (ex. plusieurs lignes
+   "Futur cousin paternel" / "Future cousine paternelle" avec des prenoms differents),
+   liste TOUS les prenoms. Ne resume PAS en "N enfants non nommes" si les prenoms sont dans le contexte.
+
+Exemples de preuves directes valides :
+- "Future cousine paternelle de Mathieu CHARREYRE" / "Futur cousin paternel"
+- "ses cousins VILLIERS (Antoine et Charlotte)"
+- Une liste de naissances avec le libelle cousin/cousine
+
+INTERDITS :
+- Dire "non nommes" ou "prénoms non cites" alors qu'un prenom figure dans PREUVES DIRECTES ou Chronologie
+- Inventer des prenoms absents du contexte
+- Transformer une tante en cousine (si le texte dit soeur du parent = tante, pas cousine)
+- Inventer "germain", "eloigne", "second degre" si non ecrit
+- Compter les occurrences d'un mot au lieu de repondre
+- Inventer des sources externes (registres, notaires, archives)
+
+Reponse : factuelle, structuree, concise, avec section source. Francais clair.`;
 // Selection des categories / sections a partir des titres (appel leger).
 const QUERY_SELECT_PROMPT = `Tu choisis les sections d'un fichier memoire (instructions.md de Mathieu CHARREYRE) les plus utiles pour repondre a une question.
 
-On te donne la liste des titres et la question. Comprends l'intention (famille, Domaine Saint-Antonin, vehicules, animaux, sante, pro, chronologie, conflits...).
+On te donne les titres, la question, et parfois une "intention elargie". Elargis mentalement :
+- ancetres / parents -> Introduction, Famille, Chronologie
+- amis d'enfance / jeunesse -> Vie Sociale, Chronologie, Experiences personnelles
+- Domaine / parcelles / proprietaires -> Famille/Patrimoine, Entites, Chronologie, Defis
+- vehicules / animaux -> Experiences personnelles, Chronologie, Techniques
 
 Regles :
 - Reponds UNIQUEMENT par 2 a 5 titres EXACTS separes par des virgules.
@@ -205,6 +241,7 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   const messages = [];
   if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
   else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
+  else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
   else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
   else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
   else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
@@ -212,13 +249,13 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   if (context) messages.push({ role: 'system', content: 'Contexte instructions : ' + context });
   const userContent = (purpose === 'query')
     ? 'Recherche dans instructions.md : ' + text
-    : (purpose === 'query-select')
+    : (purpose === 'query-select' || purpose === 'query-expand')
       ? text
       : (purpose === 'merge-check')
         ? 'Texte importe a comparer avec la memoire :\n' + text
         : 'Texte a reformuler pour le memoire : ' + text;
   messages.push({ role: 'user', content: userContent });
-  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'merge-check') ? 0.2
+  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check') ? 0.2
     : purpose === 'query-keywords' ? 0.0 : 0.4;
   return { model: model, messages: messages, temperature: temperature, max_tokens: 1500 };
 };
@@ -250,6 +287,7 @@ const LLM_ENGINES = {
       const messages = [];
       if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
       else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
+      else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
       else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
       else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
       else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
@@ -257,13 +295,13 @@ const LLM_ENGINES = {
       if (context) messages.push({ role: 'system', content: 'Contexte instructions : ' + context });
       const userContent = (purpose === 'query')
         ? 'Recherche dans instructions.md : ' + text
-        : (purpose === 'query-select')
+        : (purpose === 'query-select' || purpose === 'query-expand')
           ? text
           : (purpose === 'merge-check')
             ? 'Texte importe a comparer avec la memoire :\n' + text
             : 'Texte a reformuler pour le memoire : ' + text;
       messages.push({ role: 'user', content: userContent });
-      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'merge-check') ? 0.2
+      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check') ? 0.2
         : purpose === 'query-keywords' ? 0.0 : 0.4;
       return { model: model, messages: messages, temperature: temperature, max_tokens: 1500 };
     }

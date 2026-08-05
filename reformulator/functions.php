@@ -555,6 +555,24 @@
     }
 
     /**
+     * CORRECTIF 05/08/2026 : elargit l'intention de la question (ancetres,
+     * amis d'enfance, periodes, notions liees) avant la selection de sections.
+     * Un appel LLM leger ; en cas d'echec on renvoie une chaine vide.
+     */
+    function expand_query_intent_via_node(string $question): string {
+        $question = trim($question);
+        if ($question === '') {
+            return '';
+        }
+        $payload = [
+            'text'    => "Question : " . $question,
+            'purpose' => 'query-expand',
+        ];
+        $raw = call_reformulator_service($payload);
+        return is_string($raw) ? trim($raw) : '';
+    }
+
+    /**
      * CORRECTIF 03/08/2026 : apres extraction d'un fichier importe, compare
      * le texte extrait avec le plan / extraits d'instructions.md et propose
      * une fusion (chevauchements, nouveautes, sections cibles).
@@ -583,13 +601,14 @@
     }
 
     /**
-     * CORRECTIF 03/08/2026 (suite) : construit un extrait intelligent d'une section
-     * pour une question donnee. Priorite aux phrases/paragraphes contenant les
-     * termes de la question, puis complete avec le debut de la section jusqu'a
-     * la limite. Evite de perdre les passages au milieu ou en fin de section
-     * (ex. cousins VILLIERS dans la section Famille).
+     * CORRECTIF 05/08/2026 : extrait centre sur les OCCURRENCES des termes
+     * dans la section (pas seulement le debut du texte). Les grosses sections
+     * (Famille, Chronologie) mettaient les passages utiles au milieu / en fin ;
+     * un simple tronquage debut faisait croire au LLM que "VILLIERS" n'existait pas.
+     * Aucune personnalisation metier : uniquement les termes fournis (question
+     * + intention elargie LLM).
      */
-    function build_section_excerpt_for_query(string $content, array $terms, int $maxChars = 7000): string {
+    function build_section_excerpt_for_query(string $content, array $terms, int $maxChars = 10000): string {
         $content = trim($content);
         if ($content === '') {
             return '';
@@ -598,77 +617,76 @@
             return $content;
         }
 
-        // Detection du cote familial demande (maternel vs paternel)
-        // CORRECTIF 03/08/2026 : eviter que les paragraphes PAULY (paternel)
-        // monopolisent l'extrait quand la question porte sur le cote maternel
-        // (VILLIERS / MONTJOL) et inversement.
-        $termsJoined = mb_strtolower(implode(' ', $terms), 'UTF-8');
-        $wantsMaternal = (strpos($termsJoined, 'maternel') !== false || strpos($termsJoined, 'montjol') !== false || strpos($termsJoined, 'villiers') !== false);
-        $wantsPaternal = (strpos($termsJoined, 'paternel') !== false || strpos($termsJoined, 'pauly') !== false);
+        $terms = array_values(array_filter(array_map(function ($t) {
+            return normalize_for_matching((string) $t);
+        }, $terms), function ($t) {
+            return $t !== '' && mb_strlen($t, 'UTF-8') >= 3;
+        }));
 
-        $maternalMarkers = ['maternel', 'montjol', 'villiers', 'dominique montjol', 'tante maternelle', 'coté maternel', 'côté maternel'];
-        $paternalMarkers = ['paternel', 'pauly', 'élisabeth', 'elisabeth', 'tante paternelle', 'coté paternel', 'côté paternel'];
-
-        // Decoupage grossier en paragraphes
-        $paragraphs = preg_split('/\n\s*\n/', $content);
-        $scored = [];
-        foreach ($paragraphs as $idx => $para) {
-            $para = trim($para);
-            if ($para === '') {
-                continue;
-            }
-            $score = 0;
-            $normalized = normalize_for_matching($para);
-
-            foreach ($terms as $term) {
-                if ($term === '') {
-                    continue;
-                }
-                if (strpos($normalized, $term) !== false) {
-                    $score += 3;
-                }
-            }
-
-            // Bonus / malus fort selon le cote familial demande
-            $hasMaternal = false;
-            $hasPaternal = false;
-            foreach ($maternalMarkers as $m) {
-                if (strpos($normalized, normalize_for_matching($m)) !== false) {
-                    $hasMaternal = true;
-                    break;
-                }
-            }
-            foreach ($paternalMarkers as $m) {
-                if (strpos($normalized, normalize_for_matching($m)) !== false) {
-                    $hasPaternal = true;
-                    break;
-                }
-            }
-
-            if ($wantsMaternal && !$wantsPaternal) {
-                if ($hasMaternal) {
-                    $score += 12;
-                }
-                if ($hasPaternal && !$hasMaternal) {
-                    $score -= 8; // fortement deprioritiser le cote oppose
-                }
-            } elseif ($wantsPaternal && !$wantsMaternal) {
-                if ($hasPaternal) {
-                    $score += 12;
-                }
-                if ($hasMaternal && !$hasPaternal) {
-                    $score -= 8;
-                }
-            }
-
-            // Bonus leger pour les premiers paragraphes (contexte introductif)
-            if ($idx < 3) {
-                $score += 1;
-            }
-            $scored[] = ['score' => $score, 'text' => $para, 'idx' => $idx];
+        // 1) Decoupage fin : paragraphes, sinon lignes, sinon phrases
+        $chunks = preg_split('/\n\s*\n/', $content);
+        if (count($chunks) < 3) {
+            $chunks = preg_split('/\n+/', $content);
+        }
+        if (count($chunks) < 3) {
+            $chunks = preg_split('/(?<=[.!?])\s+/u', $content, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        // Trier par score desc, puis par ordre d'apparition
+        $scored = [];
+        foreach ($chunks as $idx => $chunk) {
+            $chunk = trim($chunk);
+            if ($chunk === '') {
+                continue;
+            }
+            $normalized = normalize_for_matching($chunk);
+            $score = 0;
+            foreach ($terms as $term) {
+                $score += substr_count($normalized, $term) * 3;
+            }
+            if ($score > 0) {
+                $scored[] = ['score' => $score, 'text' => $chunk, 'idx' => $idx];
+            }
+        }
+
+        // 2) Si aucun chunk ne matche, fenetres glissantes autour des positions
+        if (empty($scored) && !empty($terms)) {
+            $normFull = normalize_for_matching($content);
+            $window = 900;
+            $positions = [];
+            foreach ($terms as $term) {
+                $offset = 0;
+                while (($pos = strpos($normFull, $term, $offset)) !== false) {
+                    $positions[] = $pos;
+                    $offset = $pos + mb_strlen($term, 'UTF-8');
+                    if (count($positions) > 40) {
+                        break 2;
+                    }
+                }
+            }
+            $positions = array_values(array_unique($positions));
+            sort($positions);
+            $lenFull = mb_strlen($content, 'UTF-8');
+            foreach ($positions as $p) {
+                // Approximation : indices sur texte normalise ~ proches du brut
+                $start = max(0, (int) ($p * 0.95) - (int) ($window / 2));
+                $piece = mb_substr($content, $start, $window, 'UTF-8');
+                if (trim($piece) !== '') {
+                    $scored[] = ['score' => 5, 'text' => trim($piece), 'idx' => $start];
+                }
+            }
+        }
+
+        if (empty($scored)) {
+            // Dernier recours : debut + milieu + fin
+            $len = mb_strlen($content, 'UTF-8');
+            $third = (int) ($maxChars / 3);
+            return mb_substr($content, 0, $third, 'UTF-8')
+                . "\n\n[...]\n\n"
+                . mb_substr($content, (int) ($len / 2) - (int) ($third / 2), $third, 'UTF-8')
+                . "\n\n[...]\n\n"
+                . mb_substr($content, max(0, $len - $third), $third, 'UTF-8');
+        }
+
         usort($scored, function ($a, $b) {
             if ($b['score'] !== $a['score']) {
                 return $b['score'] <=> $a['score'];
@@ -678,29 +696,29 @@
 
         $selected = [];
         $totalLen = 0;
+        $seen = [];
         foreach ($scored as $item) {
-            // Ignorer les paragraphes fortement malusés (score negatif)
-            if ($item['score'] < 0 && !empty($selected)) {
+            $key = md5($item['text']);
+            if (isset($seen[$key])) {
                 continue;
             }
             $len = mb_strlen($item['text'], 'UTF-8');
             if ($totalLen + $len > $maxChars && !empty($selected)) {
                 break;
             }
+            $seen[$key] = true;
             $selected[] = $item;
             $totalLen += $len + 2;
         }
 
-        // Remettre dans l'ordre d'apparition original pour la lisibilite
         usort($selected, function ($a, $b) {
             return $a['idx'] <=> $b['idx'];
         });
 
-        $parts = array_map(function ($item) {
+        $excerpt = implode("\n\n", array_map(function ($item) {
             return $item['text'];
-        }, $selected);
+        }, $selected));
 
-        $excerpt = implode("\n\n", $parts);
         if (mb_strlen($excerpt, 'UTF-8') > $maxChars) {
             $excerpt = mb_substr($excerpt, 0, $maxChars, 'UTF-8') . '...';
         }
@@ -822,63 +840,37 @@
         return trim($text);
     }
 
+    // CORRECTIF 05/08/2026 : plus d'expansion de synonymes / entites en dur.
+    // Variantes morphologiques legeres UNIQUEMENT (pluriel / feminin courant) :
+    // "cousins" doit aussi matcher "cousin" et "cousine" dans le texte.
+    // Ce n'est PAS une liste d'entites personnelles (pas de Luna, 2CV, etc.).
     function extract_keywords(string $text): array {
         $normalized = normalize_for_matching($text);
         $words = preg_split('/\s+/', $normalized, -1, PREG_SPLIT_NO_EMPTY);
-        $stopwords = ['et','la','le','les','des','du','de','un','une','pour','avec','dans','sur','au','aux','par','plus','se','qui','que','est','pas','ou','son','sa','ses','a','il','elle','ils','elles','ne','ce','cette','ces','etre','avoir','sous','entre','sans','donc','mais','comme','car','afin','lors','tres','deja','parle','jai','tu','te','toi','moi','combien','avais','avait','ai','eu','ete'];
+        $stopwords = ['et','la','le','les','des','du','de','un','une','pour','avec','dans','sur','au','aux','par','plus','se','qui','que','est','pas','ou','son','sa','ses','a','il','elle','ils','elles','ne','ce','cette','ces','etre','avoir','sous','entre','sans','donc','mais','comme','car','afin','lors','tres','deja','parle','jai','tu','te','toi','moi','combien','avais','avait','ai','eu','ete','moi','mes','mon','ma','tout','cote','listes','liste'];
         $keywords = [];
         foreach ($words as $word) {
             if (mb_strlen($word, 'UTF-8') < 3) continue;
             if (in_array($word, $stopwords, true)) continue;
             $keywords[$word] = ($keywords[$word] ?? 0) + 1;
-        }
-        arsort($keywords);
-        $base = array_keys($keywords);
-        // Expansion de synonymes / entites frequentes de la memoire Mathieu.
-        // CORRECTIF 03/08/2026 : "j'ai eu des chiens ?" doit aussi chercher Luna ;
-        // "combien de voitures" doit aussi chercher 2CV, Titine, etc.
-        return expand_query_synonyms($base, $normalized);
-    }
-
-    /**
-     * Expansion legere de synonymes et d'entites connues.
-     * Ne remplace pas une vraie comprehension, mais evite les faux negatifs
-     * sur les questions courantes (animaux, vehicules, famille...).
-     * Orthographe archaique obligatoire dans ce fichier : Clef (pas cle),
-     * Nenuphar (pas nenufar), soeurs avec OE separes (pas de ligature).
-     */
-    function expand_query_synonyms(array $terms, string $normalizedQuery): array {
-        $expanded = $terms;
-        $synonymMap = [
-            'chien'   => ['luna', 'chiens', 'chienne'],
-            'chiens'  => ['luna', 'chien', 'chienne'],
-            'chat'    => ['ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chats'],
-            'chats'   => ['ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chat'],
-            'animal'  => ['luna', 'ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chien', 'chat'],
-            'animaux' => ['luna', 'ankou', 'spotty', 'elvira', 'morticia', 'sabbath', 'chien', 'chat'],
-            'voiture'  => ['2cv', 'titine', 'vehicule', 'auto', 'automobile', 'permis'],
-            'voitures' => ['2cv', 'titine', 'vehicule', 'auto', 'automobile', 'permis'],
-            'vehicule' => ['voiture', '2cv', 'titine', 'auto'],
-            'auto'     => ['voiture', '2cv', 'titine'],
-            'cousin'   => ['cousins', 'cousine', 'villiers', 'pauly', 'montjol'],
-            'cousins'  => ['cousin', 'cousine', 'villiers', 'pauly', 'montjol'],
-            'maternel' => ['montjol', 'villiers', 'dominique'],
-            'paternel' => ['pauly', 'charreyre', 'elisabeth'],
-        ];
-        foreach ($terms as $t) {
-            if (isset($synonymMap[$t])) {
-                foreach ($synonymMap[$t] as $syn) {
-                    $expanded[] = $syn;
+            // Racine sans s final (cousins -> cousin, enfants -> enfant)
+            if (mb_strlen($word, 'UTF-8') >= 5 && mb_substr($word, -1, 1, 'UTF-8') === 's') {
+                $stem = mb_substr($word, 0, -1, 'UTF-8');
+                if (!in_array($stem, $stopwords, true)) {
+                    $keywords[$stem] = ($keywords[$stem] ?? 0) + 1;
+                }
+            }
+            // Feminin courant en e : si le mot finit par in/ain (cousin), ajouter form e
+            // Inversement : cousine -> cousin
+            if (mb_strlen($word, 'UTF-8') >= 5 && mb_substr($word, -1, 1, 'UTF-8') === 'e') {
+                $stem = mb_substr($word, 0, -1, 'UTF-8');
+                if (mb_strlen($stem, 'UTF-8') >= 4 && !in_array($stem, $stopwords, true)) {
+                    $keywords[$stem] = ($keywords[$stem] ?? 0) + 1;
                 }
             }
         }
-        if (preg_match('/\b(chien|chiens|chat|chats|animal|animaux|luna)\b/', $normalizedQuery)) {
-            $expanded = array_merge($expanded, ['luna', 'ankou', 'spotty', 'elvira', 'morticia', 'sabbath']);
-        }
-        if (preg_match('/\b(voiture|voitures|vehicule|auto|2cv|titine)\b/', $normalizedQuery)) {
-            $expanded = array_merge($expanded, ['2cv', 'titine', 'voiture', 'permis']);
-        }
-        return array_values(array_unique(array_filter($expanded)));
+        arsort($keywords);
+        return array_keys($keywords);
     }
 
     function rewrite_paragraph(string $text): string {
@@ -1347,7 +1339,7 @@
                 // lieu d'1 seule), plus le contenu integral de la section pour
                 // permettre au handler d'inclure des sections entieres dans
                 // le contexte final envoye au LLM.
-                $sentences = extract_section_match_sentences($content, $matchedTerms, 6);
+                $sentences = extract_section_match_sentences($content, $matchedTerms, 16);
 
                 $results[$title] = [
                     'occurrences' => $sectionOccurrences,
@@ -1368,11 +1360,129 @@
         ];
     }
 
+    /**
+     * CORRECTIF 05/08/2026 : lignes matchees, scorees, puis diversifiees PAR SECTION
+     * (quota) pour qu'une grosse section (Famille/Domaine) n'ecrase pas la Chronologie.
+     * Generique : aucun filtre metier type "cousins" en dur.
+     */
+    function collect_ranked_evidence_lines(array $sections, array $terms, int $maxLines = 48, array $primaryTerms = []): array {
+        $normalizeList = function (array $list): array {
+            return array_values(array_filter(array_map(function ($t) {
+                return normalize_for_matching((string) $t);
+            }, $list), function ($t) {
+                return $t !== '' && mb_strlen($t, 'UTF-8') >= 3;
+            }));
+        };
+        $terms = $normalizeList($terms);
+        $primaryTerms = $normalizeList($primaryTerms);
+        if (empty($terms) || empty($sections)) {
+            return [];
+        }
+        $primarySet = array_fill_keys($primaryTerms, true);
+
+        $bySection = [];
+        foreach ($sections as $title => $content) {
+            $lines = preg_split('/\R/u', (string) $content);
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if ($line === '' || mb_strlen($line, 'UTF-8') < 20) {
+                    continue;
+                }
+                $norm = normalize_for_matching($line);
+                $hitTerms = 0;
+                $hitPrimary = 0;
+                $score = 0;
+                foreach ($terms as $term) {
+                    if (strpos($norm, $term) !== false) {
+                        $hitTerms++;
+                        $weight = isset($primarySet[$term]) ? 5 : 2;
+                        $score += $weight + min(3, substr_count($norm, $term));
+                        if (isset($primarySet[$term])) {
+                            $hitPrimary++;
+                        }
+                    }
+                }
+                if ($hitTerms === 0) {
+                    continue;
+                }
+                // Sans terme de la question d'origine : ignorer la ligne
+                // (empeche l'intention elargie d'inonder les preuves).
+                if (!empty($primarySet) && $hitPrimary === 0) {
+                    continue;
+                }
+                if ($hitTerms >= 2) {
+                    $score += 8 * $hitTerms;
+                }
+                if ($hitPrimary >= 1) {
+                    $score += 12 * $hitPrimary;
+                }
+                if (preg_match('/\b(cousin|cousine|neveu|niece|tante|oncle|fils|fille|pere|mere|epoux|epouse|heritier|naissance)\b/u', $norm)) {
+                    $score += 6;
+                }
+                if (preg_match('/\b[\p{Lu}][\p{L}]{2,}/u', $line)) {
+                    $score += 2;
+                }
+                $bySection[$title][] = [
+                    'score' => $score,
+                    'title' => $title,
+                    'line'  => $line,
+                ];
+            }
+        }
+
+        // Quota genereux par section pour ne pas perdre les listes nominatives
+        // (ex. 5 lignes Chronologie "Futur cousin paternel" + lignes Domaine).
+        $perSectionCap = max(15, (int) ceil($maxLines / max(1, min(5, count($bySection)))));
+        $pool = [];
+        foreach ($bySection as $title => $items) {
+            usort($items, function ($a, $b) {
+                return $b['score'] <=> $a['score'];
+            });
+            $pool = array_merge($pool, array_slice($items, 0, $perSectionCap));
+        }
+
+        usort($pool, function ($a, $b) {
+            return $b['score'] <=> $a['score'];
+        });
+
+        $out = [];
+        $seen = [];
+        foreach ($pool as $item) {
+            $key = md5($item['line']);
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+            $out[] = $item;
+            if (count($out) >= $maxLines) {
+                break;
+            }
+        }
+        return $out;
+    }
+
     function extract_section_match_sentences(string $content, array $terms, int $maxSentences = 12): array {
-        $content = preg_replace('/\s+/', ' ', $content);
-        $sentences = preg_split('/(?<=[.!?])\s+/', $content, -1, PREG_SPLIT_NO_EMPTY);
+        // Preferer les lignes markdown (puces Chronologie) aux phrases coupees
+        // au point : "Naissance d'Anne PAULY. Future cousine..." doit rester
+        // recuperable en entier ou en deux morceaux adjacents.
+        $lines = preg_split('/\R/u', $content);
+        $candidates = [];
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || mb_strlen($line, 'UTF-8') < 12) {
+                continue;
+            }
+            $candidates[] = $line;
+        }
+        // Completer avec decoupage phrase si peu de lignes utiles
+        if (count($candidates) < 5) {
+            $flat = preg_replace('/\s+/', ' ', $content);
+            foreach (preg_split('/(?<=[.!?])\s+/', $flat, -1, PREG_SPLIT_NO_EMPTY) as $sentence) {
+                $candidates[] = trim($sentence);
+            }
+        }
         $matches = [];
-        foreach ($sentences as $sentence) {
+        foreach ($candidates as $sentence) {
             $normalizedSentence = normalize_for_matching($sentence);
             foreach ($terms as $term) {
                 if (match_term_in_text($term, $normalizedSentence)) {
@@ -1891,17 +2001,19 @@
         }
 
         // ====================== INTERROGER LE FICHIER ======================
-        // CORRECTIF 03/08/2026 (v3) : selection par CATEGORIES (LLM sur titres)
-        // puis contenu des sections, puis un seul appel final avec raisonnement
-        // en deux lectures (faits explicites + resolution d'alias / liens).
-        // La recherche par mots-cles (search_with_counts_light) n'est plus le
-        // coeur : elle ne sert qu'en secours si la selection LLM echoue.
-        // Objectif : comprendre l'intention, cibler Famille / Domaine / etc.,
-        // puis laisser le LLM synthetiser et relier (ex. fille de la tante = cousine).
+        // CORRECTIF 05/08/2026 : 1) expansion d'intention (LLM leger)
+        // 2) selection de sections (titres + intention elargie)
+        // 3) contenu des sections
+        // 4) reponse finale (deux lectures + boussole d'intention)
+        // La recherche par mots-cles n'est qu'un secours.
         //
         // Garde-fou de taille : en dessous du seuil on envoie le fichier INTEGRAL.
         if (isset($_POST['query_instructions']) && $input_text !== '') {
             $reformule_original = $input_text;
+            $rankedLines = [];
+
+            // 0) Comprendre vraiment la question (ancetres, amis d'enfance, etc.)
+            $intentExpanded = expand_query_intent_via_node($input_text);
 
             $sections = extract_instructions_sections();
             $fullDocument = load_instructions_content();
@@ -1909,12 +2021,21 @@
             $fullDocumentSizeLimit = 60000; // ~15-18k tokens, sur pour la plupart des moteurs
 
             if ($fullDocumentLength > 0 && $fullDocumentLength <= $fullDocumentSizeLimit) {
-                $instructions_context = "Voici le contenu INTEGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
-                $query_debug_mode = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)';
+                $instructions_context = '';
+                if ($intentExpanded !== '') {
+                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
+                }
+                $instructions_context .= "Voici le contenu INTEGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
+                $query_debug_mode = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)'
+                    . ($intentExpanded !== '' ? ' + intention elargie' : '');
             } else {
                 $outline = extract_instructions_outline();
-                // 1) Selection semantique des sections (categories) par le LLM
-                $selectedTitles = select_relevant_sections_via_node($input_text, $outline);
+                // 1) Selection semantique des sections (question + intention elargie)
+                $selectQuestion = $input_text;
+                if ($intentExpanded !== '') {
+                    $selectQuestion = $input_text . "\n\nIntention elargie :\n" . $intentExpanded;
+                }
+                $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
 
                 $relevantSections = [];
                 if (!empty($selectedTitles)) {
@@ -1940,21 +2061,18 @@
                     $relevantSections = array_slice($sections, 0, 3, true);
                 }
 
-                // 4) Garantir au moins 3 sections quand possible (evite les reponses
-                // partiales quand le LLM n'en a renvoye qu'une seule).
-                // On complete d'abord via recherche locale, puis via sections
-                // voisines de l'outline (Famille + Chronologie + Entites souvent utiles).
+                // 4) TOUJOURS fusionner les sections les mieux scorees en local.
+                // Ex. Chronologie contient "Future cousine paternelle Anne PAULY"
+                // alors que le LLM n'a parfois selectionne que Famille / Domaine.
                 $minSections = 3;
-                $maxSections = 5;
-                if (count($relevantSections) < $minSections) {
-                    $localSearch = search_with_counts_light($input_text, $sections);
-                    foreach (($localSearch['sections'] ?? []) as $title => $info) {
-                        if (count($relevantSections) >= $minSections) {
-                            break;
-                        }
-                        if (isset($sections[$title]) && !isset($relevantSections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
+                $maxSections = 6;
+                $localSearchPad = search_with_counts_light($input_text . ' ' . $intentExpanded, $sections);
+                foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
+                    if (count($relevantSections) >= $maxSections) {
+                        break;
+                    }
+                    if (isset($sections[$title]) && !isset($relevantSections[$title])) {
+                        $relevantSections[$title] = $sections[$title];
                     }
                 }
                 if (count($relevantSections) < $minSections) {
@@ -1975,22 +2093,71 @@
                     }
                 }
 
-                // Contenu des sections selectionnees (troncature douce par section)
-                $perSectionLimit = 8000;
+                // Contenu des sections selectionnees (extraits centres sur les termes)
+                $perSectionLimit = 12000;
                 $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
 
                 $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
-                $instructions_context .= "Contenu des sections les plus pertinentes pour la question (a lire en deux passes : faits explicites, puis liens/alias) :\n";
-                foreach ($relevantSections as $title => $content) {
+                if ($intentExpanded !== '') {
+                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
+                }
+
+                // Termes primaires = UNIQUEMENT la question (signal utile).
+                // L'intention elargie guide la selection de sections, PAS le
+                // ranking des preuves (sinon "domaine/montjol" noie "cousin").
+                $primaryTerms = extract_keywords($input_text);
+                foreach (preg_split('/\s+/u', $input_text, -1, PREG_SPLIT_NO_EMPTY) as $w) {
+                    $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
+                    if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
+                        $primaryTerms[] = $w;
+                    }
+                }
+                // Retirer les mots trop generiques qui matchent partout
+                $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien'];
+                $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
+                    return !in_array($t, $genericNoise, true);
+                }));
+                $queryTerms = $primaryTerms;
+
+                // PRIORITE 1 : preuves classees + diversifiees par section
+                $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 60, $primaryTerms);
+                if (!empty($rankedLines)) {
+                    $instructions_context .= "PREUVES DIRECTES du fichier (citations prioritaires — "
+                        . "N'INVENTE RIEN en dehors de ces faits et du contexte ci-dessous) :\n";
+                    foreach ($rankedLines as $item) {
+                        $instructions_context .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
+                    }
+                    $instructions_context .= "\n";
+                }
+
+                // PRIORITE 2 : contenu des sections, ordonnees par densite de preuves locales
+                // (Chronologie avant un pavé Domaine si elle matche mieux la question).
+                $sectionBoost = [];
+                foreach ($rankedLines as $item) {
+                    $t = $item['title'];
+                    $sectionBoost[$t] = ($sectionBoost[$t] ?? 0) + (int) ($item['score'] ?? 1);
+                }
+                $orderedTitles = array_keys($relevantSections);
+                usort($orderedTitles, function ($a, $b) use ($sectionBoost) {
+                    $sa = $sectionBoost[$a] ?? 0;
+                    $sb = $sectionBoost[$b] ?? 0;
+                    if ($sb !== $sa) {
+                        return $sb <=> $sa;
+                    }
+                    return 0;
+                });
+                $instructions_context .= "Contenu des sections (contexte elargi, secondaire par rapport aux preuves ci-dessus) :\n";
+                foreach ($orderedTitles as $title) {
+                    $content = $relevantSections[$title];
                     $block = trim($content);
                     if (mb_strlen($block, 'UTF-8') > $perSectionLimit) {
-                        // Preferer un extrait centre sur les termes de la question si possible
-                        $queryTerms = extract_keywords($input_text);
                         $block = build_section_excerpt_for_query($content, $queryTerms, $perSectionLimit);
                     }
                     $instructions_context .= "\n--- Section : $title ---\n" . $block . "\n";
                 }
-                $query_debug_mode = count($relevantSections) . ' section(s) par categories LLM (fichier trop volumineux : '
+                $query_debug_mode = count($relevantSections) . ' section(s) par categories LLM'
+                    . ($intentExpanded !== '' ? ' + intention elargie' : '')
+                    . ' (fichier trop volumineux : '
                     . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres > seuil de ' . number_format($fullDocumentSizeLimit, 0, ',', ' ') . ')';
             }
 
@@ -1999,6 +2166,12 @@
 
             $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n";
             $query_debug .= "Contexte transmis : " . $query_debug_mode . "\n";
+            if (!empty($rankedLines)) {
+                $query_debug .= "Preuves prioritaires retenues (" . count($rankedLines) . ") :\n";
+                foreach (array_slice($rankedLines, 0, 12) as $item) {
+                    $query_debug .= "  [" . $item['title'] . "] " . mb_substr($item['line'], 0, 120, 'UTF-8') . "\n";
+                }
+            }
 
             // Appel LLM final : la question et le contenu reel (integral ou sections selectionnees)
             // sont transmis ensemble, le moteur cherche et repond lui-meme.

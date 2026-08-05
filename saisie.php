@@ -218,9 +218,9 @@
     </div>
     <?php endif; ?>
 
-    <?php if ($query_debug !== '' && strpos($reformule_msg, 'Erreur') !== false): ?>
-    <div class="msg-err" style="white-space:pre-wrap; font-size:.93rem; margin-top:.8rem;">
-        <?php echo html_escape($query_debug); ?>
+    <?php if ($query_debug !== ''): ?>
+    <div class="msg-ok" style="white-space:pre-wrap; font-size:.9rem; margin-top:.8rem; background:#eef2ff; border-color:#c5d0f0; color:#1a2744;">
+        <strong>Debug interrogation</strong><br><?php echo html_escape($query_debug); ?>
     </div>
     <?php endif; ?>
 
@@ -318,9 +318,11 @@
   <div class="footer">
     <p>Pour plus de securite, inserer toujours a la main dans le fichier cible.</p>
     <p style="font-size:.82rem; margin-top:.5rem; color:#444;">
-      <a href="reformulator/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer">Voir les erreurs</a>
+      <a href="<?php echo html_escape(CPANEL_URL); ?>" target="_blank" rel="noopener noreferrer" alt="Ouvrir cPanel o2switch Node.js" title="Ouvrir le cPanel o2switch Node.js">Ouvrir cPanel o2switch</a>
       •
-      <a href="reformulator/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer">Voir les requêtes</a>
+      <a href="reformulator/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" alt="Voir les retours d'erreurs" title="Voir les retours d'erreurs">Voir les erreurs</a>
+      •
+      <a href="reformulator/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" alt="Voir les requêtes effectuées" title="Voir les requêtes effectuées">Voir les requêtes</a>
     </p>
   </div>
 </div>
