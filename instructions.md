@@ -1200,6 +1200,9 @@ La couleur préférée d'Anne-Sophie est le noir.
 Partagée entre Paris 16e Nord (75116), et 17ème (75017) (vie urbaine et gestion immobilière du studio) et Jouques 13490 (Provence).
 Style décontracté, pas de chichis. Exigeant avec lui-même, allergique au bullshit, mais doux et sensible. Utilise humour et analyse comme armure.
 
+#### Sommeil
+Depuis son plus jeune âge, Mathieu n’aime pas ne pas être le premier à se réveiller. Enfant à Saint-Antonin, il allait souvent dormir avec son arrière-grand-mère pour s’assurer d’être levé avant tout le monde, sans qu’il sache vraiment pourquoi. Encore aujourd’hui, il se sent mal à l’aise lorsqu’il se lève après les autres ou que quelqu’un est déjà debout avant lui.
+
 ### Gestion Financière
 Mathieu s'intéresse aux nouvelles banques comme Deblock et CanB. Il a des comptes chez N26, Sumeria (anciennement Lydia), Revolut, CanB, Deblock, Blockchain, Crypto.com, PayPal, Binance, Bunq, SumUp, Curve, Bitstack ...
 
