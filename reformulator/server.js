@@ -12,6 +12,15 @@
  *   3. Le prompt QUERY doit faire comprendre l'INTENTION de la question
  *      (synthese, decompte, liste) et non se contenter de compter un mot.
  *      Luna est un chien ; une 2CV est une voiture. Les noms propres comptent.
+ *   3b. Le prompt SAISIE (bouton Reformulation avancee) doit COMPRENDRE
+ *      l'anecdote, la transposer en 3e personne (Mathieu), et synthetiser
+ *      intelligemment (ni mot a mot, ni resume seche). Voir SAISIE_PROMPT.
+ *   3c. STYLE_RULES (Regles d'Or d'instructions.md) est appende a tous les
+ *      prompts qui produisent du texte francais : SAISIE, QUERY, LOCATION,
+ *      MERGE_CHECK, MERGE_SMART. CLEF, NENUPHAR, noms en MAJUSCULES, etc.
+ *   3d. Bouton Comparer/Fusionner (purpose=merge-smart) : contexte memoire
+ *      comme Interroger + texte nouveau du champ -> fusion prete a coller
+ *      + emplacement. Voir MERGE_SMART_PROMPT et merge_smart_via_node().
  *   4. Les modeles OpenRouter :free tournent souvent (HTTP 404). Preferer
  *      openrouter/free ou verifier la disponibilite avant de changer le defaut.
  *   5. Ne jamais laisser une erreur Multer ou Express renvoyer du HTML :
@@ -133,9 +142,24 @@ const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_O
   .map(function(item) { return item.trim().toLowerCase(); })
   .filter(Boolean);
 
-// Prompts optimisés - Mise à jour 29/06/2026
-// Reformulation avancée avec IA
-const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-clés. À partir de la question suivante sur la vie de Mathieu CHARREYRE, retourne UNIQUEMENT une liste de mots-clés ou expressions séparés par des virgules (maximum 8 termes). Pas de phrase, pas de salutation, pas d'explication.`;
+// Prompts optimises - Mise a jour 08/08/2026
+// STYLE_RULES : extrait des Regles d'Or d'instructions.md (section debut).
+// Applique a TOUS les prompts qui produisent du texte francais (4 boutons :
+// Reformulation, Interroger, Proposer emplacement, Charger/Extraire+merge).
+// Commentaires code : sans accents ni caracteres speciaux.
+const STYLE_RULES = `
+Regles de style OBLIGATOIRES (calquees sur instructions.md - Regles d'Or) :
+- Orthographe archaique : ecrire CLEF (jamais "cle" ni "cles"), NENUPHAR (jamais "nenufar"). Preferer les graphies classiques elegantes.
+- Pas de ligature oe fusionnee : ecrire OE separes (COEUR, VOEUX, soeurs avec o et e distincts).
+- Noms de famille en MAJUSCULES completes (CHARREYRE, MONTJOL). Prenoms : majuscule initiale seulement (Mathieu).
+- Domaine Saint-Antonin : majuscule a Domaine ; jamais "Domaine de Saint-Antonin".
+- Pas de tiret cadratin ni demi-cadratin (— –) a la place d'une virgule ou d'une parenthese : utiliser virgules, parentheses ou deux-points.
+- Pas d'emoji ni de smiley dans le texte.
+- Parler de Mathieu a la troisieme personne (jamais "je" a sa place).
+- Ne pas recopier mot a mot sans reformuler avec nuance quand le contexte le demande.
+`;
+
+const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-cles. A partir de la question suivante sur la vie de Mathieu CHARREYRE, retourne UNIQUEMENT une liste de mots-cles ou expressions separes par des virgules (maximum 8 termes). Pas de phrase, pas de salutation, pas d'explication.`;
 // CORRECTIF 18/07/2026 : le prompt precedent n'interdisait pas explicitement
 // d'inventer une citation quand le contexte local ne contenait rien de
 // pertinent -- ce qui produisait des extraits fabriques, plausibles mais
@@ -187,14 +211,16 @@ Exemples de preuves directes valides :
 - Une liste de naissances avec le libelle cousin/cousine
 
 INTERDITS :
-- Dire "non nommes" ou "prénoms non cites" alors qu'un prenom figure dans PREUVES DIRECTES ou Chronologie
+- Dire "non nommes" ou "prenoms non cites" alors qu'un prenom figure dans PREUVES DIRECTES ou Chronologie
 - Inventer des prenoms absents du contexte
-- Transformer une tante en cousine (si le texte dit soeur du parent = tante, pas cousine)
+- Extrapoler un lien de parente : verifie chaque lien uniquement d'apres ce qui est ecrit
+  (ne reclasse pas une personne sous un autre degre que celui indique par le texte)
 - Inventer "germain", "eloigne", "second degre" si non ecrit
 - Compter les occurrences d'un mot au lieu de repondre
 - Inventer des sources externes (registres, notaires, archives)
 
-Reponse : factuelle, structuree, concise, avec section source. Francais clair.`;
+Reponse : factuelle, structuree, concise, avec section source. Francais clair.
+` + STYLE_RULES;
 // Selection des categories / sections a partir des titres (appel leger).
 const QUERY_SELECT_PROMPT = `Tu choisis les sections d'un fichier memoire (instructions.md de Mathieu CHARREYRE) les plus utiles pour repondre a une question.
 
@@ -221,20 +247,76 @@ Reponds en francais, structure clair :
 4. Proposition de fusion : pour chaque bloc utile, section cible (titre exact si possible) et action (completer / remplacer / ignorer)
 5. Si peu ou pas de lien avec la memoire : dis-le franchement
 
-Ne reformule pas tout le document. Sois concis et actionnable. N'invente pas de sections inexistantes.`;
+Ne reformule pas tout le document. Sois concis et actionnable. N'invente pas de sections inexistantes.
+` + STYLE_RULES;
+// CORRECTIF 08/08/2026 : fusion intelligente (bouton Comparer / Fusionner).
+// Nouveau texte (champ ou import) + contexte memoire deja recupere comme Interroger.
+// Produit un texte pret a coller + emplacement cible.
+const MERGE_SMART_PROMPT = `Tu es Reformulator. Tu fusionnes des informations nouvelles avec la memoire instructions.md de Mathieu CHARREYRE.
+
+On te donne :
+A) CONTEXTE MEMOIRE : extraits / preuves deja presents dans instructions.md sur le sujet
+B) TEXTE NOUVEAU : infos fraiches (Geneanet, notes, PDF, etc.)
+
+Objectif : un TEXTE PRET A COLLER, puis ou le mettre. Le reste est secondaire.
+
+Methode :
+1. Identifie le sujet principal (personne, lieu, evenement...).
+2. Pour le texte a coller : integre faits memoire + nouveautes, sans doublon, sans invention.
+   Ne confonds pas conjoint et fratrie. 3e personne. Noms/dates/lieux exacts.
+3. Emplacement : section exacte si possible, action (completer / remplacer / ajouter),
+   amorce du paragraphe existant a modifier si connu.
+4. Details (deja / nouveau / contradictions) : courts, UNIQUEMENT lies au sujet
+   (ignore le hors-sujet du contexte memoire).
+
+ORDRE OBLIGATOIRE de la reponse (respecte les balises exactes) :
+
+<<<A_COLLER
+(ici UNIQUEMENT le paragraphe ou bloc pret a coller dans instructions.md, rien d'autre)
+>>>A_COLLER
+
+<<<EMPLACEMENT
+(section, action, eventuelle amorce a remplacer)
+>>>EMPLACEMENT
+
+<<<DETAILS
+### Deja dans la memoire (sujet uniquement)
+...
+### Nouveau ou plus precis
+...
+### Contradictions (ou : aucune)
+...
+>>>DETAILS
+
+Ne coupe jamais en plein milieu. Pas de texte hors de ces trois blocs.
+` + STYLE_RULES;
 // Proposer emplacement
-const LOCATION_PROMPT = `Tu es un expert en organisation de mémoire personnelle. Reçois un texte sur la vie de Mathieu CHARREYRE et propose les sections les plus pertinentes où l'insérer dans instructions.md.
-Réponds de façon courte, précise et structurée. Mentionne explicitement les titres de sections recommandées. Ne reformule pas le texte lui-même.`;
-// Interroger le fichier
-const SAISIE_PROMPT = `Tu es Reformulator, un assistant orthographique et stylistique précis pour Mathieu CHARREYRE.
-Règles strictes :
-- Si le texte est à la première personne (je, moi, mon, ma, mes, nous...), transforme-le obligatoirement en troisième personne avec "Mathieu" comme sujet.
-- Ne conserve AUCUNE forme à la première personne dans la réponse finale.
-- Corrige uniquement l'orthographe, la grammaire, la ponctuation et améliore légèrement la fluidité.
-- Ne change pas les faits, n'ajoute rien, ne supprime rien d'important.
-- Structure en paragraphes clairs et naturels.
-- Réponds UNIQUEMENT par le texte corrigé/reformulé, sans introduction, sans explication, sans guillemets, sans salutation.
-- Si le texte est très court, corrige-le simplement.`;
+const LOCATION_PROMPT = `Tu es un expert en organisation de memoire personnelle. Recois un texte sur la vie de Mathieu CHARREYRE et propose les sections les plus pertinentes ou l'inserer dans instructions.md.
+Reponds de facon courte, precise et structuree. Mentionne explicitement les titres de sections recommandees. Ne reformule pas le texte lui-meme.
+` + STYLE_RULES;
+// CORRECTIF 08/08/2026 : reformulation intelligente (pas un simple correcteur).
+// Objectif : saisir la nature de l'anecdote / du souvenir, le reformuler proprement
+// a la 3e personne pour insertion dans instructions.md, sans le diluer ni le
+// densifier a l'extreme. Commentaires sans accents ni caracteres speciaux.
+const SAISIE_PROMPT = `Tu es Reformulator, redacteur de memoire pour Mathieu CHARREYRE.
+
+Mission : comprendre le sens et la nature du texte (anecdote, souvenir, fait, impression, conflit, detail technique...) puis le reformuler en prose claire, a la troisieme personne, pret a etre inserer dans instructions.md.
+
+Regles obligatoires :
+1. Personne : si le texte est a la premiere personne (je, moi, mon, ma, mes, nous...), transpose TOUT en troisieme personne avec "Mathieu" comme sujet. Aucune forme a la premiere personne dans la reponse.
+2. Comprehension : saisis l'intention et le ton (ironie, colere, nostalgie, factuel...). Ne traite pas le texte comme une liste de mots a corriger.
+3. Fidelite : ne change pas les faits, ne invente rien, ne supprime rien d'important (noms, dates, lieux, chiffres, liens de parente).
+4. Longueur : synthese intelligente, pas un resume seche ni une paraphrase mot a mot.
+   - Texte court (quelques phrases) : corrige et fluidifie, garde une longueur proche.
+   - Texte moyen/long (ex. 10-20 lignes) : vise environ le tiers a la moitie (ex. 15 lignes -> 4 a 7 lignes utiles), en gardant le coeur de l'anecdote.
+   - Evite les paves inutiles et les listes artificielles sauf si le contenu l'exige.
+5. Style : francais clair, paragraphes naturels, orthographe et grammaire correctes. Pas de titre, pas de puces forcees, pas de meta-commentaire.
+6. Sortie : UNIQUEMENT le texte reformule. Pas d'introduction, pas de guillemets, pas de "Voici la version...", pas de salutation.
+
+Exemples de transposition :
+- "J'ai rachete une 2CV en 1998" -> "Mathieu a rachete une 2CV en 1998"
+- "Ma tante Dom m'a toujours surnomme..." -> "Sa tante Dom l'a toujours surnomme..."
+` + STYLE_RULES;
 
 // LLM_ENGINES contient la configuration de chaque moteur LLM supporté, avec la fonction createPayload() pour construire la requête API.
 const createOpenAICompatiblePayload = (text, model, context, purpose) => {
@@ -245,19 +327,26 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
   else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
   else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
+  else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
   else messages.push({ role: 'system', content: SAISIE_PROMPT });
-  if (context) messages.push({ role: 'system', content: 'Contexte instructions : ' + context });
+  if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
   const userContent = (purpose === 'query')
     ? 'Recherche dans instructions.md : ' + text
     : (purpose === 'query-select' || purpose === 'query-expand')
       ? text
       : (purpose === 'merge-check')
         ? 'Texte importe a comparer avec la memoire :\n' + text
-        : 'Texte a reformuler pour le memoire : ' + text;
+        : (purpose === 'merge-smart')
+          ? 'TEXTE NOUVEAU a fusionner avec la memoire ci-dessus :\n' + text
+          : 'Texte a reformuler pour le memoire : ' + text;
   messages.push({ role: 'user', content: userContent });
-  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check') ? 0.2
+  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart') ? 0.2
     : purpose === 'query-keywords' ? 0.0 : 0.4;
-  return { model: model, messages: messages, temperature: temperature, max_tokens: 1500 };
+  // merge-smart : reponses longues (deja + nouveau + texte fusionne + emplacement)
+  const maxTokens = (purpose === 'merge-smart') ? 4000
+    : (purpose === 'query') ? 2200
+    : 1500;
+  return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
 };
 
 const LLM_ENGINES = {
@@ -291,19 +380,25 @@ const LLM_ENGINES = {
       else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
       else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
       else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
+      else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
       else messages.push({ role: 'system', content: SAISIE_PROMPT });
-      if (context) messages.push({ role: 'system', content: 'Contexte instructions : ' + context });
+      if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
       const userContent = (purpose === 'query')
         ? 'Recherche dans instructions.md : ' + text
         : (purpose === 'query-select' || purpose === 'query-expand')
           ? text
           : (purpose === 'merge-check')
             ? 'Texte importe a comparer avec la memoire :\n' + text
-            : 'Texte a reformuler pour le memoire : ' + text;
+            : (purpose === 'merge-smart')
+              ? 'TEXTE NOUVEAU a fusionner avec la memoire ci-dessus :\n' + text
+              : 'Texte a reformuler pour le memoire : ' + text;
       messages.push({ role: 'user', content: userContent });
-      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check') ? 0.2
+      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart') ? 0.2
         : purpose === 'query-keywords' ? 0.0 : 0.4;
-      return { model: model, messages: messages, temperature: temperature, max_tokens: 1500 };
+      const maxTokens = (purpose === 'merge-smart') ? 4000
+        : (purpose === 'query') ? 2200
+        : 1500;
+      return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
     }
   },
   // Cerebras

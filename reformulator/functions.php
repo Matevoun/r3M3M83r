@@ -388,13 +388,16 @@
     // -----------------------------------------------------------------------------
     // BLOC 2 : Appel du service Node.js pour reformulation LLM ou recherche de fallback
     // -----------------------------------------------------------------------------
-    // Cette fonction envoie le texte saisi au backend Node.js pour reformulation LLM.
-    // Le backend est responsable de comprendre un récit à la première personne
-    // et de le transposer en mémoire à la troisième personne lorsque c'est nécessaire.
+    // Reformulation avancee (bouton "Reformulation avancee avec IA").
+    // Envoie le texte au backend Node.js (purpose implicite = rewrite / SAISIE_PROMPT).
+    // Le prompt cote server.js doit :
+    //   - comprendre la nature de l'anecdote (pas un simple correcteur ortho)
+    //   - transposer je/moi -> Mathieu (3e personne)
+    //   - synthetiser intelligemment (ex. 15 lignes -> 4-7) sans inventer
+    //   - rendre un texte pret a coller dans instructions.md
+    // Voir SAISIE_PROMPT dans reformulator/server.js (CORRECTIF 08/08/2026).
     function reformuler_via_node(string $text, string $instructionsContext = ''): string {
         global $selected_engine;
-        // Envoie le texte saisi au service Node.js local pour reformulation LLM.
-        // La route distante peut etre ajustee si le serveur est deplace.
         $payload = ['text' => $text];
         if ($instructionsContext !== '') {
             $payload['instructionsContext'] = $instructionsContext;
@@ -598,6 +601,198 @@
             $payload['instructionsContext'] = "Plan des sections : " . implode(' ; ', $outline) . "\n\nExtraits :\n" . $excerpt;
         }
         return call_reformulator_service($payload);
+    }
+
+    /**
+     * CORRECTIF 08/08/2026 : fusion intelligente (bouton Comparer / Fusionner).
+     * Envoie le texte NOUVEAU + un contexte memoire deja construit comme Interroger
+     * (sections + preuves). Le LLM (purpose=merge-smart) produit :
+     * deja / nouveau / contradictions / texte fusionne / emplacement.
+     */
+    function merge_smart_via_node(string $newText, string $memoryContext = ''): string {
+        global $selected_engine;
+        $text = trim($newText);
+        if ($text === '') {
+            return '';
+        }
+        if (mb_strlen($text, 'UTF-8') > 14000) {
+            $text = mb_substr($text, 0, 14000, 'UTF-8') . "\n...[texte tronque pour fusion]...";
+        }
+        $payload = [
+            'text'    => $text,
+            'purpose' => 'merge-smart',
+        ];
+        if ($memoryContext !== '') {
+            $payload['instructionsContext'] = $memoryContext;
+        }
+        if (!empty($selected_engine)) {
+            $payload['engine'] = $selected_engine;
+        }
+        return call_reformulator_service($payload);
+    }
+
+    /**
+     * Decoupe la reponse merge-smart en blocs A_COLLER / EMPLACEMENT / DETAILS
+     * (balises <<<...>>> imposees par MERGE_SMART_PROMPT). Fallback si absentes.
+     */
+    function parse_merge_smart_result(string $raw): array {
+        $raw = trim($raw);
+        $out = ['a_coller' => '', 'emplacement' => '', 'details' => '', 'raw' => $raw];
+        if ($raw === '') {
+            return $out;
+        }
+        if (preg_match('/<<<A_COLLER\s*(.*?)\s*>>>A_COLLER/is', $raw, $m)) {
+            $out['a_coller'] = trim($m[1]);
+        }
+        if (preg_match('/<<<EMPLACEMENT\s*(.*?)\s*>>>EMPLACEMENT/is', $raw, $m)) {
+            $out['emplacement'] = trim($m[1]);
+        }
+        if (preg_match('/<<<DETAILS\s*(.*?)\s*>>>DETAILS/is', $raw, $m)) {
+            $out['details'] = trim($m[1]);
+        }
+        if ($out['a_coller'] === '') {
+            if (preg_match('/###\s*Texte fusionn[eé].*?\n(.*?)(?=###\s*Emplacement|\z)/is', $raw, $m)) {
+                $out['a_coller'] = trim($m[1]);
+            } else {
+                $out['a_coller'] = $raw;
+            }
+        }
+        if ($out['emplacement'] === '' && preg_match('/###\s*Emplacement.*?\n(.*?)(?=###|\z)/is', $raw, $m)) {
+            $out['emplacement'] = trim($m[1]);
+        }
+        return $out;
+    }
+
+    /**
+     * Construit un contexte memoire cible sur un sujet (meme logique qu'Interroger :
+     * intention, selection de sections, preuves rankees). Utilise par Interroger
+     * et par Comparer/Fusionner pour ne pas dupliquer la logique.
+     * Retourne ['context' => string, 'debug' => string].
+     */
+    function build_memory_context_for_topic(string $topicText): array {
+        $topicText = trim($topicText);
+        $debug = '';
+        if ($topicText === '') {
+            return ['context' => '', 'debug' => ''];
+        }
+
+        $intentExpanded = expand_query_intent_via_node($topicText);
+        $sections = extract_instructions_sections();
+        $fullDocument = load_instructions_content();
+        $fullDocumentLength = mb_strlen($fullDocument, 'UTF-8');
+        $fullDocumentSizeLimit = 60000;
+
+        if ($fullDocumentLength > 0 && $fullDocumentLength <= $fullDocumentSizeLimit) {
+            $ctx = '';
+            if ($intentExpanded !== '') {
+                $ctx .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
+            }
+            $ctx .= "Voici le contenu INTEGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
+            $debug = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)';
+            return ['context' => $ctx, 'debug' => $debug];
+        }
+
+        $outline = extract_instructions_outline();
+        $selectQuestion = $topicText;
+        if ($intentExpanded !== '') {
+            $selectQuestion = $topicText . "\n\nIntention elargie :\n" . $intentExpanded;
+        }
+        $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
+        $relevantSections = [];
+        if (!empty($selectedTitles)) {
+            foreach ($selectedTitles as $title) {
+                if (isset($sections[$title])) {
+                    $relevantSections[$title] = $sections[$title];
+                }
+            }
+        }
+        if (empty($relevantSections)) {
+            $localSearch = search_with_counts_light($topicText, $sections);
+            foreach (($localSearch['sections'] ?? []) as $title => $info) {
+                if (isset($sections[$title])) {
+                    $relevantSections[$title] = $sections[$title];
+                }
+            }
+        }
+        if (empty($relevantSections)) {
+            $relevantSections = array_slice($sections, 0, 3, true);
+        }
+
+        $maxSections = 6;
+        $localSearchPad = search_with_counts_light($topicText . ' ' . $intentExpanded, $sections);
+        foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
+            if (count($relevantSections) >= $maxSections) {
+                break;
+            }
+            if (isset($sections[$title]) && !isset($relevantSections[$title])) {
+                $relevantSections[$title] = $sections[$title];
+            }
+        }
+
+        $perSectionLimit = 12000;
+        $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
+
+        $primaryTerms = extract_keywords($topicText);
+        foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $w) {
+            $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
+            if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
+                $primaryTerms[] = $w;
+            }
+        }
+        $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien'];
+        $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
+            return !in_array($t, $genericNoise, true);
+        }));
+        $queryTerms = $primaryTerms;
+
+        $ctx = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
+        if ($intentExpanded !== '') {
+            $ctx .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
+        }
+
+        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 60, $primaryTerms);
+        if (!empty($rankedLines)) {
+            $ctx .= "PREUVES DIRECTES du fichier (citations prioritaires) :\n";
+            foreach ($rankedLines as $item) {
+                $ctx .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
+            }
+            $ctx .= "\n";
+        }
+
+        $sectionBoost = [];
+        foreach ($rankedLines as $item) {
+            $t = $item['title'];
+            $sectionBoost[$t] = ($sectionBoost[$t] ?? 0) + (int) ($item['score'] ?? 1);
+        }
+        $orderedTitles = array_keys($relevantSections);
+        usort($orderedTitles, function ($a, $b) use ($sectionBoost) {
+            $sa = $sectionBoost[$a] ?? 0;
+            $sb = $sectionBoost[$b] ?? 0;
+            if ($sb !== $sa) {
+                return $sb <=> $sa;
+            }
+            return 0;
+        });
+        $ctx .= "Contenu des sections (contexte elargi) :\n";
+        foreach ($orderedTitles as $title) {
+            $content = $relevantSections[$title];
+            $block = trim($content);
+            if (mb_strlen($block, 'UTF-8') > $perSectionLimit) {
+                $block = build_section_excerpt_for_query($content, $queryTerms, $perSectionLimit);
+            }
+            $ctx .= "\n--- Section : $title ---\n" . $block . "\n";
+        }
+
+        $debug = count($relevantSections) . ' section(s)'
+            . ($intentExpanded !== '' ? ' + intention elargie' : '')
+            . ' (fichier : ' . number_format($fullDocumentLength, 0, ',', ' ') . ' car.)';
+        if (!empty($rankedLines)) {
+            $debug .= "\nPreuves retenues (" . count($rankedLines) . ") :\n";
+            foreach (array_slice($rankedLines, 0, 8) as $item) {
+                $debug .= '  [' . $item['title'] . '] ' . mb_substr($item['line'], 0, 100, 'UTF-8') . "\n";
+            }
+        }
+        return ['context' => $ctx, 'debug' => $debug];
     }
 
     /**
@@ -1872,6 +2067,7 @@
     $proposed_location         = '';
     $query_result              = '';
     $query_debug               = '';
+    $merge_result              = '';  // CORRECTIF 08/08/2026 : resultat Comparer/Fusionner
     $last_reformulator_error   = '';
     $selected_engine           = '';  // Moteur IA choisi par l'utilisateur (état global)
     $instructions_outline      = [];
@@ -2184,6 +2380,29 @@
                 $query_result = "Je n'ai pas trouvé d'information pertinente dans tes mémoires pour cette question.";
                 $reformule_msg = 'Aucune information trouvée.';
             }
+        }
+
+        // Bouton "Comparer / Fusionner avec la memoire"
+        // CORRECTIF 08/08/2026 : 1) construit un contexte memoire comme Interroger
+        // sur le sujet du texte ; 2) LLM merge-smart -> deja / nouveau / fusion /
+        // emplacement. Texte du champ = infos NOUVELLES (Geneanet, notes...).
+        if (isset($_POST['merge_smart']) && $input_text !== '') {
+            $reformule_original = $input_text;
+            $built = build_memory_context_for_topic($input_text);
+            $memoryCtx = $built['context'] ?? '';
+            $query_debug = "Mode : Comparer / Fusionner\n";
+            $query_debug .= "Contexte memoire : " . ($built['debug'] ?? '') . "\n";
+
+            $merged = merge_smart_via_node($input_text, $memoryCtx);
+            if ($merged !== '') {
+                $merge_result = $merged;
+                $reformule_msg = 'Fusion proposee (comparer avec la memoire).';
+            } else {
+                $merge_result = '';
+                $reformule_msg = 'Erreur : la fusion n\'a pas abouti. Verifiez que Node.js tourne.';
+            }
+            $instructions_loaded = true;
+            $instructions_line_count = count_instructions_lines();
         }
 
         // Bouton "Charger les instructions"

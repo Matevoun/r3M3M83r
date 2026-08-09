@@ -1,4 +1,7 @@
 <?php
+    // Fichiier saisie.php — Interface de saisie memoire pour reformulator
+    // Toute la logique metier (interrogation, extraction, appels Node) vit dans
+    // reformulator/functions.php. Ici : HTML, styles, JS d'interface uniquement.
     include_once __DIR__ . '/reformulator/functions.php';
 ?>
 
@@ -64,7 +67,15 @@
         .block .copy:hover{background:#2e4475}
         .ia-result{border:1px solid #d2d2d2;border-radius:8px;padding:1rem;background:#fcfcff;margin-bottom:1rem}
         .ia-result h2{font-size:1.05rem;margin:0 0 .8rem}
+        .ia-result .block-label{font-size:.88rem;font-style:italic;font-weight:normal;color:#6b7280;margin:0 0 .65rem;letter-spacing:.01em}
         .ia-result pre{white-space:pre-wrap;background:#f7f9ff;padding:.85rem;border-radius:6px;border:1px solid #e0e0ff;overflow:auto;margin:0}
+        .debug-panel{margin:.8rem 0 1rem;border:1px solid #d0d8ef;border-radius:8px;background:#f4f6fb;color:#4b5563}
+        .debug-panel summary{cursor:pointer;list-style:none;padding:.55rem .85rem;font-size:.88rem;font-style:italic;color:#6b7280;user-select:none}
+        .debug-panel summary::-webkit-details-marker{display:none}
+        .debug-panel summary::before{content:"▸ ";font-style:normal;color:#9ca3af}
+        .debug-panel[open] summary::before{content:"▾ "}
+        .debug-panel summary:hover{color:#374151;background:#eef2ff;border-radius:8px}
+        .debug-panel pre{margin:0;padding:.65rem .9rem .85rem;font-size:.82rem;line-height:1.45;white-space:pre-wrap;word-break:break-word;color:#4b5563;border-top:1px solid #e5e7eb;background:#fafbff;border-radius:0 0 8px 8px}
         .summary{display:grid;grid-template-columns:1fr;gap:.5rem}
         .summary .item{padding:.8rem;background:#eef2ff;border-radius:6px;border:1px solid #d6dff6}
         .notice{font-size:.94rem;color:#333}
@@ -178,7 +189,7 @@
 
   <?php if ($reformule_original !== ''): ?>
   <div class="ia-result">
-    <h2>Rendu :</h2>
+    <p class="block-label">Rendu</p>
     <p><strong>Ce que vous écriviez :</strong></p>
     <pre><?php echo html_escape($reformule_original); ?></pre>
     <?php if ($reformule_interpretation !== ''): ?>
@@ -193,7 +204,7 @@
 
   <?php if ($proposed_location !== ''): ?>
   <div class="ia-result">
-    <h2>Emplacement proposé :</h2>
+    <p class="block-label">Emplacement proposé</p>
     <pre><?php echo html_escape($proposed_location); ?></pre>
   </div>
   <?php endif; ?>
@@ -201,8 +212,48 @@
   <!-- Affichage du résultat de la requête d'interrogation du fichier d'instructions -->
     <?php if ($query_result !== ''): ?>
     <div class="ia-result">
-        <h2>Réponse du fichier d'instructions :</h2>
+        <p class="block-label">Réponse du fichier d'instructions</p>
         <pre><?php echo html_escape($query_result); ?></pre>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($merge_result)):
+        $mergeParts = function_exists('parse_merge_smart_result')
+            ? parse_merge_smart_result($merge_result)
+            : ['a_coller' => $merge_result, 'emplacement' => '', 'details' => '', 'raw' => $merge_result];
+    ?>
+    <div class="ia-result">
+        <p class="block-label">Comparer / Fusionner avec la memoire</p>
+
+        <div style="border:2px solid #16275b;border-radius:8px;padding:.85rem 1rem;background:#f0f4ff;margin-bottom:.85rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.5rem;">
+            <strong style="color:#16275b;font-size:.95rem;">A coller dans instructions.md</strong>
+            <button class="copy" type="button" data-target="merge-a-coller">Copier ce bloc</button>
+          </div>
+          <pre id="merge-a-coller" style="margin:0;background:#fff;"><?php echo html_escape($mergeParts['a_coller']); ?></pre>
+        </div>
+
+        <?php if ($mergeParts['emplacement'] !== ''): ?>
+        <div style="border:1px solid #c5d0f0;border-radius:8px;padding:.75rem .9rem;background:#fafbff;margin-bottom:.75rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.4rem;">
+            <strong style="font-size:.9rem;color:#374151;">Ou le mettre</strong>
+            <button class="copy" type="button" data-target="merge-emplacement" style="font-size:.85rem;padding:.35rem .65rem;">Copier</button>
+          </div>
+          <pre id="merge-emplacement" style="margin:0;font-size:.9rem;"><?php echo html_escape($mergeParts['emplacement']); ?></pre>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($mergeParts['details'] !== ''): ?>
+        <details class="debug-panel" style="margin:0;">
+          <summary>Details (deja / nouveau / contradictions)</summary>
+          <pre><?php echo html_escape($mergeParts['details']); ?></pre>
+        </details>
+        <?php elseif ($mergeParts['a_coller'] !== $mergeParts['raw']): ?>
+        <details class="debug-panel" style="margin:0;">
+          <summary>Reponse brute complete</summary>
+          <pre><?php echo html_escape($mergeParts['raw']); ?></pre>
+        </details>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
 
@@ -211,17 +262,18 @@
     if (isset($localSearch) && !empty($localSearch['sections'])):
     ?>
     <div class="msg-ok" style="margin:1rem 0; padding:1rem; border-radius:8px;">
-        <strong>✅ Recherche terminée</strong><br>
+        <strong>Recherche terminee</strong><br>
         <strong>Moteur :</strong> <?php echo html_escape($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')); ?><br>
-        <strong>Occurrences détectées :</strong> <?php echo number_format($localSearch['total_occ'] ?? 0, 0, ',', ' '); ?><br>
-        <strong>Sections trouvées :</strong> <?php echo count($localSearch['sections'] ?? []); ?>
+        <strong>Occurrences detectees :</strong> <?php echo number_format($localSearch['total_occ'] ?? 0, 0, ',', ' '); ?><br>
+        <strong>Sections trouvees :</strong> <?php echo count($localSearch['sections'] ?? []); ?>
     </div>
     <?php endif; ?>
 
     <?php if ($query_debug !== ''): ?>
-    <div class="msg-ok" style="white-space:pre-wrap; font-size:.9rem; margin-top:.8rem; background:#eef2ff; border-color:#c5d0f0; color:#1a2744;">
-        <strong>Debug interrogation</strong><br><?php echo html_escape($query_debug); ?>
-    </div>
+    <details class="debug-panel">
+      <summary>Debug interrogation (cliquer pour afficher)</summary>
+      <pre><?php echo html_escape($query_debug); ?></pre>
+    </details>
     <?php endif; ?>
 
   <div class="card">
@@ -261,10 +313,11 @@
         <?php endif; ?>
       </div>
       <div class="btn-row">
-            <button type="button" id="extract-file-btn" class="test">📄 Charger & Extraire fichier</button>
+            <button type="button" id="extract-file-btn" class="test">Charger & Extraire fichier</button>
             <button type="submit" name="query_instructions" class="test" title="Interroger le fichier d'instructions">Interroger le fichier</button>
+            <button type="submit" name="merge_smart" class="test" title="Comparer le texte du champ avec la memoire et proposer une version fusionnee pret a coller">Comparer / Fusionner</button>
             <button type="submit" name="proposer_emplacement" class="test" title="Proposer un emplacement dans le fichier d'instructions">Proposer emplacement</button>
-            <button type="submit" name="reformuler" class="ia" title="Reformuler le texte en utilisant le moteur LLM">✨ Reformulation avancée avec IA</button>
+            <button type="submit" name="reformuler" class="ia" title="Reformuler le texte en utilisant le moteur LLM">Reformulation avancee avec IA</button>
         </div>
     </form>
   </div>
@@ -591,7 +644,8 @@ if (copyTestOutputButton) {
     });
 }
 
-// Extraction seule du fichier
+// Extraction seule du fichier (fetch hors submit formulaire :
+// il faut ouvrir manuellement le meme overlay de chargement).
 document.getElementById('extract-file-btn').addEventListener('click', function() {
   const fileInput = document.getElementById('uploaded_file');
   if (!fileInput.files || fileInput.files.length === 0) {
@@ -606,6 +660,9 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
   const originalText = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Extraction en cours...';
+  if (loadingOverlay) {
+    loadingOverlay.classList.add('open');
+  }
 
   fetch('saisie.php?extract_only=1', {
     method: 'POST',
@@ -615,7 +672,7 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
   .then(data => {
     if (data.success && data.text) {
       document.getElementById('story').value = data.text;
-      alert("✅ Fichier extrait !");
+      alert("Fichier extrait.");
     } else {
       alert("Erreur : " + (data.error || "Impossible d'extraire (Node.js ? )"));
     }
@@ -626,6 +683,9 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
   .finally(() => {
     btn.disabled = false;
     btn.textContent = originalText;
+    if (loadingOverlay) {
+      loadingOverlay.classList.remove('open');
+    }
   });
 });
 </script>
