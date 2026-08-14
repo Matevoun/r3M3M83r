@@ -1983,7 +1983,7 @@ Voir section Club-Internet (1995-2001) pour les anecdotes professionnelles Club,
 #### Pierre-Jean SAUVÉ aka "PJ", "Schlum" ou "Action-Man"
 Pierre-Jean SAUVÉ est un ami rencontré lors du déménagement des locaux de Club-Internet de Neuilly-sur-Seine (Avenue du Général de GAULLE) vers Paris, dans le complexe des anciens abattoirs de la Villette, **rue Corentin CARIOU**, vers **1998**. Ce grand ensemble de bâtiments abritait également le siège de Club Med (dans le Bâtiment 024 ou 025, Mathieu ne se souvient plus exactement -- juste en face du 026) ; les locaux y étaient spacieux et splendides, bien différents de ceux de Neuilly. PJ était **cuistot** au restaurant d'entreprise de Club-Internet, situé en sous-sol du **Bâtiment 026**. Ce restaurant comportait 4 pôles de cuisine (poisson, viandes, etc.). PJ officiait également comme **barman** du bar du RdC du Bâtiment 026, juste en face de l'accueil. Architecture des locaux : à l'arrivée en 1998, hotline et service commercial au 2ème étage du Bat.026, "Le Garage" au RdC. Puis migration de tous les services online au **Bâtiment 033** : service commercial au RdC, hotline et bunnies au 1er étage (open space), bureau fermé de Mathieu au centre de ce même étage.
 
-Mathieu mangeait toujours très tard — vers 15h, quand le restaurant était fermé. PJ lui gardait alors pizzas et snacks, **gratuitement**, par sympathie. Une amitié rapide et sincère s'est nouée de cette façon. Vif, bavard, toujours prêt à faire des conneries, PJ a rapidement été embarqué dans le **GAN** (Gang Antin-Nains). Charles de LEUSSE l'appréciait ; Julien GAUTIER, moins.
+Mathieu mangeait toujours très tard — vers 15h, quand le restaurant était fermé. PJ lui gardait alors pizzas et snacks, **gratuitement**, par sympathie. Une amitié rapide et sincère s'est nouée de cette façon. Vif, bavard, toujours prêt à faire des conneries, PJ a rapidement été embarqué dans le **GAN** (Gang Antin-Nains, voir section dédiée). Charles de LEUSSE l'appréciait ; Julien GAUTIER, moins.
 
 **Garde à vue et TIG** : Pris en flagrant délit avec Mathieu, Charles et Jean-Baptiste ASLANIAN (alias SennaIsAlive), PJ a écopé — comme ses comparses — d'une **garde à vue de 8 heures** et d'un **travail d'intérêt général (TIG) de 40 heures** pour *"vols d'extincteurs en réunion"*. Casier judiciaire temporaire à la clef, pour toute la bande.
 
@@ -2078,11 +2078,11 @@ Le GAN est l'une des périodes les plus intenses et les plus fondatrices de la v
 
 #### Roster du GAN (par ordre)
 
-1. **LGF — La Grande Folle** : **Mathieu CHARREYRE**. Pseudo dû à ses cheveux longs. Fondateur et seul gardien du GAN.
-2. **Le Fameux** : **Charles de LEUSSE** de SYON de BUISSON de COURSON. Pseudo inventé par PJ en référence à sa noblesse. *"Il était fameux."*
+1. **LGF — La Grande Folle** : **Mathieu CHARREYRE**. Pseudo dû à ses cheveux longs. Sinon appelé **l'Enfumeur Fou** dans les carrières. Fondateur et seul gardien du GAN.
+2. **Le Fameux** : **Charles de LEUSSE** de SYON de BUISSON de COURSON. Pseudo inventé par Pierre-Jean SAUVÉ aka PJ en référence à sa noblesse. *"Il était fameux."*
 3. **Zurmff** : **Julien GAUTIER**. Valeureux au sol, beaucoup moins en altitude — vertige prononcé, ce qui limitait sa présence sur les toits.
-4. **SennaIsAlive** : **Jean-Baptiste ASLANIAN** (JB). Chauffeur de légende, passion absolue pour la conduite rapide (pseudo hommage à Ayrton SENNA). Il les a tirés d'affaire plus d'une fois lors de poursuites en voiture avec les flics. Lui aussi sujet au vertige — moins présent sur les toits.
-5. **Action Man** : **Pierre-Jean SAUVÉ** (PJ). Vif comme l'éclair, toujours partant pour la prochaine connerie.
+4. **SennaIsAlive** : **Jean-Baptiste ASLANIAN** (aka **JB** dans la vie privée). Chauffeur de légende, passion absolue pour la conduite rapide (pseudo hommage à Ayrton SENNA). Il les a tirés d'affaire plus d'une fois lors de poursuites en voiture avec les flics. Lui aussi sujet au vertige — moins présent sur les toits.
+5. **Action Man** : **Pierre-Jean SAUVÉ** (aka **PJ** ou **Schlum** dans la vie privée). Vif comme l'éclair, toujours partant pour la prochaine connerie.
 6. **Egnee** : **Jean-Michel FRIEDMANN** (né le 6 avril 1974 — rencontré par Mathieu le jour même de son 27e anniversaire, dans les katas). Spécialiste des Carrières de Paris, a fait connaître de nombreux spots remarquables au GAN. (Voir section dédiée dans Amitiés Clefs.)
 
 *Et quelques autres…*
@@ -2102,22 +2102,31 @@ La base d'opérations : le studio de Mathieu à la Villa Jacquemont — tout le 
 #### Hauts faits
 
 - Toits de Paris (nombreuses nuits), accès par soupiraux et vasistas illégalement
-- **Cinéma Le Louxor** (Paris, Xe) : visite par les toits (abandonné à l'époque)
+- **Cinéma Le Louxor** (Paris, Xe) : Visite par les toits (abandonné à l'époque)
 - **Carrières de Paris** (multiples sessions, notamment grâce aux spots d'Egnee)
 - **Île Seguin** (ancienne usine Renault, Boulogne-Billancourt, face à Meudon) : visitée plusieurs fois avec PJ, JB, Charles, Julien, avant sa démolition (2004-2005). Vidéos sur YouTube.
-- **Bunker EDF sous la place des Victoires** (Paris 1er) : ancienne usine EDF/GDF désaffectée, 6 rue d'Aboukir (vide souterrain). Plan fourni par **Anthony RAUCHEN** alias **"Le Korbo"** (lekorbo.be), urbexeur belge. Premières visites : 27/03/2013 avec Le Korbo, puis 18/04/2013 seul (séances photo). Session GAN post-revival 09/06/2013 avec Lionel BOYON et Cyrille ROBIN. Accès muré peu après.
-- **Restaurant L'Orée du Bois** (Porte Maillot, Paris XVIe) : visité de nuit après l'incendie qui l'avait ravagé — exploit qui coûtera cher à JB (voir ci-dessous).
+- **Bunker EDF sous la place des Victoires** (Paris 1er) : Ancienne usine EDF/GDF désaffectée, 6 rue d'Aboukir (vide souterrain). Plan fourni par **Anthony RAUCHEN** alias **"Le Korbo"** (lekorbo.be), urbexeur belge. Premières visites : 27/03/2013 avec Le Korbo, puis 18/04/2013 seul (séances photo). Session GAN post-revival 09/06/2013 avec Lionel BOYON et Cyrille ROBIN. Accès muré peu après.
+- **Restaurant L'Orée du Bois** (Porte Maillot, Paris XVIe) : Visité de nuit après l'incendie qui l'avait ravagé — exploit qui coûtera cher à JB (voir ci-dessous).
 
 #### Les TIGs — quand le GAN a croisé la justice
 
-Pris en flagrant délit lors de la visite nocturne du **restaurant L'Orée du Bois** (Porte Maillot, bâtiment calciné), le groupe s'est retrouvé au poste. La situation s'est aggravée pour JB : ses plaques d'immatriculation avaient déjà été relevées lors d'un autre coup, et les flics ont fait le rapprochement. Résultat :
+Le **7 mars 2000, vers minuit trente**, dans le cadre d'une patrouille du **GAN** (*Gang Antin-Nains*), Mathieu CHARREYRE — alors connu sous les pseudonymes **LGF** ou **L'Enfumeur Fou** —, J-B (**SenniaIsAlive**), Pierre-Jean (**ActionMan**) et Charles (**Le Fameux**) ont été interpellés par la **BAC** dans le **XVIe arrondissement de Paris**.
 
-- **JB** : **100 heures de TIG** (peine alourdie, désigné comme le chauffeur récidiviste)
-- **Mathieu, PJ, Charles** : **40 heures de TIG** chacun + **8 heures de garde à vue** + casier judiciaire temporaire
+L'interpellation intervient dans un contexte plutôt chargé : un incendie venait de se déclarer non loin de leur position et le groupe était également soupçonné d'une action de **gazage** visant l'**Église du Christ Scientiste**, située boulevard Lannes, à Paris XVIe.
 
-*Note savoureuse* : Mathieu s'est retrouvé en **"chômage technique"** de ses propres TIGs. Assigné comme technicien info dans une association, il abattait le travail tellement vite qu'ils n'avaient plus rien à lui confier — il n'a finalement effectué que **16 heures** sur les 40 prescrites.
+Les enquêteurs ont rapidement fait le rapprochement avec une précédente opération d'**urbex**, menée plus tôt dans la journée sur les ruines de l'ancien restaurant **L'Orée du Bois**, près de la **Porte Maillot**. Lors de cette exploration, une alarme silencieuse avait été déclenchée et J-B, resté sur place dans un état de panique, avait été identifié par les forces de l'ordre. Sa **Polo noire**, dont la plaque d'immatriculation avait été relevée, a permis d'établir le lien entre les différents épisodes.
 
-Les démêlés avec la justice ne se limitaient pas à cet épisode : les gardes à vue ponctuelles (vols d'extincteurs en réunion, etc.) faisaient partie du folklore GAN.
+Le groupe s'est ainsi retrouvé au poste, avec notamment **huit heures de garde à vue** pour Mathieu, Pierre-Jean et Charles.
+
+La procédure qui a suivi concernait notamment la **soustraction de sept extincteurs** au préjudice de la **Société GODO et ENSCH-GF**, dont les locaux étaient situés **51 avenue de la Bourdonnais, à Paris VIIe**. Les faits étaient qualifiés de **vol aggravé par la réunion des auteurs**, sur le fondement des **articles 311-1, 311-4 et 311-14 du Code pénal**.
+
+Mathieu CHARREYRE a reçu un **procès-verbal de convocation**, émis le **17 mars 2000** par le **Tribunal de Grande Instance de Paris**, le convoquant devant le **Tribunal correctionnel de Paris**, le **2 mai 2000 à 9 heures**, au Palais de Justice, **14 quai des Orfèvres**. La convocation tenait lieu de **citation à personne** et précisait que le jugement pourrait être rendu contradictoirement, y compris en cas d'absence.
+
+Au final, **Mathieu, Pierre-Jean et Charles ont été condamnés à 40 heures de Travaux d'Intérêt Général**, tandis que **J-B a écopé de 100 heures de TIG**, qu'il a effectuées au sein de l'**association François DOLTO**.
+
+Mathieu, pour sa part, fut affecté comme **technicien informatique** dans une association. Et là, le système judiciaire avait manifestement sous-estimé la vitesse d'exécution du bonhomme : il accomplissait les tâches qu'on lui confiait tellement rapidement qu'il s'est retrouvé en quelque sorte en **« chômage technique » de ses propres TIG**. Faute de travail à lui donner, il n'aurait finalement effectué que **16 heures sur les 40 prescrites**.
+
+Cet épisode est resté dans le folklore du GAN comme l'un de ses rares véritables passages par la case justice : entre explorations nocturnes, extincteurs « empruntés » en réunion, interpellations et gardes à vue, le **Gang Antin-Nains** avait fini, pour une fois, par sortir du virtuel pour se retrouver face à une administration nettement moins joueuse.
 
 #### Dissolution et revival
 
@@ -2125,6 +2134,7 @@ Le GAN s'est étiolé avec le départ de Mathieu pour Aix-en-Provence. Revival p
 
 #### Anthony RAUCHEN alias "Le Korbo"
 Anthony RAUCHEN est un urbexeur belge se faisant appeler **"Le Korbo"** -- site : https://lekorbo.be. Connu de Mathieu via les SubParty. Se prend très au sérieux dans son rôle d'urbexeur : jamais un sourire, toujours un peu de hauteur, genre "Monsieur Urbex". Avec lui, Mathieu a effectué trois sorties en 2013 : le **sanatorium d'Angicourt** (Oise, 03/03/2013) avec la copine de Le Korbo et la stagiaire PhotoMat de Mathieu -- plan de Le Korbo, toute l'après-midi, très grand bâtiment, Mathieu a les photos ; une tentative infructueuse au **sanatorium de Saint-Martin-du-Tertre** (Val-d'Oise, 10/03/2013, avec la stagiaire, pas réussi à rentrer dans le coeur du bâtiment) ; et l'**ancienne usine EDF/GDF désaffectée du 6 rue d'Aboukir** (Paris 1er, place des Victoires, 27/03/2013). Mathieu y est retourné seul le 18/04/2013 pour des séances photo, avant d'y amener **Lionel BOYON** et **Cyrille ROBIN** le 09/06/2013 (session GAN, dernière visite -- accès muré peu après).
+
 
 ### Avatars
 #### Rebecca aka "Rebbye"
@@ -2158,11 +2168,11 @@ Loyal, honnête, capable de douceur. Allergique au bullshit, mais sensible. Util
 ## 7. Vie Médicale et Santé : Défis et Résilience
 
 ### Santé Physique
-Pacemaker posé en juillet 2025 suite aux tensions chroniques du conflit Saint-Antonin et à l'accumulation de stress depuis plus de quinze ans. Lors de l'opération, une bicuspidie aortique a été détectée (anomalie congénitale de la valve aortique avec deux cuspides au lieu de trois).
+Pacemaker posé en juillet 2025 suite aux tensions chroniques du conflit Saint-Antonin et à l'accumulation de stress depuis longtemps. Lors de l'opération, une bicuspidie aortique a été détectée (anomalie congénitale de la valve aortique avec deux cuspides au lieu de trois).
 
 **Mathieu est intimement persuadé que la pose de ce pacemaker est directement liée au stress prolongé** qu'il subit depuis le début du conflit d'indivision en 2009, aggravé par les décès de ses parents (Henri en 2017, Anne en 2023), l'hostilité familiale généralisée, les attaques juridiques, l'isolement social complet, et la gestion solitaire d'un patrimoine lourd sans aucune aide réelle. Il était déjà sur le fil avant, mais il tenait bon. Depuis le décès de ses parents, entre les déboires financiers (à bientôt 50 ans, il n'a même pas de quoi se payer du pain quotidiennement) et la gestion écrasante de ce patrimoine qu'il considère comme une responsabilité sacrée, il a littéralement vieilli de vingt ans en dix ans.
 
-Mathieu est en cours de traitement pour l'hypertension et prend de l'Ibersartan 300 mg le matin et de l'Amlodipine 5 mg le soir.
+Mathieu est en cours de traitement pour l'hypertension et prend de l'Ibersartan 300 mg le matin et de l'Amlodipine 5 mg le soir (ou inversement en ce moment).
 
 #### Épaule droite — séquelle permanente (depuis ~1999-2000)
 Lors d'une sortie MTB en forêt de Fontainebleau (vers 1999-2000), Mathieu rate un saut : trop décollé, une racine l'arrête net, il fait un vol plané depuis le vélo et percute un arbre de l'épaule droite. **Déboîtement de l'épaule droite.** Il était seul — règle d'or du VTT qu'il avait violée. A dû **se remettre l'épaule en place lui-même**, en forêt, sans assistance.
