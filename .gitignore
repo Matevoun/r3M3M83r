@@ -21,3 +21,7 @@ reformulator/.port
 *~
 *.bak
 Thumbs.db
+
+# Copie locale de instructions.md telechargee depuis GitHub quand le fichier
+# local est illisible (voir reformulator/retrieval.php)
+reformulator/cache/

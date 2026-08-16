@@ -199,6 +199,13 @@
       </div>
       <pre id="interpretation-output"><?php echo html_escape($reformule_interpretation); ?></pre>
     <?php endif; ?>
+    <?php // Explication adressee a Mathieu (bloc <<<HUMAIN du moteur, 16/08/2026). ?>
+    <?php if (!empty($reformule_humain)): ?>
+      <div style="margin-top:1rem;border-left:4px solid #16275b;background:#f0f4ff;padding:.75rem 1rem;border-radius:0 8px 8px 0;">
+        <strong style="display:block;margin-bottom:.35rem;color:#16275b;font-size:.9rem;">Ce que le moteur en dit</strong>
+        <div style="white-space:pre-wrap;font-size:.95rem;"><?php echo html_escape($reformule_humain); ?></div>
+      </div>
+    <?php endif; ?>
   </div>
   <?php endif; ?>
 
@@ -224,6 +231,11 @@
     ?>
     <div class="ia-result">
         <p class="block-label">Comparer / Fusionner avec la memoire</p>
+
+        <?php // Explication humaine : ce qui a ete trouve, ou, et ce qui est propose. ?>
+        <?php if (!empty($merge_humain)): ?>
+        <div style="border-left:4px solid #16275b;background:#f0f4ff;padding:.75rem 1rem;border-radius:0 8px 8px 0;margin-bottom:.85rem;white-space:pre-wrap;font-size:.95rem;"><?php echo html_escape($merge_humain); ?></div>
+        <?php endif; ?>
 
         <div style="border:2px solid #16275b;border-radius:8px;padding:.85rem 1rem;background:#f0f4ff;margin-bottom:.85rem;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.5rem;">
@@ -269,9 +281,12 @@
     </div>
     <?php endif; ?>
 
+    <?php // Bloc de debogage : source du fichier, comprehension de la demande,
+          // termes reellement cherches, passes de recherche, blocs retenus,
+          // taille du contexte transmis. Alimenté par prepare_memory_context(). ?>
     <?php if ($query_debug !== ''): ?>
     <details class="debug-panel">
-      <summary>Debug interrogation (cliquer pour afficher)</summary>
+      <summary>Debug : comprehension, recherche et contexte transmis (cliquer pour afficher)</summary>
       <pre><?php echo html_escape($query_debug); ?></pre>
     </details>
     <?php endif; ?>
@@ -285,8 +300,12 @@
         <label><strong>Ou charger un fichier à analyser :</strong></label><br>
         <input type="file" id="uploaded_file" name="uploaded_file" accept=".pdf,.docx,.doc,.rtf,.txt,.md" style="margin-top:8px;">
         <small style="color:#555; display:block; margin-top:4px;">(Optionnel) PDF, DOCX, DOC, RTF, TXT, MD — max 15 Mo</small>
+        <div id="extraction-suggestion" style="margin-top:10px;"></div>
         </div>
       <p class="notice">Le bouton "Reformulation avancee avec IA" corrige, reformule et transpose à la troisième personne, "Proposer emplacement" propose où ranger le souvenir dans le fichier d'instructions, et “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
+      <?php // Ce champ n'alimente plus la recherche (16/08/2026) : chaque bouton
+            // reconstruit son contexte cote serveur avec prepare_memory_context().
+            // Il ne sert plus qu'au bandeau "Contexte d'instructions charge". ?>
       <input type="hidden" name="instructions_context" value="<?php echo html_escape($instructions_context); ?>">
       <?php
         // Construction de la liste des moteurs disponibles pour le sélecteur.
@@ -644,6 +663,24 @@ if (copyTestOutputButton) {
     });
 }
 
+// Affiche, sous le champ de saisie, la comparaison du document avec la memoire
+// (merge_suggestion) renvoyee par saisie.php?extract_only=1. Elle etait
+// calculee cote serveur mais jamais affichee (corrige le 16/08/2026).
+function showExtractionSuggestion(data) {
+  var zone = document.getElementById('extraction-suggestion');
+  if (!zone) return;
+  var suggestion = (data && data.merge_suggestion) ? String(data.merge_suggestion).trim() : '';
+  var entete = (data && data.resume_genere)
+    ? 'Document lu et restitue par le moteur ; le texte est modifiable avant de le soumettre a un autre bouton.'
+    : 'Document extrait en mode technique (le moteur n\'a pas repondu) : relisez le texte avant de le soumettre.';
+  var html = '<div class="msg-ok" style="margin:0 0 .75rem 0;">' + escapeHtml(entete) + '</div>';
+  if (suggestion !== '') {
+    html += '<details class="debug-panel" open><summary>Ce que la memoire dit deja de ce document</summary><pre>'
+      + escapeHtml(suggestion) + '</pre></details>';
+  }
+  zone.innerHTML = html;
+}
+
 // Extraction seule du fichier (fetch hors submit formulaire :
 // il faut ouvrir manuellement le meme overlay de chargement).
 document.getElementById('extract-file-btn').addEventListener('click', function() {
@@ -671,8 +708,13 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
   .then(r => r.json())
   .then(data => {
     if (data.success && data.text) {
+      // Le champ recoit la restitution lisible produite par le moteur
+      // ("Mathieu vient de soumettre un fichier ..."), relisible et modifiable
+      // avant d'etre soumise a un autre bouton. En cas de panne du moteur,
+      // c'est le texte brut de l'extracteur qui arrive ici.
       document.getElementById('story').value = data.text;
-      alert("Fichier extrait.");
+      showExtractionSuggestion(data);
+      document.getElementById('story').scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
       alert("Erreur : " + (data.error || "Impossible d'extraire (Node.js ? )"));
     }

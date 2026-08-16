@@ -88,7 +88,15 @@
     // vide, le contexte transmis au LLM etait vide, et le LLM repondait -- a
     // raison, vu ce qu'il recevait -- "Le contexte fourni ne mentionne pas ce
     // sujet" pour absolument toutes les questions.
-    define('SOURCE_FILE', dirname(__DIR__) . '/instructions.md');
+    if (!defined('SOURCE_FILE')) {
+        define('SOURCE_FILE', dirname(__DIR__) . '/instructions.md');
+    }
+
+    // Couche de recherche generique dans instructions.md (CORRECTIF 16/08/2026).
+    // Tout ce qui concerne la lecture du fichier, son decoupage en blocs, la
+    // ponderation des termes et la construction du contexte vit desormais la.
+    // Lire la documentation en tete du fichier avant d'y toucher.
+    require_once __DIR__ . '/retrieval.php';
 
     // Calcule l'URL de base du service reformulator.
     // Priorite 1 : connexion directe via 127.0.0.1:PORT (lit le fichier .port ecrit par Node.js
@@ -97,6 +105,16 @@
     // Priorite 3 : URL publique codee en dur (dernier recours).
     // Toute modification de cette logique doit etre consignee dans les regles d'or.
     function get_reformulator_base_url(): string {
+        // Priorite 0 (ajout 16/08/2026) : variable d'environnement REFORMULATOR_URL.
+        // Elle ne sert pas en production ; elle permet de faire tourner le site
+        // en local (php -S) contre un "node server.js" ecoutant sur un autre
+        // port, par exemple :
+        //   REFORMULATOR_URL=http://127.0.0.1:3000 php -S 127.0.0.1:8080
+        $override = getenv('REFORMULATOR_URL');
+        if (is_string($override) && trim($override) !== '') {
+            return rtrim(trim($override), '/');
+        }
+
         // Sur hébergement mutualisé o2switch/Passenger, la connexion directe
         // via 127.0.0.1:PORT n'est pas accessible depuis PHP (Passenger proxy).
         // On utilise toujours l'URL publique — identique au comportement de test_curl.php.
@@ -410,7 +428,7 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 240);
         $result = curl_exec($ch);
         $error  = curl_error($ch);
         close_curl_handle($ch);
@@ -435,7 +453,7 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 240);
         $result = curl_exec($ch);
         $error  = curl_error($ch);
         close_curl_handle($ch);
@@ -458,7 +476,11 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        // CORRECTIF 16/08/2026 : 30 secondes ne suffisaient pas des que le
+        // contexte depassait quelques dizaines de milliers de caracteres. PHP
+        // coupait la ligne pendant que le moteur redigeait, et l'interface
+        // annoncait une panne de service alors que la reponse arrivait.
+        curl_setopt($ch, CURLOPT_TIMEOUT, 240);
         $result = curl_exec($ch);
         $curlError  = curl_error($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -654,13 +676,390 @@
             if (preg_match('/###\s*Texte fusionn[eé].*?\n(.*?)(?=###\s*Emplacement|\z)/is', $raw, $m)) {
                 $out['a_coller'] = trim($m[1]);
             } else {
-                $out['a_coller'] = $raw;
+                // Aucune balise A_COLLER : on retombe sur la reponse entiere,
+                // debarrassee du bloc HUMAIN qui, lui, est affiche a part.
+                $out['a_coller'] = trim(preg_replace('/<<<HUMAIN\s*.*?\s*>>>HUMAIN/is', '', $raw));
             }
         }
         if ($out['emplacement'] === '' && preg_match('/###\s*Emplacement.*?\n(.*?)(?=###|\z)/is', $raw, $m)) {
             $out['emplacement'] = trim($m[1]);
         }
         return $out;
+    }
+
+    // =========================================================================
+    // PIPELINE COMPRENDRE -> CHERCHER -> REPONDRE (CORRECTIF 16/08/2026)
+    // =========================================================================
+    // Probleme resolu : le bouton Interroger repondait "je n'ai pas trouve"
+    // alors que le sujet etait ecrit noir sur blanc dans instructions.md, dans
+    // des termes quasi identiques. Trois causes cumulees :
+    //   1. le fichier n'etait envoye en entier qu'en dessous de 60 000
+    //      caracteres, or il en fait plus de 560 000 : ce chemin etait mort ;
+    //   2. au-dela, seules 3 a 6 sections de premier niveau etaient retenues,
+    //      puis tronquees : un passage situe au milieu d'un gros chapitre etait
+    //      simplement absent de ce qui partait au moteur ;
+    //   3. les synonymes produits par le LLM servaient a choisir les sections
+    //      mais PAS a chercher les preuves, filtrees sur les mots litteraux de
+    //      la question. "chiens" ne pouvait donc jamais trouver "Luna",
+    //      "animal" ou "faune".
+    //
+    // Nouveau parcours, identique pour les quatre boutons de texte :
+    //   1. COMPRENDRE : un appel LLM court (purpose=understand) renvoie du JSON
+    //      structure : intention, attendu, mots clefs ponderes, synonymes,
+    //      entites, periodes. Aucune redaction a ce stade.
+    //   2. CHERCHER : reformulator/retrieval.php decoupe instructions.md en
+    //      blocs fins, cherche AVEC les synonymes, score, diversifie par
+    //      chapitre et rend un contexte cite (chemin + ligne).
+    //   3. REPONDRE : l'appel LLM final ne recoit que des extraits reels.
+    //
+    // Aucune regle metier en dur : pas de liste de synonymes codee, pas de
+    // section privilegiee. Si le contenu du fichier change, rien a modifier.
+    // =========================================================================
+
+    /**
+     * Extrait le premier objet JSON d'une reponse LLM.
+     * Les moteurs entourent volontiers leur JSON de texte ou de balises de bloc
+     * de code, malgre la consigne : on tolere, on ne s'en remet pas au hasard.
+     */
+    function decode_json_object_from_llm(string $raw): ?array {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return null;
+        }
+        // Retire une eventuelle cloture de bloc de code (```json ... ```).
+        $raw = preg_replace('/^```[a-zA-Z]*\s*/', '', $raw);
+        $raw = preg_replace('/\s*```$/', '', $raw);
+
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+        // Deuxieme chance : la portion entre la premiere accolade ouvrante et
+        // la derniere fermante.
+        $start = mb_strpos($raw, '{', 0, 'UTF-8');
+        $end   = mb_strrpos($raw, '}', 0, 'UTF-8');
+        if ($start === false || $end === false || $end <= $start) {
+            return null;
+        }
+        $candidate = mb_substr($raw, $start, $end - $start + 1, 'UTF-8');
+        $decoded = json_decode($candidate, true);
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * Etape 1 : COMPRENDRE la demande.
+     *
+     * $bouton indique ce que Mathieu attend (interroger, fusionner, emplacement,
+     * reformuler, document) ; le prompt "understand" s'en sert pour orienter
+     * l'elargissement. En cas d'echec du LLM (service arrete, quota, JSON
+     * casse), on retombe sur une comprehension locale minimale construite a
+     * partir des mots de la demande : la recherche fonctionne toujours, en
+     * moins large.
+     *
+     * Retour :
+     *   ['comprehension' => array, 'source' => 'llm'|'local', 'erreur' => string,
+     *    'brut' => string]
+     */
+    function understand_request_via_node(string $text, string $bouton): array {
+        $text = trim($text);
+        $out = ['comprehension' => [], 'source' => 'local', 'erreur' => '', 'brut' => ''];
+        if ($text === '') {
+            return $out;
+        }
+
+        // Le texte soumis peut etre long (document importe) : la comprehension
+        // n'a pas besoin de tout, le debut et la structure suffisent.
+        $sample = mb_strlen($text, 'UTF-8') > 6000
+            ? mb_substr($text, 0, 6000, 'UTF-8') . "\n...[suite non transmise a l'etape de comprehension]..."
+            : $text;
+
+        $raw = call_reformulator_service([
+            'text'    => "Bouton clique : " . $bouton . "\n\nTexte saisi par Mathieu :\n" . $sample,
+            'purpose' => 'understand',
+        ]);
+        $out['brut'] = is_string($raw) ? $raw : '';
+
+        $decoded = is_string($raw) ? decode_json_object_from_llm($raw) : null;
+        if (is_array($decoded)) {
+            $out['comprehension'] = normalize_comprehension($decoded);
+            $out['source'] = 'llm';
+            return $out;
+        }
+
+        global $last_reformulator_error;
+        $out['erreur'] = $last_reformulator_error !== ''
+            ? $last_reformulator_error
+            : 'reponse de comprehension illisible (JSON attendu)';
+        $out['comprehension'] = normalize_comprehension([]);
+        return $out;
+    }
+
+    /**
+     * Met la comprehension recue en forme sure : clefs presentes, types
+     * attendus, pas de valeur aberrante. Le reste du code peut ensuite lire
+     * $comprehension['synonymes'] sans precautions.
+     */
+    function normalize_comprehension(array $data): array {
+        $stringList = function ($value): array {
+            if (is_string($value)) {
+                $value = preg_split('/[,;]/u', $value) ?: [];
+            }
+            if (!is_array($value)) {
+                return [];
+            }
+            $out = [];
+            foreach ($value as $item) {
+                if (is_array($item)) {
+                    $item = $item['terme'] ?? ($item['mot'] ?? '');
+                }
+                $item = trim((string) $item);
+                if ($item !== '' && mb_strlen($item, 'UTF-8') <= 60) {
+                    $out[] = $item;
+                }
+            }
+            return array_values(array_unique($out));
+        };
+
+        $keywords = [];
+        $rawKeywords = $data['mots_clefs'] ?? ($data['mots_cles'] ?? []);
+        // Certains moteurs renvoient "chien, animal" au lieu d'une liste :
+        // on accepte les deux formes plutot que de perdre les mots clefs.
+        if (is_string($rawKeywords)) {
+            $rawKeywords = preg_split('/[,;]/u', $rawKeywords) ?: [];
+        }
+        if (is_array($rawKeywords)) {
+            foreach ($rawKeywords as $entry) {
+                if (is_array($entry)) {
+                    $term = trim((string) ($entry['terme'] ?? ($entry['mot'] ?? '')));
+                    $weight = (float) ($entry['poids'] ?? 2);
+                } else {
+                    $term = trim((string) $entry);
+                    $weight = 2.0;
+                }
+                if ($term === '' || mb_strlen($term, 'UTF-8') > 60) {
+                    continue;
+                }
+                $keywords[] = ['terme' => $term, 'poids' => max(1.0, min(4.0, $weight))];
+            }
+        }
+
+        return [
+            'intention'     => trim((string) ($data['intention'] ?? '')),
+            'type_texte'    => trim((string) ($data['type_texte'] ?? '')),
+            'attendu'       => trim((string) ($data['attendu'] ?? '')),
+            'sujets'        => $stringList($data['sujets'] ?? []),
+            'mots_clefs'    => $keywords,
+            'synonymes'     => $stringList($data['synonymes'] ?? []),
+            'entites'       => $stringList($data['entites'] ?? []),
+            'periodes'      => $stringList($data['periodes'] ?? []),
+            'reformulation' => trim((string) ($data['reformulation'] ?? '')),
+        ];
+    }
+
+    /**
+     * Rend une erreur de service lisible dans le bloc de debogage : les pages
+     * d'erreur HTML et les traces multilignes sont reduites a une seule ligne
+     * courte, sinon elles noient les informations utiles (termes cherches,
+     * blocs retenus).
+     */
+    function debug_short_error(string $message, int $max = 300): string {
+        $plat = trim(preg_replace('/\s+/u', ' ', strip_tags($message)) ?? '');
+        if ($plat === '') {
+            return '(erreur sans message)';
+        }
+        return mb_strlen($plat, 'UTF-8') > $max
+            ? mb_substr($plat, 0, $max, 'UTF-8') . ' [...]'
+            : $plat;
+    }
+
+    /**
+     * Resume lisible de la comprehension, place en tete du contexte envoye au
+     * moteur final : il sait ainsi ce qui a ete cherche, et pourquoi ces
+     * extraits lui arrivent.
+     */
+    function format_comprehension_for_prompt(array $c): string {
+        if (empty($c)) {
+            return '';
+        }
+        $lines = [];
+        if ($c['intention'] !== '')     { $lines[] = 'Intention comprise : ' . $c['intention']; }
+        if ($c['attendu'] !== '')       { $lines[] = 'Attendu : ' . $c['attendu']; }
+        if (!empty($c['sujets']))       { $lines[] = 'Sujets : ' . implode(', ', $c['sujets']); }
+        if (!empty($c['entites']))      { $lines[] = 'Entites citees ou probables : ' . implode(', ', $c['entites']); }
+        if (!empty($c['periodes']))     { $lines[] = 'Periodes : ' . implode(', ', $c['periodes']); }
+        if (empty($lines)) {
+            return '';
+        }
+        return "Comprehension de la demande :\n" . implode("\n", $lines);
+    }
+
+    /**
+     * Trace lisible de la comprehension pour le bloc de debogage.
+     */
+    function format_comprehension_for_debug(array $understood): string {
+        $c = $understood['comprehension'] ?? [];
+        $lines = [];
+        $lines[] = 'Comprehension : ' . ($understood['source'] === 'llm'
+            ? 'par le moteur (purpose=understand)'
+            : 'LOCALE de secours (le moteur n\'a pas repondu en JSON)');
+        if (!empty($understood['erreur'])) {
+            $lines[] = 'Avertissement comprehension : ' . debug_short_error($understood['erreur']);
+        }
+        if (!empty($c['intention']))  { $lines[] = 'Intention : ' . $c['intention']; }
+        if (!empty($c['attendu']))    { $lines[] = 'Attendu : ' . $c['attendu']; }
+        if (!empty($c['type_texte'])) { $lines[] = 'Type de texte : ' . $c['type_texte']; }
+        if (!empty($c['sujets']))     { $lines[] = 'Sujets : ' . implode(', ', $c['sujets']); }
+        if (!empty($c['mots_clefs'])) {
+            $parts = [];
+            foreach ($c['mots_clefs'] as $entry) {
+                $parts[] = $entry['terme'] . ' (' . rtrim(rtrim(number_format($entry['poids'], 1, ',', ''), '0'), ',') . ')';
+            }
+            $lines[] = 'Mots clefs proposes : ' . implode(', ', $parts);
+        }
+        if (!empty($c['synonymes'])) { $lines[] = 'Synonymes et notions reliees : ' . implode(', ', $c['synonymes']); }
+        if (!empty($c['entites']))   { $lines[] = 'Entites : ' . implode(', ', $c['entites']); }
+        if (!empty($c['periodes']))  { $lines[] = 'Periodes : ' . implode(', ', $c['periodes']); }
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Etapes 1 et 2 reunies : comprendre la demande puis chercher dans
+     * instructions.md. C'est LE point d'entree commun aux quatre boutons de
+     * texte ; toute amelioration de la recherche profite donc a tous.
+     *
+     * Options transmises a mem_retrieve() : 'budget', 'min_blocs', 'max_blocs'.
+     * L'option 'avec_plan' ajoute le plan complet du fichier au contexte
+     * (utile pour Proposer emplacement, qui doit nommer des sections exactes).
+     *
+     * Retour :
+     *   ['contexte'      => string,  contexte pret a envoyer au moteur
+     *    'comprehension' => array,   comprehension normalisee
+     *    'recherche'     => array,   retour brut de mem_retrieve()
+     *    'debug'         => string,  trace complete pour le panneau de debogage
+     *    'resume'        => string]  une ligne de resume pour l'interface
+     */
+    function prepare_memory_context(string $text, string $bouton, array $options = []): array {
+        $text = trim($text);
+        if ($text === '') {
+            return ['contexte' => '', 'comprehension' => [], 'recherche' => [], 'debug' => '', 'resume' => 'aucun texte soumis'];
+        }
+
+        $understood = understand_request_via_node($text, $bouton);
+        $comprehension = $understood['comprehension'];
+
+        $retrieval = mem_retrieve($text, $comprehension, $options);
+
+        $parts = [];
+        $resume = format_comprehension_for_prompt($comprehension);
+        if ($resume !== '') {
+            $parts[] = $resume;
+        }
+        if (!empty($options['avec_plan'])) {
+            $plan = mem_outline_text();
+            if ($plan !== '') {
+                $parts[] = "Plan complet d'instructions.md (chapitres et sous-sections, orthographe exacte) :\n" . $plan;
+            }
+        }
+        if ($retrieval['contexte'] !== '') {
+            $parts[] = "Extraits retrouves dans instructions.md :\n\n" . $retrieval['contexte'];
+        } else {
+            $parts[] = "Aucun extrait n'a ete retrouve pour cette demande. Ne conclus pas pour autant "
+                . "que le sujet est absent du fichier : dis que la recherche automatique n'a rien ramene "
+                . "et propose d'autres formulations.";
+        }
+
+        $stats = $retrieval['stats'];
+        $debug = "Bouton : " . $bouton . "\n"
+            . format_comprehension_for_debug($understood) . "\n"
+            . mem_debug_report($retrieval);
+
+        $resumeLigne = $stats['blocs_retenus'] . ' extrait(s) sur ' . $stats['blocs_trouves']
+            . ' trouve(s), ' . number_format((float) $stats['contexte_car'], 0, ',', ' ')
+            . ' caracteres transmis, source ' . $stats['source'];
+
+        return [
+            'contexte'      => implode("\n\n", $parts),
+            'comprehension' => $comprehension,
+            'recherche'     => $retrieval,
+            'debug'         => $debug,
+            'resume'        => $resumeLigne,
+        ];
+    }
+
+    /**
+     * Etape 3 pour le bouton Interroger : le moteur ne voit que des extraits
+     * reels, cites avec leur emplacement.
+     */
+    function answer_query_via_node(string $question, string $memoryContext): string {
+        return call_reformulator_service([
+            'text'                => $question,
+            'purpose'             => 'query',
+            'instructionsContext' => $memoryContext,
+        ]);
+    }
+
+    /**
+     * Bouton Reformulation avancee : reponse en deux blocs (texte pret a coller
+     * et explication humaine). Le decoupage tolere l'absence de balises, un
+     * moteur pouvant les oublier.
+     */
+    function parse_rewrite_result(string $raw): array {
+        $raw = trim($raw);
+        $out = ['texte' => '', 'humain' => '', 'raw' => $raw];
+        if ($raw === '') {
+            return $out;
+        }
+        if (preg_match('/<<<TEXTE\s*(.*?)\s*>>>TEXTE/is', $raw, $m)) {
+            $out['texte'] = trim($m[1]);
+        }
+        if (preg_match('/<<<HUMAIN\s*(.*?)\s*>>>HUMAIN/is', $raw, $m)) {
+            $out['humain'] = trim($m[1]);
+        }
+        if ($out['texte'] === '') {
+            // Aucune balise : tout le texte est considere comme la reformulation.
+            $out['texte'] = $raw;
+        }
+        return $out;
+    }
+
+    /**
+     * Bouton Comparer / Fusionner : le bloc humain s'ajoute aux blocs deja
+     * geres par parse_merge_smart_result().
+     */
+    function parse_merge_human_block(string $raw): string {
+        if (preg_match('/<<<HUMAIN\s*(.*?)\s*>>>HUMAIN/is', $raw, $m)) {
+            return trim($m[1]);
+        }
+        return '';
+    }
+
+    /**
+     * Bouton Charger & Extraire : transforme le texte brut extrait d'un
+     * document en une restitution lisible, prete a etre relue puis soumise a un
+     * autre bouton. Si le moteur ne repond pas, on rend le texte brut : mieux
+     * vaut une extraction technique qu'un champ vide.
+     */
+    function summarize_document_via_node(string $rawText, string $fileName, string $fileType): string {
+        $text = trim($rawText);
+        if ($text === '') {
+            return '';
+        }
+        $limit = 30000;
+        $tronque = false;
+        if (mb_strlen($text, 'UTF-8') > $limit) {
+            $text = mb_substr($text, 0, $limit, 'UTF-8');
+            $tronque = true;
+        }
+        $entete = "Nom du fichier : " . $fileName . "\n"
+            . "Type de fichier : " . $fileType . "\n"
+            . ($tronque ? "Attention : seuls les " . $limit . " premiers caracteres du document sont transmis.\n" : '')
+            . "\n";
+
+        $result = call_reformulator_service([
+            'text'    => $entete . $text,
+            'purpose' => 'extract-summary',
+        ]);
+        return is_string($result) ? trim($result) : '';
     }
 
     /**
@@ -2068,6 +2467,10 @@
     $query_result              = '';
     $query_debug               = '';
     $merge_result              = '';  // CORRECTIF 08/08/2026 : resultat Comparer/Fusionner
+    // CORRECTIF 16/08/2026 : chaque bouton rend desormais, en plus de son
+    // resultat brut, une explication adressee a Mathieu (bloc <<<HUMAIN).
+    $reformule_humain          = '';
+    $merge_humain              = '';
     $last_reformulator_error   = '';
     $selected_engine           = '';  // Moteur IA choisi par l'utilisateur (état global)
     $instructions_outline      = [];
@@ -2118,17 +2521,35 @@
                 $extraction = extract_text_from_file($tmpPath, $fileName);
 
                 if ($extraction['success'] && trim($extraction['text']) !== '') {
-                    // Passage LLM de controle : chevauchements avec instructions.md
-                    // et proposition de fusion (n'echoue pas l'extraction si le LLM est HS).
+                    // CORRECTIF 16/08/2026 : le champ de saisie recevait le texte
+                    // brut de l'extracteur (scories d'OCR, en-tetes de page,
+                    // coupures), inutilisable tel quel. Le moteur en fait
+                    // desormais une restitution lisible qui commence par
+                    // "Mathieu vient de soumettre un fichier ...". Si le moteur
+                    // ne repond pas, on rend le texte brut : mieux vaut une
+                    // extraction technique qu'un champ vide.
+                    $extension = strtoupper(pathinfo($fileName, PATHINFO_EXTENSION));
+                    $lisible = '';
+                    try {
+                        $lisible = summarize_document_via_node($extraction['text'], $fileName, $extension !== '' ? $extension : 'inconnu');
+                    } catch (Throwable $e) {
+                        error_log('EXTRACT_SUMMARY echec pour ' . $fileName . ' : ' . $e->getMessage());
+                    }
+
+                    // Comparaison avec la memoire, sur le texte le plus propre
+                    // disponible (n'echoue pas l'extraction si le moteur est HS).
                     $mergeSuggestion = '';
                     try {
-                        $mergeSuggestion = merge_check_via_node($extraction['text']);
+                        $prep = prepare_memory_context($lisible !== '' ? $lisible : $extraction['text'], 'Charger & Extraire fichier', ['budget' => 30000]);
+                        $mergeSuggestion = merge_check_via_node($extraction['text'], $prep['contexte']);
                     } catch (Throwable $e) {
                         error_log('MERGE_CHECK echec apres extract : ' . $e->getMessage());
                     }
                     echo json_encode([
                         'success' => true,
-                        'text' => $extraction['text'],
+                        'text' => $lisible !== '' ? $lisible : $extraction['text'],
+                        'text_brut' => $extraction['text'],
+                        'resume_genere' => $lisible !== '',
                         'merge_suggestion' => $mergeSuggestion,
                     ], JSON_UNESCAPED_UNICODE);
                 } else {
@@ -2144,262 +2565,135 @@
             exit;
         }
 
-        $instructions_context = trim($_POST['instructions_context'] ?? '');
-        // Moteur IA sélectionné par l'utilisateur (vide = auto/fallback)
+        // Le contexte memoire est construit par chaque bouton via
+        // prepare_memory_context() (comprehension + recherche fine). Le champ
+        // cache instructions_context du navigateur n'est donc plus lu ici.
+        // Moteur IA selectionne par l'utilisateur (vide = auto/fallback)
         $selected_engine = trim($_POST['selected_engine'] ?? '');
+        $instructions_context = '';
 
-        // Si les instructions sont chargees, enrichir le contexte avec le contenu de la section la plus probable.
-        if ($instructions_context !== '') {
-            $sections = extract_instructions_sections();
-            [$bestSectionTitle, $bestSectionContent] = find_best_instruction_section($input_text, $sections);
-            if ($bestSectionTitle !== '' && $bestSectionContent !== '') {
-                $instructions_context = build_instructions_context(
-                    extract_instructions_outline(),
-                    load_instructions_excerpt(),
-                    $bestSectionTitle,
-                    $bestSectionContent
-                );
-            }
-        }
+        // =================================================================
+        // LES QUATRE BOUTONS DE TEXTE (refonte 16/08/2026)
+        // =================================================================
+        // Tous suivent le meme parcours : prepare_memory_context() comprend la
+        // demande puis cherche dans instructions.md, et le moteur final ne
+        // recoit que des extraits reels. Seuls le "purpose" et le budget de
+        // contexte changent d'un bouton a l'autre. Voir le bloc de
+        // documentation du pipeline plus haut dans ce fichier.
+        //
+        // Le champ cache instructions_context envoye par le navigateur n'est
+        // plus utilise pour la recherche : il ne contenait qu'un extrait
+        // generique des premiers caracteres du fichier, parfois vieux de
+        // plusieurs minutes, et c'est lui qui partait au moteur a la place du
+        // vrai contenu.
+        // =================================================================
 
-        // Bouton "Reformulation avec IA"
+        // Bouton "Reformulation avancee avec IA"
         if (isset($_POST['reformuler']) && $input_text !== '') {
             $reformule_original = $input_text;
-            if ($instructions_context === '') {
-                $instructions_context = build_instructions_context_for_text($input_text);
-                $instructions_loaded = true;
-                $instructions_line_count = count_instructions_lines();
-            }
+            // Budget modere : la reformulation a besoin du ton et des graphies
+            // deja employes sur le sujet, pas de tout le dossier.
+            $prep = prepare_memory_context($input_text, 'Reformulation avancee avec IA', [
+                'budget' => 20000,
+            ]);
+            $instructions_context = $prep['contexte'];
+            $query_debug = $prep['debug'];
             log_reformulator_request($input_text);
+
             $cleaned = reformuler_via_node($input_text, $instructions_context);
             if ($cleaned !== '') {
-                $reformule_interpretation = $cleaned;
-                $reformule_msg          = 'Voici ce que vous écriviez, et mon interprétation.';
+                $parsed = parse_rewrite_result($cleaned);
+                $reformule_interpretation = $parsed['texte'];
+                $reformule_humain = $parsed['humain'];
+                $reformule_msg = 'Reformulation proposee (' . $prep['resume'] . ').';
             } else {
                 $reformule_msg = 'Erreur : le reformulator n\'a pas répondu. Vérifiez que Node.js tourne.';
+                if ($last_reformulator_error !== '') {
+                    $query_debug .= "\nErreur moteur : " . debug_short_error($last_reformulator_error);
+                }
             }
+            $instructions_loaded = true;
+            $instructions_line_count = count_instructions_lines();
         }
 
         // Bouton "Proposer emplacement"
         if (isset($_POST['proposer_emplacement']) && $input_text !== '') {
             $reformule_original = $input_text;
-            if ($instructions_context === '') {
-                $instructions_context = build_instructions_context_for_text($input_text);
-                $instructions_loaded = true;
-                $instructions_line_count = count_instructions_lines();
-            }
+            // avec_plan : le moteur doit nommer des sections qui existent
+            // vraiment, donc il recoit le plan complet en plus des extraits.
+            $prep = prepare_memory_context($input_text, 'Proposer emplacement', [
+                'budget'    => 30000,
+                'avec_plan' => true,
+            ]);
+            $instructions_context = $prep['contexte'];
+            $query_debug = $prep['debug'];
+
             $proposed_location = propose_emplacement_via_node($input_text, $instructions_context);
             if ($proposed_location !== '') {
-                $reformule_msg = 'Emplacement proposé en fonction de la structure du fichier d\'instructions.';
+                $reformule_msg = 'Emplacement propose (' . $prep['resume'] . ').';
             } else {
                 $reformule_msg = 'Erreur : le service n\'a pas pu proposer un emplacement.';
+                if ($last_reformulator_error !== '') {
+                    $query_debug .= "\nErreur moteur : " . debug_short_error($last_reformulator_error);
+                }
             }
-        }
-
-        // ====================== INTERROGER LE FICHIER ======================
-        // CORRECTIF 05/08/2026 : 1) expansion d'intention (LLM leger)
-        // 2) selection de sections (titres + intention elargie)
-        // 3) contenu des sections
-        // 4) reponse finale (deux lectures + boussole d'intention)
-        // La recherche par mots-cles n'est qu'un secours.
-        //
-        // Garde-fou de taille : en dessous du seuil on envoie le fichier INTEGRAL.
-        if (isset($_POST['query_instructions']) && $input_text !== '') {
-            $reformule_original = $input_text;
-            $rankedLines = [];
-
-            // 0) Comprendre vraiment la question (ancetres, amis d'enfance, etc.)
-            $intentExpanded = expand_query_intent_via_node($input_text);
-
-            $sections = extract_instructions_sections();
-            $fullDocument = load_instructions_content();
-            $fullDocumentLength = mb_strlen($fullDocument, 'UTF-8');
-            $fullDocumentSizeLimit = 60000; // ~15-18k tokens, sur pour la plupart des moteurs
-
-            if ($fullDocumentLength > 0 && $fullDocumentLength <= $fullDocumentSizeLimit) {
-                $instructions_context = '';
-                if ($intentExpanded !== '') {
-                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
-                }
-                $instructions_context .= "Voici le contenu INTEGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
-                $query_debug_mode = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)'
-                    . ($intentExpanded !== '' ? ' + intention elargie' : '');
-            } else {
-                $outline = extract_instructions_outline();
-                // 1) Selection semantique des sections (question + intention elargie)
-                $selectQuestion = $input_text;
-                if ($intentExpanded !== '') {
-                    $selectQuestion = $input_text . "\n\nIntention elargie :\n" . $intentExpanded;
-                }
-                $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
-
-                $relevantSections = [];
-                if (!empty($selectedTitles)) {
-                    foreach ($selectedTitles as $title) {
-                        if (isset($sections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                // 2) Secours : recherche locale par termes si le LLM n'a rien renvoye
-                if (empty($relevantSections)) {
-                    $localSearch = search_with_counts_light($input_text, $sections);
-                    foreach (($localSearch['sections'] ?? []) as $title => $info) {
-                        if (isset($sections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                // 3) Dernier recours : premieres sections du fichier
-                if (empty($relevantSections)) {
-                    $relevantSections = array_slice($sections, 0, 3, true);
-                }
-
-                // 4) TOUJOURS fusionner les sections les mieux scorees en local.
-                // Ex. Chronologie contient "Future cousine paternelle Anne PAULY"
-                // alors que le LLM n'a parfois selectionne que Famille / Domaine.
-                $minSections = 3;
-                $maxSections = 6;
-                $localSearchPad = search_with_counts_light($input_text . ' ' . $intentExpanded, $sections);
-                foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
-                    if (count($relevantSections) >= $maxSections) {
-                        break;
-                    }
-                    if (isset($sections[$title]) && !isset($relevantSections[$title])) {
-                        $relevantSections[$title] = $sections[$title];
-                    }
-                }
-                if (count($relevantSections) < $minSections) {
-                    foreach ($outline as $title) {
-                        if (count($relevantSections) >= $minSections) {
-                            break;
-                        }
-                        $tNorm = mb_strtolower($title, 'UTF-8');
-                        $useful = (mb_strpos($tNorm, 'exp') !== false && mb_strpos($tNorm, 'person') !== false)
-                            || mb_strpos($tNorm, 'chronologie') !== false
-                            || mb_strpos($tNorm, 'entit') !== false
-                            || mb_strpos($tNorm, 'defis') !== false
-                            || mb_strpos($tNorm, 'défis') !== false
-                            || mb_strpos($tNorm, 'introduction') !== false;
-                        if ($useful && isset($sections[$title]) && !isset($relevantSections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                // Contenu des sections selectionnees (extraits centres sur les termes)
-                $perSectionLimit = 12000;
-                $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
-
-                $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
-                if ($intentExpanded !== '') {
-                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
-                }
-
-                // Termes primaires = UNIQUEMENT la question (signal utile).
-                // L'intention elargie guide la selection de sections, PAS le
-                // ranking des preuves (sinon "domaine/montjol" noie "cousin").
-                $primaryTerms = extract_keywords($input_text);
-                foreach (preg_split('/\s+/u', $input_text, -1, PREG_SPLIT_NO_EMPTY) as $w) {
-                    $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
-                    if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
-                        $primaryTerms[] = $w;
-                    }
-                }
-                // Retirer les mots trop generiques qui matchent partout
-                $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien'];
-                $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
-                    return !in_array($t, $genericNoise, true);
-                }));
-                $queryTerms = $primaryTerms;
-
-                // PRIORITE 1 : preuves classees + diversifiees par section
-                $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 60, $primaryTerms);
-                if (!empty($rankedLines)) {
-                    $instructions_context .= "PREUVES DIRECTES du fichier (citations prioritaires — "
-                        . "N'INVENTE RIEN en dehors de ces faits et du contexte ci-dessous) :\n";
-                    foreach ($rankedLines as $item) {
-                        $instructions_context .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
-                    }
-                    $instructions_context .= "\n";
-                }
-
-                // PRIORITE 2 : contenu des sections, ordonnees par densite de preuves locales
-                // (Chronologie avant un pavé Domaine si elle matche mieux la question).
-                $sectionBoost = [];
-                foreach ($rankedLines as $item) {
-                    $t = $item['title'];
-                    $sectionBoost[$t] = ($sectionBoost[$t] ?? 0) + (int) ($item['score'] ?? 1);
-                }
-                $orderedTitles = array_keys($relevantSections);
-                usort($orderedTitles, function ($a, $b) use ($sectionBoost) {
-                    $sa = $sectionBoost[$a] ?? 0;
-                    $sb = $sectionBoost[$b] ?? 0;
-                    if ($sb !== $sa) {
-                        return $sb <=> $sa;
-                    }
-                    return 0;
-                });
-                $instructions_context .= "Contenu des sections (contexte elargi, secondaire par rapport aux preuves ci-dessus) :\n";
-                foreach ($orderedTitles as $title) {
-                    $content = $relevantSections[$title];
-                    $block = trim($content);
-                    if (mb_strlen($block, 'UTF-8') > $perSectionLimit) {
-                        $block = build_section_excerpt_for_query($content, $queryTerms, $perSectionLimit);
-                    }
-                    $instructions_context .= "\n--- Section : $title ---\n" . $block . "\n";
-                }
-                $query_debug_mode = count($relevantSections) . ' section(s) par categories LLM'
-                    . ($intentExpanded !== '' ? ' + intention elargie' : '')
-                    . ' (fichier trop volumineux : '
-                    . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres > seuil de ' . number_format($fullDocumentSizeLimit, 0, ',', ' ') . ')';
-            }
-
             $instructions_loaded = true;
             $instructions_line_count = count_instructions_lines();
+        }
 
-            $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n";
-            $query_debug .= "Contexte transmis : " . $query_debug_mode . "\n";
-            if (!empty($rankedLines)) {
-                $query_debug .= "Preuves prioritaires retenues (" . count($rankedLines) . ") :\n";
-                foreach (array_slice($rankedLines, 0, 12) as $item) {
-                    $query_debug .= "  [" . $item['title'] . "] " . mb_substr($item['line'], 0, 120, 'UTF-8') . "\n";
+        // Bouton "Interroger le fichier"
+        // Le budget est le plus large des quatre : repondre "ce sujet est
+        // absent" exige d'avoir regarde le plus loin possible.
+        if (isset($_POST['query_instructions']) && $input_text !== '') {
+            $reformule_original = $input_text;
+            $prep = prepare_memory_context($input_text, 'Interroger le fichier', [
+                'budget'    => 48000,
+                'min_blocs' => 6,
+            ]);
+            $instructions_context = $prep['contexte'];
+            $query_debug = $prep['debug'];
+
+            $finalResponse = answer_query_via_node($input_text, $instructions_context);
+
+            if ($finalResponse !== '') {
+                // On n'ecrase plus une reponse negative du moteur par un
+                // message maison : s'il explique ce qu'il n'a pas trouve, cette
+                // explication vaut mieux qu'une phrase toute faite, et le bloc
+                // de debogage dit exactement ce qui a ete cherche.
+                $query_result = $finalResponse;
+                $reformule_msg = 'Reponse du moteur (' . $prep['resume'] . ').';
+            } else {
+                $query_result = "Le moteur n'a pas repondu. Le detail de la recherche est dans le bloc de debogage ci-dessous.";
+                $reformule_msg = 'Erreur : aucune reponse du moteur.';
+                if ($last_reformulator_error !== '') {
+                    $query_debug .= "\nErreur moteur : " . debug_short_error($last_reformulator_error);
                 }
             }
-
-            // Appel LLM final : la question et le contenu reel (integral ou sections selectionnees)
-            // sont transmis ensemble, le moteur cherche et repond lui-meme.
-            $finalResponse = finalize_query_response_via_node($input_text, '', $instructions_context);
-
-            if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
-                $query_result = $finalResponse;
-                $reformule_msg = 'Réponse générée par l\'IA (' . $query_debug_mode . ')';
-            } else {
-                $query_result = "Je n'ai pas trouvé d'information pertinente dans tes mémoires pour cette question.";
-                $reformule_msg = 'Aucune information trouvée.';
-            }
+            $instructions_loaded = true;
+            $instructions_line_count = count_instructions_lines();
         }
 
         // Bouton "Comparer / Fusionner avec la memoire"
-        // CORRECTIF 08/08/2026 : 1) construit un contexte memoire comme Interroger
-        // sur le sujet du texte ; 2) LLM merge-smart -> deja / nouveau / fusion /
-        // emplacement. Texte du champ = infos NOUVELLES (Geneanet, notes...).
         if (isset($_POST['merge_smart']) && $input_text !== '') {
             $reformule_original = $input_text;
-            $built = build_memory_context_for_topic($input_text);
-            $memoryCtx = $built['context'] ?? '';
-            $query_debug = "Mode : Comparer / Fusionner\n";
-            $query_debug .= "Contexte memoire : " . ($built['debug'] ?? '') . "\n";
+            $prep = prepare_memory_context($input_text, 'Comparer / Fusionner', [
+                'budget'    => 40000,
+                'min_blocs' => 6,
+            ]);
+            $instructions_context = $prep['contexte'];
+            $query_debug = $prep['debug'];
 
-            $merged = merge_smart_via_node($input_text, $memoryCtx);
+            $merged = merge_smart_via_node($input_text, $instructions_context);
             if ($merged !== '') {
                 $merge_result = $merged;
-                $reformule_msg = 'Fusion proposee (comparer avec la memoire).';
+                $merge_humain = parse_merge_human_block($merged);
+                $reformule_msg = 'Fusion proposee (' . $prep['resume'] . ').';
             } else {
                 $merge_result = '';
                 $reformule_msg = 'Erreur : la fusion n\'a pas abouti. Verifiez que Node.js tourne.';
+                if ($last_reformulator_error !== '') {
+                    $query_debug .= "\nErreur moteur : " . debug_short_error($last_reformulator_error);
+                }
             }
             $instructions_loaded = true;
             $instructions_line_count = count_instructions_lines();

@@ -9,18 +9,20 @@
  *   2. Orthographe archaique obligatoire : CLEF (jamais "cle"), NENUPHAR
  *      (jamais "nenufar"), soeurs avec O et E separes (jamais ligature oe).
  *      Pas de tiret cadratin, pas d'emoji en dur dans le code source.
- *   3. Le prompt QUERY doit faire comprendre l'INTENTION de la question
- *      (synthese, decompte, liste) et non se contenter de compter un mot.
- *      Luna est un chien ; une 2CV est une voiture. Les noms propres comptent.
- *   3b. Le prompt SAISIE (bouton Reformulation avancee) doit COMPRENDRE
- *      l'anecdote, la transposer en 3e personne (Mathieu), et synthetiser
- *      intelligemment (ni mot a mot, ni resume seche). Voir SAISIE_PROMPT.
- *   3c. STYLE_RULES (Regles d'Or d'instructions.md) est appende a tous les
- *      prompts qui produisent du texte francais : SAISIE, QUERY, LOCATION,
- *      MERGE_CHECK, MERGE_SMART. CLEF, NENUPHAR, noms en MAJUSCULES, etc.
- *   3d. Bouton Comparer/Fusionner (purpose=merge-smart) : contexte memoire
- *      comme Interroger + texte nouveau du champ -> fusion prete a coller
- *      + emplacement. Voir MERGE_SMART_PROMPT et merge_smart_via_node().
+ *   3. TOUS les prompts sont dans reformulator/prompts.txt, plus dans ce
+ *      fichier. Un bloc "=== nom ===" par purpose ; le nom du bloc est le
+ *      purpose envoye par functions.php. Le fichier est relu a chaud des que
+ *      sa date change : aucun redemarrage Node.js pour ajuster un prompt.
+ *   3b. Ajouter un bouton = un bloc dans prompts.txt + une entree dans
+ *      PURPOSE_SETTINGS (temperature, taille de reponse, phrase d'amorce).
+ *      Rien d'autre : buildMessages() est partage par tous les moteurs.
+ *   3c. Les fragments {{_style}}, {{_factuel}} et {{_contexte}} de prompts.txt
+ *      sont inseres automatiquement dans les prompts qui les appellent :
+ *      Regles d'Or (CLEF, NENUPHAR, noms en MAJUSCULES), interdiction
+ *      d'inventer, et mode d'emploi des extraits fournis.
+ *   3d. La recherche dans instructions.md se fait cote PHP, dans
+ *      reformulator/retrieval.php : ce service ne recoit que des extraits
+ *      deja selectionnes. Voir la documentation en tete de retrieval.php.
  *   4. Les modeles OpenRouter :free tournent souvent (HTTP 404). Preferer
  *      openrouter/free ou verifier la disponibilite avant de changer le defaut.
  *   5. Ne jamais laisser une erreur Multer ou Express renvoyer du HTML :
@@ -142,211 +144,160 @@ const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_O
   .map(function(item) { return item.trim().toLowerCase(); })
   .filter(Boolean);
 
-// Prompts optimises - Mise a jour 08/08/2026
-// STYLE_RULES : extrait des Regles d'Or d'instructions.md (section debut).
-// Applique a TOUS les prompts qui produisent du texte francais (4 boutons :
-// Reformulation, Interroger, Proposer emplacement, Charger/Extraire+merge).
-// Commentaires code : sans accents ni caracteres speciaux.
-const STYLE_RULES = `
-Regles de style OBLIGATOIRES (calquees sur instructions.md - Regles d'Or) :
-- Orthographe archaique : ecrire CLEF (jamais "cle" ni "cles"), NENUPHAR (jamais "nenufar"). Preferer les graphies classiques elegantes.
-- Pas de ligature oe fusionnee : ecrire OE separes (COEUR, VOEUX, soeurs avec o et e distincts).
-- Noms de famille en MAJUSCULES completes (CHARREYRE, MONTJOL). Prenoms : majuscule initiale seulement (Mathieu).
-- Domaine Saint-Antonin : majuscule a Domaine ; jamais "Domaine de Saint-Antonin".
-- Pas de tiret cadratin ni demi-cadratin (— –) a la place d'une virgule ou d'une parenthese : utiliser virgules, parentheses ou deux-points.
-- Pas d'emoji ni de smiley dans le texte.
-- Parler de Mathieu a la troisieme personne (jamais "je" a sa place).
-- Ne pas recopier mot a mot sans reformuler avec nuance quand le contexte le demande.
-`;
+// =============================================================================
+// PROMPTS : charges depuis reformulator/prompts.txt (CORRECTIF 16/08/2026)
+// =============================================================================
+// Les prompts ne sont plus ecrits en dur ici. Ils vivent dans prompts.txt, un
+// simple fichier texte decoupe en blocs "=== nom ===". Trois raisons :
+//   1. Mathieu (ou une autre IA reprenant le projet) peut ajuster un prompt
+//      sans toucher au code ni redemarrer Node.js : le fichier est relu des
+//      que sa date de modification change.
+//   2. Les prompts etaient dupliques a l'identique dans deux fonctions
+//      createPayload (generique et Groq) : toute correction devait etre faite
+//      deux fois, et une des deux etait invariablement oubliee.
+//   3. Ajouter un bouton ou un moteur ne demande plus qu'un bloc de texte.
+//
+// Les blocs commencant par un tiret bas (_style, _factuel, _contexte) sont des
+// fragments reutilisables, inseres via {{_style}} dans les autres blocs.
+// =============================================================================
 
-const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-cles. A partir de la question suivante sur la vie de Mathieu CHARREYRE, retourne UNIQUEMENT une liste de mots-cles ou expressions separes par des virgules (maximum 8 termes). Pas de phrase, pas de salutation, pas d'explication.`;
-// CORRECTIF 18/07/2026 : le prompt precedent n'interdisait pas explicitement
-// d'inventer une citation quand le contexte local ne contenait rien de
-// pertinent -- ce qui produisait des extraits fabriques, plausibles mais
-// inexistants dans le fichier reel (constate sur une question dont la
-// recherche locale ne remontait aucune preuve, cote saisie.php -- voir
-// aussi le correctif de search_with_counts_light() le meme jour).
-// CORRECTIF 05/08/2026 : expansion d'intention avant selection (ancetres,
-// amis d'enfance, etc.) puis reponse en deux lectures.
-const QUERY_EXPAND_PROMPT = `Tu elargis une question sur la memoire de Mathieu CHARREYRE pour preparer une recherche dans instructions.md.
+const PROMPTS_FILE = path.join(__dirname, 'prompts.txt');
 
-Comprends l'intention humaine, pas les mots isoles. Elargis vers les notions RELIEES, periodes, lieux et types de personnes.
+// Prompt de secours minimal, utilise UNIQUEMENT si prompts.txt est absent ou
+// illisible. Volontairement generique : il ne remplace pas les vrais prompts,
+// il evite juste que le service reponde n'importe quoi en cas de deploiement
+// incomplet. L'incident est ecrit dans log/error.log.
+const FALLBACK_PROMPT = 'Tu es Reformulator, assistant de la memoire de Mathieu CHARREYRE. '
+  + 'Reponds en francais, de facon factuelle, sans jamais inventer de fait absent du contexte fourni. '
+  + 'ATTENTION : le fichier reformulator/prompts.txt est introuvable ou illisible, les consignes detaillees manquent.';
 
-Exemples :
-- "mes ancetres" -> parents, grands-parents, arbre familial, lignées maternelle et paternelle, origines
-- "amis d'enfance" -> amities / camarades ~1976-1992, ecole, quartier, Vie Sociale, Chronologie jeunesse
-- "combien de voitures" -> vehicules, 2CV, Titine, permis, deplacements
-- "parcelles a Saint-Antonin" -> Domaine, lieudits, natures Bois/Taillis, indivision
+let promptsCache = { mtimeMs: 0, map: {}, loadedAt: 0 };
 
-Reponds en 4 a 8 lignes max, structure libre mais claire :
-Intention :
-Axes de recherche : (mots, periodes, lieux, types de personnes)
-Sections utiles probables : (famille, chronologie, vie sociale, domaine...)
+// Decoupe le fichier en blocs "=== nom ===" puis resout les inclusions {{_nom}}.
+const parsePromptsFile = function(raw) {
+  const map = {};
+  let current = null;
+  let buffer = [];
+  const lines = String(raw).split(/\r?\n/);
 
-Pas de reponse a la question elle-meme. Pas d'invention de faits.`;
-// CORRECTIF 05/08/2026 : FACTUEL STRICT — tout doit etre dans le fichier.
-const QUERY_PROMPT = `Tu es Reformulator. REGLE D'OR NUMERO 1 (prioritaire sur tout le reste) :
+  const flush = function() {
+    if (current !== null) {
+      map[current] = buffer.join('\n').trim();
+    }
+    buffer = [];
+  };
 
-************************************************************
-** N'INVENTE RIEN. JAMAIS. **
-** CHAQUE FAIT DOIT ETRE PRESENT DANS LE CONTEXTE FOURNI. **
-** Si l'info n'y est pas : dis "non mentionne dans le fichier". **
-** Pas de prenom invente, pas de degre de parente invente, **
-** pas de recommandation d'archives externes, pas de "il faudrait consulter". **
-************************************************************
+  for (const line of lines) {
+    const header = line.match(/^===\s*([A-Za-z0-9_.-]+)\s*===\s*$/);
+    if (header) {
+      flush();
+      current = header[1];
+      continue;
+    }
+    if (current === null) {
+      continue; // en-tete de documentation du fichier
+    }
+    buffer.push(line);
+  }
+  flush();
 
-Tu ne connais la memoire de Mathieu CHARREYRE QUE via le contexte fourni.
+  // Resolution des fragments {{_nom}} (une seule passe : pas d'imbrication).
+  for (const name of Object.keys(map)) {
+    map[name] = map[name].replace(/\{\{([A-Za-z0-9_.-]+)\}\}/g, function(match, ref) {
+      return typeof map[ref] === 'string' ? map[ref] : match;
+    });
+  }
+  return map;
+};
 
-Methode :
-1. Lis d'abord le bloc "PREUVES DIRECTES" s'il existe : ce sont les citations prioritaires.
-2. Ensuite le reste du contexte. Releves UNIQUEMENT ce qui est ecrit noir sur blanc.
-3. Tu PEUX relier deux faits TOUS DEUX ecrits (ex. "fils d'Elisabeth" + "Elisabeth tante de Mathieu" => cousin) MAIS seulement si les deux sont dans le texte. Sinon abstiens-toi.
-4. Si PLUSIEURS personnes sont nommees avec le meme type de libelle (ex. plusieurs lignes
-   "Futur cousin paternel" / "Future cousine paternelle" avec des prenoms differents),
-   liste TOUS les prenoms. Ne resume PAS en "N enfants non nommes" si les prenoms sont dans le contexte.
+// Recharge prompts.txt si sa date de modification a change (hot reload).
+const loadPrompts = function() {
+  try {
+    const stat = fs.statSync(PROMPTS_FILE);
+    if (stat.mtimeMs !== promptsCache.mtimeMs) {
+      const raw = fs.readFileSync(PROMPTS_FILE, 'utf8');
+      const map = parsePromptsFile(raw);
+      const count = Object.keys(map).length;
+      if (count === 0) {
+        logError('prompts.txt lu mais aucun bloc "=== nom ===" trouve.');
+      } else {
+        promptsCache = { mtimeMs: stat.mtimeMs, map: map, loadedAt: Date.now() };
+        console.log('[PROMPTS] ' + count + ' bloc(s) charge(s) depuis prompts.txt');
+      }
+    }
+  } catch (error) {
+    if (promptsCache.loadedAt === 0) {
+      logError('Lecture de prompts.txt impossible (' + PROMPTS_FILE + ') : '
+        + (error && error.message ? error.message : String(error))
+        + ' -- bascule sur le prompt de secours.');
+    }
+  }
+  return promptsCache.map;
+};
 
-Exemples de preuves directes valides :
-- "Future cousine paternelle de Mathieu CHARREYRE" / "Futur cousin paternel"
-- "ses cousins VILLIERS (Antoine et Charlotte)"
-- Une liste de naissances avec le libelle cousin/cousine
+// Prompt systeme d'un purpose donne. 'rewrite' est le comportement par defaut
+// (bouton Reformulation avancee), conforme a l'historique du projet.
+const getPrompt = function(purpose) {
+  const map = loadPrompts();
+  const key = String(purpose || 'rewrite').toLowerCase();
+  if (map[key]) return map[key];
+  if (map.rewrite) return map.rewrite;
+  return FALLBACK_PROMPT;
+};
 
-INTERDITS :
-- Dire "non nommes" ou "prenoms non cites" alors qu'un prenom figure dans PREUVES DIRECTES ou Chronologie
-- Inventer des prenoms absents du contexte
-- Extrapoler un lien de parente : verifie chaque lien uniquement d'apres ce qui est ecrit
-  (ne reclasse pas une personne sous un autre degre que celui indique par le texte)
-- Inventer "germain", "eloigne", "second degre" si non ecrit
-- Compter les occurrences d'un mot au lieu de repondre
-- Inventer des sources externes (registres, notaires, archives)
+// =============================================================================
+// REGLAGES PAR PURPOSE
+// =============================================================================
+// Un seul endroit pour la temperature, la taille de reponse et la phrase qui
+// introduit le texte de l'utilisateur. Ajouter un bouton = ajouter une entree
+// ici et un bloc dans prompts.txt, rien d'autre.
+//   temperature : 0 = deterministe (extraction, JSON), 0.4 = redaction souple
+//   maxTokens   : plafond de la reponse
+//   userPrefix  : ce qui precede le texte de Mathieu dans le message utilisateur
+// =============================================================================
+const PURPOSE_SETTINGS = {
+  'understand':      { temperature: 0.1, maxTokens: 900,  userPrefix: '' },
+  'query':           { temperature: 0.2, maxTokens: 2600, userPrefix: 'Question de Mathieu sur instructions.md :\n' },
+  'merge-smart':     { temperature: 0.2, maxTokens: 4000, userPrefix: 'TEXTE NOUVEAU a comparer et fusionner avec la memoire ci-dessus :\n' },
+  'location':        { temperature: 0.2, maxTokens: 1800, userPrefix: 'Texte a placer dans instructions.md :\n' },
+  'rewrite':         { temperature: 0.4, maxTokens: 2000, userPrefix: 'Texte a reformuler pour la memoire :\n' },
+  'extract-summary': { temperature: 0.2, maxTokens: 4000, userPrefix: 'Texte brut extrait du document :\n' },
+  'query-keywords':  { temperature: 0.0, maxTokens: 300,  userPrefix: '' },
+  'query-expand':    { temperature: 0.2, maxTokens: 600,  userPrefix: '' },
+  'query-select':    { temperature: 0.2, maxTokens: 300,  userPrefix: '' },
+  'merge-check':     { temperature: 0.2, maxTokens: 2000, userPrefix: 'Texte importe a comparer avec la memoire :\n' },
+};
 
-Reponse : factuelle, structuree, concise, avec section source. Francais clair.
-` + STYLE_RULES;
-// Selection des categories / sections a partir des titres (appel leger).
-const QUERY_SELECT_PROMPT = `Tu choisis les sections d'un fichier memoire (instructions.md de Mathieu CHARREYRE) les plus utiles pour repondre a une question.
+const getPurposeSettings = function(purpose) {
+  const key = String(purpose || 'rewrite').toLowerCase();
+  return PURPOSE_SETTINGS[key] || PURPOSE_SETTINGS.rewrite;
+};
 
-On te donne les titres, la question, et parfois une "intention elargie". Elargis mentalement :
-- ancetres / parents -> Introduction, Famille, Chronologie
-- amis d'enfance / jeunesse -> Vie Sociale, Chronologie, Experiences personnelles
-- Domaine / parcelles / proprietaires -> Famille/Patrimoine, Entites, Chronologie, Defis
-- vehicules / animaux -> Experiences personnelles, Chronologie, Techniques
+// Construction des messages envoyes au moteur. Partagee par TOUS les moteurs :
+// c'est la seule fonction a modifier pour changer la structure d'un appel.
+const buildMessages = function(text, context, purpose) {
+  const settings = getPurposeSettings(purpose);
+  const messages = [{ role: 'system', content: getPrompt(purpose) }];
+  if (context) {
+    messages.push({
+      role: 'system',
+      content: 'Extraits de la memoire de Mathieu (instructions.md) selectionnes pour cette demande :\n\n' + context
+    });
+  }
+  messages.push({ role: 'user', content: settings.userPrefix + text });
+  return messages;
+};
 
-Regles :
-- Reponds UNIQUEMENT par 2 a 5 titres EXACTS separes par des virgules.
-- Aucun texte, numero ou guillemet en plus.
-- Si aucun titre ne convient : AUCUNE.
-- Respecte l'orthographe exacte des titres fournis.`;
-// Apres extraction d'un fichier importe : chevauchements + proposition de fusion.
-const MERGE_CHECK_PROMPT = `Tu compares un TEXTE FRAICHEMENT EXTRAIT d'un document importe avec le plan / extraits du fichier memoire instructions.md de Mathieu CHARREYRE.
-
-Objectif : detecter si le nouveau texte contient des infos deja presentes, complementaires ou contradictoires, et proposer une fusion.
-
-Reponds en francais, structure clair :
-1. Chevauchements (sujets deja traites dans instructions.md)
-2. Informations nouvelles (a integrer)
-3. Contradictions eventuelles
-4. Proposition de fusion : pour chaque bloc utile, section cible (titre exact si possible) et action (completer / remplacer / ignorer)
-5. Si peu ou pas de lien avec la memoire : dis-le franchement
-
-Ne reformule pas tout le document. Sois concis et actionnable. N'invente pas de sections inexistantes.
-` + STYLE_RULES;
-// CORRECTIF 08/08/2026 : fusion intelligente (bouton Comparer / Fusionner).
-// Nouveau texte (champ ou import) + contexte memoire deja recupere comme Interroger.
-// Produit un texte pret a coller + emplacement cible.
-const MERGE_SMART_PROMPT = `Tu es Reformulator. Tu fusionnes des informations nouvelles avec la memoire instructions.md de Mathieu CHARREYRE.
-
-On te donne :
-A) CONTEXTE MEMOIRE : extraits / preuves deja presents dans instructions.md sur le sujet
-B) TEXTE NOUVEAU : infos fraiches (Geneanet, notes, PDF, etc.)
-
-Objectif : un TEXTE PRET A COLLER, puis ou le mettre. Le reste est secondaire.
-
-Methode :
-1. Identifie le sujet principal (personne, lieu, evenement...).
-2. Pour le texte a coller : integre faits memoire + nouveautes, sans doublon, sans invention.
-   Ne confonds pas conjoint et fratrie. 3e personne. Noms/dates/lieux exacts.
-3. Emplacement : section exacte si possible, action (completer / remplacer / ajouter),
-   amorce du paragraphe existant a modifier si connu.
-4. Details (deja / nouveau / contradictions) : courts, UNIQUEMENT lies au sujet
-   (ignore le hors-sujet du contexte memoire).
-
-ORDRE OBLIGATOIRE de la reponse (respecte les balises exactes) :
-
-<<<A_COLLER
-(ici UNIQUEMENT le paragraphe ou bloc pret a coller dans instructions.md, rien d'autre)
->>>A_COLLER
-
-<<<EMPLACEMENT
-(section, action, eventuelle amorce a remplacer)
->>>EMPLACEMENT
-
-<<<DETAILS
-### Deja dans la memoire (sujet uniquement)
-...
-### Nouveau ou plus precis
-...
-### Contradictions (ou : aucune)
-...
->>>DETAILS
-
-Ne coupe jamais en plein milieu. Pas de texte hors de ces trois blocs.
-` + STYLE_RULES;
-// Proposer emplacement
-const LOCATION_PROMPT = `Tu es un expert en organisation de memoire personnelle. Recois un texte sur la vie de Mathieu CHARREYRE et propose les sections les plus pertinentes ou l'inserer dans instructions.md.
-Reponds de facon courte, precise et structuree. Mentionne explicitement les titres de sections recommandees. Ne reformule pas le texte lui-meme.
-` + STYLE_RULES;
-// CORRECTIF 08/08/2026 : reformulation intelligente (pas un simple correcteur).
-// Objectif : saisir la nature de l'anecdote / du souvenir, le reformuler proprement
-// a la 3e personne pour insertion dans instructions.md, sans le diluer ni le
-// densifier a l'extreme. Commentaires sans accents ni caracteres speciaux.
-const SAISIE_PROMPT = `Tu es Reformulator, redacteur de memoire pour Mathieu CHARREYRE.
-
-Mission : comprendre le sens et la nature du texte (anecdote, souvenir, fait, impression, conflit, detail technique...) puis le reformuler en prose claire, a la troisieme personne, pret a etre inserer dans instructions.md.
-
-Regles obligatoires :
-1. Personne : si le texte est a la premiere personne (je, moi, mon, ma, mes, nous...), transpose TOUT en troisieme personne avec "Mathieu" comme sujet. Aucune forme a la premiere personne dans la reponse.
-2. Comprehension : saisis l'intention et le ton (ironie, colere, nostalgie, factuel...). Ne traite pas le texte comme une liste de mots a corriger.
-3. Fidelite : ne change pas les faits, ne invente rien, ne supprime rien d'important (noms, dates, lieux, chiffres, liens de parente).
-4. Longueur : synthese intelligente, pas un resume seche ni une paraphrase mot a mot.
-   - Texte court (quelques phrases) : corrige et fluidifie, garde une longueur proche.
-   - Texte moyen/long (ex. 10-20 lignes) : vise environ le tiers a la moitie (ex. 15 lignes -> 4 a 7 lignes utiles), en gardant le coeur de l'anecdote.
-   - Evite les paves inutiles et les listes artificielles sauf si le contenu l'exige.
-5. Style : francais clair, paragraphes naturels, orthographe et grammaire correctes. Pas de titre, pas de puces forcees, pas de meta-commentaire.
-6. Sortie : UNIQUEMENT le texte reformule. Pas d'introduction, pas de guillemets, pas de "Voici la version...", pas de salutation.
-
-Exemples de transposition :
-- "J'ai rachete une 2CV en 1998" -> "Mathieu a rachete une 2CV en 1998"
-- "Ma tante Dom m'a toujours surnomme..." -> "Sa tante Dom l'a toujours surnomme..."
-` + STYLE_RULES;
-
-// LLM_ENGINES contient la configuration de chaque moteur LLM supporté, avec la fonction createPayload() pour construire la requête API.
-const createOpenAICompatiblePayload = (text, model, context, purpose) => {
-  const messages = [];
-  if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
-  else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
-  else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
-  else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
-  else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
-  else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
-  else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
-  else messages.push({ role: 'system', content: SAISIE_PROMPT });
-  if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
-  const userContent = (purpose === 'query')
-    ? 'Recherche dans instructions.md : ' + text
-    : (purpose === 'query-select' || purpose === 'query-expand')
-      ? text
-      : (purpose === 'merge-check')
-        ? 'Texte importe a comparer avec la memoire :\n' + text
-        : (purpose === 'merge-smart')
-          ? 'TEXTE NOUVEAU a fusionner avec la memoire ci-dessus :\n' + text
-          : 'Texte a reformuler pour le memoire : ' + text;
-  messages.push({ role: 'user', content: userContent });
-  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart') ? 0.2
-    : purpose === 'query-keywords' ? 0.0 : 0.4;
-  // merge-smart : reponses longues (deja + nouveau + texte fusionne + emplacement)
-  const maxTokens = (purpose === 'merge-smart') ? 4000
-    : (purpose === 'query') ? 2200
-    : 1500;
-  return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
+// Charge unique des moteurs compatibles OpenAI (Mistral, Groq, Cerebras,
+// OpenRouter partagent le meme format de requete).
+const createOpenAICompatiblePayload = function(text, model, context, purpose) {
+  const settings = getPurposeSettings(purpose);
+  return {
+    model: model,
+    messages: buildMessages(text, context || '', purpose || 'rewrite'),
+    temperature: settings.temperature,
+    max_tokens: settings.maxTokens
+  };
 };
 
 const LLM_ENGINES = {
@@ -370,36 +321,7 @@ const LLM_ENGINES = {
     engineUrl: 'https://console.groq.com/home',
     defaultModel: 'llama-3.3-70b-versatile',
     models: ['llama-3.3-70b-versatile','llama-3.1-8b-instant','llama-4-scout-17b-16e-instruct','gemma2-9b-it','qwen-qwq-32b','compound-beta-mini'],
-    createPayload: function(text, model, context, purpose) {
-      context = context || '';
-      purpose = purpose || 'rewrite';
-      const messages = [];
-      if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
-      else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
-      else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
-      else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
-      else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
-      else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
-      else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
-      else messages.push({ role: 'system', content: SAISIE_PROMPT });
-      if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
-      const userContent = (purpose === 'query')
-        ? 'Recherche dans instructions.md : ' + text
-        : (purpose === 'query-select' || purpose === 'query-expand')
-          ? text
-          : (purpose === 'merge-check')
-            ? 'Texte importe a comparer avec la memoire :\n' + text
-            : (purpose === 'merge-smart')
-              ? 'TEXTE NOUVEAU a fusionner avec la memoire ci-dessus :\n' + text
-              : 'Texte a reformuler pour le memoire : ' + text;
-      messages.push({ role: 'user', content: userContent });
-      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart') ? 0.2
-        : purpose === 'query-keywords' ? 0.0 : 0.4;
-      const maxTokens = (purpose === 'merge-smart') ? 4000
-        : (purpose === 'query') ? 2200
-        : 1500;
-      return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
-    }
+    createPayload: createOpenAICompatiblePayload,
   },
   // Cerebras
   cerebras: {
@@ -466,6 +388,11 @@ const getCurrentEngineInfo = function() {
     fallbackOrder: LLM_FALLBACK_ORDER,
     availableEngines: getAvailableEngines(),
     modelCandidates: engine && engine.models ? engine.models : [],
+    // Etat des prompts : permet au bloc de debogage de saisie.php de montrer
+    // quels prompts sont reellement charges et depuis quand.
+    promptsFile: PROMPTS_FILE,
+    promptsPurposes: Object.keys(loadPrompts()).filter(function(name) { return name.charAt(0) !== '_'; }),
+    promptsLoadedAt: promptsCache.loadedAt ? new Date(promptsCache.loadedAt).toISOString() : null,
   };
 };
 
@@ -551,6 +478,10 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 
       try {
         var response = await axios.post(requestUrl, payload, {
+          // CORRECTIF 16/08/2026 : sans timeout explicite, une requete perdue
+          // laissait PHP attendre jusqu'a son propre delai de garde, sans
+          // jamais tenter le moteur suivant.
+          timeout: 180000,
           headers: {
             'Authorization': 'Bearer ' + apiKey,
             'Content-Type': 'application/json',
