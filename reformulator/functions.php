@@ -1,6 +1,6 @@
 <?php
     /**
-     * reformulator/functions.php - Interface de saisie locale pour instructions.md
+     * functions.php - Interface de saisie locale pour instructions.md
      *
      * Ce fichier fournit une page HTML simple pour saisir un texte libre
      * et le faire analyser localement. Il ne modifie pas automatiquement
@@ -43,13 +43,12 @@
      *      - ecrire CLEF (jamais "cle" ni "clés"), NENUPHAR (jamais "nenufar"),
      *        soeurs avec O et E separes (jamais la ligature oe).
      *      - Pas de tiret cadratin, pas d'emoji en dur, pas de glyphe special.
-     *   7. Objectif du bouton Interroger : comprendre l'INTENTION de la question
-     *      (combien, ai-je eu, parle-moi de...) et repondre a partir du fichier
-     *      instructions.md, pas se contenter de compter les occurrences d'un mot.
-     *      La recherche locale (search_with_counts_light + expansion de synonymes)
-     *      alimente le LLM ; le LLM doit synthetiser, lister, decompter.
-     *   8. La meme exigence de comprehension s'applique a tous les boutons
-     *      (Interroger, Proposer emplacement, Reformulation, Extraction).
+     *   7. Interroger : le LLM comprend l'intention (QUERY_EXPAND) puis on
+     *      localise les passages dans instructions.md. AUCUNE liste de
+     *      synonymes / mots-clefs metier a maintenir dans le code.
+     *   8. Meme exigence de comprehension pour tous les boutons.
+     *   9. Matching technique (limites de mots pour termes courts) n'est pas
+     *      un filtre metier : evite seulement "gan" dans "organisateur".
      *
      * CORRECTIF 04/07/2026 (Mathieu CHARREYRE) :
      *   - extract_via_node() et extract_text_from_file() renvoient desormais un
@@ -692,24 +691,40 @@
             return ['context' => $ctx, 'debug' => $debug];
         }
 
+        // Meme strategie qu'Interroger (CORRECTIF 16/08/2026) : local d'abord.
         $outline = extract_instructions_outline();
         $selectQuestion = $topicText;
         if ($intentExpanded !== '') {
             $selectQuestion = $topicText . "\n\nIntention elargie :\n" . $intentExpanded;
         }
-        $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
-        $relevantSections = [];
-        if (!empty($selectedTitles)) {
-            foreach ($selectedTitles as $title) {
-                if (isset($sections[$title])) {
-                    $relevantSections[$title] = $sections[$title];
-                }
+        $primaryTerms = extract_keywords($topicText);
+        foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $w) {
+            $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
+            if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
+                $primaryTerms[] = $w;
             }
         }
-        if (empty($relevantSections)) {
-            $localSearch = search_with_counts_light($topicText, $sections);
-            foreach (($localSearch['sections'] ?? []) as $title => $info) {
-                if (isset($sections[$title])) {
+        $intentTerms = $intentExpanded !== '' ? extract_keywords($intentExpanded) : [];
+        $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention'];
+        $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
+            return !in_array($t, $genericNoise, true);
+        }));
+        $intentTerms = array_values(array_filter(array_unique($intentTerms), function ($t) use ($genericNoise) {
+            return !in_array($t, $genericNoise, true);
+        }));
+        $searchBag = trim($topicText . ' ' . implode(' ', array_slice($intentTerms, 0, 20)));
+        $localSearchPad = search_with_counts_light($searchBag, $sections);
+
+        $relevantSections = [];
+        foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
+            if (isset($sections[$title])) {
+                $relevantSections[$title] = $sections[$title];
+            }
+        }
+        $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
+        if (!empty($selectedTitles)) {
+            foreach ($selectedTitles as $title) {
+                if (isset($sections[$title]) && !isset($relevantSections[$title])) {
                     $relevantSections[$title] = $sections[$title];
                 }
             }
@@ -718,39 +733,17 @@
             $relevantSections = array_slice($sections, 0, 3, true);
         }
 
-        $maxSections = 6;
-        $localSearchPad = search_with_counts_light($topicText . ' ' . $intentExpanded, $sections);
-        foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
-            if (count($relevantSections) >= $maxSections) {
-                break;
-            }
-            if (isset($sections[$title]) && !isset($relevantSections[$title])) {
-                $relevantSections[$title] = $sections[$title];
-            }
-        }
-
-        $perSectionLimit = 12000;
+        $maxSections = 8;
+        $perSectionLimit = 14000;
         $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
-
-        $primaryTerms = extract_keywords($topicText);
-        foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $w) {
-            $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
-            if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
-                $primaryTerms[] = $w;
-            }
-        }
-        $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien'];
-        $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
-            return !in_array($t, $genericNoise, true);
-        }));
-        $queryTerms = $primaryTerms;
+        $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
 
         $ctx = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
         if ($intentExpanded !== '') {
             $ctx .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
         }
 
-        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 60, $primaryTerms);
+        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 80, $primaryTerms);
         if (!empty($rankedLines)) {
             $ctx .= "PREUVES DIRECTES du fichier (citations prioritaires) :\n";
             foreach ($rankedLines as $item) {
@@ -1521,7 +1514,8 @@
             foreach ($terms as $term) {
                 $termNorm = normalize_for_matching($term);
                 if ($termNorm === '') continue;
-                $count = substr_count($normContent, $termNorm);
+                // CORRECTIF 16/08/2026 : limites de mots pour termes courts (GAN vs organisateur)
+                $count = term_matches_in_text($normContent, $termNorm);
                 if ($count > 0) {
                     $sectionOccurrences += $count;
                     $matchedTerms[] = $term;
@@ -1560,6 +1554,27 @@
      * (quota) pour qu'une grosse section (Famille/Domaine) n'ecrase pas la Chronologie.
      * Generique : aucun filtre metier type "cousins" en dur.
      */
+    /**
+     * CORRECTIF 16/08/2026 : matching de termes avec limites de mots pour les
+     * termes courts (ex. "gan" ne doit PAS matcher "organisateur").
+     * Termes >= 5 lettres : sous-chaine autorisee (racines).
+     */
+    function term_matches_in_text(string $normText, string $term): int {
+        $term = normalize_for_matching($term);
+        if ($term === '' || $normText === '') {
+            return 0;
+        }
+        $len = mb_strlen($term, 'UTF-8');
+        if ($len <= 4) {
+            // Mot entier uniquement (lettres/chiffres autour = pas un match)
+            if (preg_match_all('/(?<![\p{L}\p{N}])' . preg_quote($term, '/') . '(?![\p{L}\p{N}])/u', $normText, $m)) {
+                return count($m[0]);
+            }
+            return 0;
+        }
+        return substr_count($normText, $term);
+    }
+
     function collect_ranked_evidence_lines(array $sections, array $terms, int $maxLines = 48, array $primaryTerms = []): array {
         $normalizeList = function (array $list): array {
             return array_values(array_filter(array_map(function ($t) {
@@ -1588,10 +1603,11 @@
                 $hitPrimary = 0;
                 $score = 0;
                 foreach ($terms as $term) {
-                    if (strpos($norm, $term) !== false) {
+                    $count = term_matches_in_text($norm, $term);
+                    if ($count > 0) {
                         $hitTerms++;
                         $weight = isset($primarySet[$term]) ? 5 : 2;
-                        $score += $weight + min(3, substr_count($norm, $term));
+                        $score += $weight + min(3, $count);
                         if (isset($primarySet[$term])) {
                             $hitPrimary++;
                         }
@@ -2225,82 +2241,20 @@
                 $query_debug_mode = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)'
                     . ($intentExpanded !== '' ? ' + intention elargie' : '');
             } else {
+                // CORRECTIF 16/08/2026 : le fichier fait ~580 Ko ; on ne peut pas
+                // l'envoyer en entier. La selection LLM seule rate souvent des
+                // sections pertinentes. Strategie :
+                //   1) intention elargie (synonymes, periodes, notions liees)
+                //   2) recherche LOCALE prioritaire (question + intention)
+                //   3) selection LLM en complement
+                //   4) union ordonnee par score local, jusqu'a 8 sections
                 $outline = extract_instructions_outline();
-                // 1) Selection semantique des sections (question + intention elargie)
                 $selectQuestion = $input_text;
                 if ($intentExpanded !== '') {
                     $selectQuestion = $input_text . "\n\nIntention elargie :\n" . $intentExpanded;
                 }
-                $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
 
-                $relevantSections = [];
-                if (!empty($selectedTitles)) {
-                    foreach ($selectedTitles as $title) {
-                        if (isset($sections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                // 2) Secours : recherche locale par termes si le LLM n'a rien renvoye
-                if (empty($relevantSections)) {
-                    $localSearch = search_with_counts_light($input_text, $sections);
-                    foreach (($localSearch['sections'] ?? []) as $title => $info) {
-                        if (isset($sections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                // 3) Dernier recours : premieres sections du fichier
-                if (empty($relevantSections)) {
-                    $relevantSections = array_slice($sections, 0, 3, true);
-                }
-
-                // 4) TOUJOURS fusionner les sections les mieux scorees en local.
-                // Ex. Chronologie contient "Future cousine paternelle Anne PAULY"
-                // alors que le LLM n'a parfois selectionne que Famille / Domaine.
-                $minSections = 3;
-                $maxSections = 6;
-                $localSearchPad = search_with_counts_light($input_text . ' ' . $intentExpanded, $sections);
-                foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
-                    if (count($relevantSections) >= $maxSections) {
-                        break;
-                    }
-                    if (isset($sections[$title]) && !isset($relevantSections[$title])) {
-                        $relevantSections[$title] = $sections[$title];
-                    }
-                }
-                if (count($relevantSections) < $minSections) {
-                    foreach ($outline as $title) {
-                        if (count($relevantSections) >= $minSections) {
-                            break;
-                        }
-                        $tNorm = mb_strtolower($title, 'UTF-8');
-                        $useful = (mb_strpos($tNorm, 'exp') !== false && mb_strpos($tNorm, 'person') !== false)
-                            || mb_strpos($tNorm, 'chronologie') !== false
-                            || mb_strpos($tNorm, 'entit') !== false
-                            || mb_strpos($tNorm, 'defis') !== false
-                            || mb_strpos($tNorm, 'défis') !== false
-                            || mb_strpos($tNorm, 'introduction') !== false;
-                        if ($useful && isset($sections[$title]) && !isset($relevantSections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                // Contenu des sections selectionnees (extraits centres sur les termes)
-                $perSectionLimit = 12000;
-                $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
-
-                $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
-                if ($intentExpanded !== '') {
-                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
-                }
-
-                // Termes primaires = UNIQUEMENT la question (signal utile).
-                // L'intention elargie guide la selection de sections, PAS le
-                // ranking des preuves (sinon "domaine/montjol" noie "cousin").
+                // Termes de recherche : question + mots issus de l'intention
                 $primaryTerms = extract_keywords($input_text);
                 foreach (preg_split('/\s+/u', $input_text, -1, PREG_SPLIT_NO_EMPTY) as $w) {
                     $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
@@ -2308,15 +2262,69 @@
                         $primaryTerms[] = $w;
                     }
                 }
-                // Retirer les mots trop generiques qui matchent partout
-                $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien'];
+                $intentTerms = [];
+                if ($intentExpanded !== '') {
+                    $intentTerms = extract_keywords($intentExpanded);
+                }
+                $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention','notions','periodes','types','personnes'];
                 $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
                     return !in_array($t, $genericNoise, true);
                 }));
-                $queryTerms = $primaryTerms;
+                $intentTerms = array_values(array_filter(array_unique($intentTerms), function ($t) use ($genericNoise) {
+                    return !in_array($t, $genericNoise, true);
+                }));
+                // Recherche locale large : question + synonymes / axes de l'intention
+                $searchBag = trim($input_text . ' ' . implode(' ', array_slice($intentTerms, 0, 20)));
+                $localSearchPad = search_with_counts_light($searchBag, $sections);
+
+                $relevantSections = [];
+                // PRIORITE 1 : sections qui matchent vraiment dans le fichier
+                foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
+                    if (isset($sections[$title])) {
+                        $relevantSections[$title] = $sections[$title];
+                    }
+                }
+
+                // PRIORITE 2 : selection LLM (complement, n'ecrase pas le local)
+                $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
+                if (!empty($selectedTitles)) {
+                    foreach ($selectedTitles as $title) {
+                        if (isset($sections[$title]) && !isset($relevantSections[$title])) {
+                            $relevantSections[$title] = $sections[$title];
+                        }
+                    }
+                }
+
+                // Dernier recours : sections structurantes si toujours vide
+                if (empty($relevantSections)) {
+                    foreach ($outline as $title) {
+                        if (count($relevantSections) >= 3) {
+                            break;
+                        }
+                        $tNorm = mb_strtolower($title, 'UTF-8');
+                        $useful = (mb_strpos($tNorm, 'exp') !== false && mb_strpos($tNorm, 'person') !== false)
+                            || mb_strpos($tNorm, 'chronologie') !== false
+                            || mb_strpos($tNorm, 'entit') !== false
+                            || mb_strpos($tNorm, 'introduction') !== false;
+                        if ($useful && isset($sections[$title])) {
+                            $relevantSections[$title] = $sections[$title];
+                        }
+                    }
+                }
+
+                $maxSections = 8;
+                $perSectionLimit = 14000;
+                $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
+                // Preuves : termes question en priorite, intention en secours
+                $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
+
+                $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
+                if ($intentExpanded !== '') {
+                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
+                }
 
                 // PRIORITE 1 : preuves classees + diversifiees par section
-                $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 60, $primaryTerms);
+                $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 80, $primaryTerms);
                 if (!empty($rankedLines)) {
                     $instructions_context .= "PREUVES DIRECTES du fichier (citations prioritaires — "
                         . "N'INVENTE RIEN en dehors de ces faits et du contexte ci-dessous) :\n";
@@ -2351,10 +2359,15 @@
                     }
                     $instructions_context .= "\n--- Section : $title ---\n" . $block . "\n";
                 }
-                $query_debug_mode = count($relevantSections) . ' section(s) par categories LLM'
-                    . ($intentExpanded !== '' ? ' + intention elargie' : '')
-                    . ' (fichier trop volumineux : '
-                    . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres > seuil de ' . number_format($fullDocumentSizeLimit, 0, ',', ' ') . ')';
+                $localHits = count($localSearchPad['sections'] ?? []);
+                $query_debug_mode = count($relevantSections) . ' section(s)'
+                    . ' (local=' . $localHits
+                    . ', llm=' . count($selectedTitles ?? [])
+                    . ($intentExpanded !== '' ? ', intention' : '')
+                    . ')'
+                    . ' — fichier '
+                    . number_format($fullDocumentLength, 0, ',', ' ') . ' car. > seuil '
+                    . number_format($fullDocumentSizeLimit, 0, ',', ' ');
             }
 
             $instructions_loaded = true;
