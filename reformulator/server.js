@@ -1,5 +1,5 @@
 /**
- * reformulator/server.js
+ * r3M3M83r/reformulator/server.js
  * Version avec support upload de fichiers + Mistral par defaut + logique dynamique modeles
  * Mise a jour 03/08/2026 - Mathieu CHARREYRE
  *
@@ -15,8 +15,7 @@
  *   3b. Le prompt SAISIE (bouton Reformulation avancee) doit COMPRENDRE
  *      l'anecdote, la transposer en 3e personne (Mathieu), et synthetiser
  *      intelligemment (ni mot a mot, ni resume seche). Voir SAISIE_PROMPT.
- *   3c. Les prompts vivent dans reformulator/prompts.js (source unique).
- *      STYLE_RULES (Regles d'Or d'instructions.md) est appende a tous les
+ *   3c. STYLE_RULES (Regles d'Or d'instructions.md) est appende a tous les
  *      prompts qui produisent du texte francais : SAISIE, QUERY, LOCATION,
  *      MERGE_CHECK, MERGE_SMART. CLEF, NENUPHAR, noms en MAJUSCULES, etc.
  *   3d. Bouton Comparer/Fusionner (purpose=merge-smart) : contexte memoire
@@ -143,8 +142,8 @@ const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_O
   .map(function(item) { return item.trim().toLowerCase(); })
   .filter(Boolean);
 
-// Prompts : fichier dedie pour entretien perenne (editer prompts.js, puis restart Node).
-// CORRECTIF 16/08/2026 : externalisation + durcissement portee des reponses (QUERY).
+// Prompts : fichier dedie (editer prompts.js, puis restart Node).
+// CORRECTIF 16/08/2026 : externalisation. CORRECTIF 19/08/2026 : chat-route / chat-talk.
 const prompts = require('./prompts.js');
 const STYLE_RULES = prompts.STYLE_RULES;
 const QUERY_KEYWORD_PROMPT = prompts.QUERY_KEYWORD_PROMPT;
@@ -155,6 +154,8 @@ const MERGE_CHECK_PROMPT = prompts.MERGE_CHECK_PROMPT;
 const MERGE_SMART_PROMPT = prompts.MERGE_SMART_PROMPT;
 const LOCATION_PROMPT = prompts.LOCATION_PROMPT;
 const SAISIE_PROMPT = prompts.SAISIE_PROMPT;
+const CHAT_ROUTE_PROMPT = prompts.CHAT_ROUTE_PROMPT;
+const CHAT_TALK_PROMPT = prompts.CHAT_TALK_PROMPT;
 
 // LLM_ENGINES contient la configuration de chaque moteur LLM supporté, avec la fonction createPayload() pour construire la requête API.
 const createOpenAICompatiblePayload = (text, model, context, purpose) => {
@@ -166,11 +167,13 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
   else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
   else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
+  else if (purpose === 'chat-route') messages.push({ role: 'system', content: CHAT_ROUTE_PROMPT });
+  else if (purpose === 'chat-talk') messages.push({ role: 'system', content: CHAT_TALK_PROMPT });
   else messages.push({ role: 'system', content: SAISIE_PROMPT });
   if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
   const userContent = (purpose === 'query')
     ? 'Recherche dans instructions.md : ' + text
-    : (purpose === 'query-select' || purpose === 'query-expand')
+    : (purpose === 'query-select' || purpose === 'query-expand' || purpose === 'chat-route' || purpose === 'chat-talk')
       ? text
       : (purpose === 'merge-check')
         ? 'Texte importe a comparer avec la memoire :\n' + text
@@ -178,10 +181,12 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
           ? 'TEXTE NOUVEAU a fusionner avec la memoire ci-dessus :\n' + text
           : 'Texte a reformuler pour le memoire : ' + text;
   messages.push({ role: 'user', content: userContent });
-  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart') ? 0.2
+  const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart' || purpose === 'chat-route' || purpose === 'chat-talk') ? 0.2
     : purpose === 'query-keywords' ? 0.0 : 0.4;
   // merge-smart : reponses longues (deja + nouveau + texte fusionne + emplacement)
   const maxTokens = (purpose === 'merge-smart') ? 4000
+    : (purpose === 'chat-route') ? 16
+    : (purpose === 'chat-talk') ? 400
     : (purpose === 'query') ? 2200
     : 1500;
   return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
@@ -219,11 +224,13 @@ const LLM_ENGINES = {
       else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
       else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
       else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
+      else if (purpose === 'chat-route') messages.push({ role: 'system', content: CHAT_ROUTE_PROMPT });
+      else if (purpose === 'chat-talk') messages.push({ role: 'system', content: CHAT_TALK_PROMPT });
       else messages.push({ role: 'system', content: SAISIE_PROMPT });
       if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
       const userContent = (purpose === 'query')
         ? 'Recherche dans instructions.md : ' + text
-        : (purpose === 'query-select' || purpose === 'query-expand')
+        : (purpose === 'query-select' || purpose === 'query-expand' || purpose === 'chat-route' || purpose === 'chat-talk')
           ? text
           : (purpose === 'merge-check')
             ? 'Texte importe a comparer avec la memoire :\n' + text
@@ -231,9 +238,11 @@ const LLM_ENGINES = {
               ? 'TEXTE NOUVEAU a fusionner avec la memoire ci-dessus :\n' + text
               : 'Texte a reformuler pour le memoire : ' + text;
       messages.push({ role: 'user', content: userContent });
-      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart') ? 0.2
+      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart' || purpose === 'chat-route' || purpose === 'chat-talk') ? 0.2
         : purpose === 'query-keywords' ? 0.0 : 0.4;
       const maxTokens = (purpose === 'merge-smart') ? 4000
+        : (purpose === 'chat-route') ? 16
+        : (purpose === 'chat-talk') ? 400
         : (purpose === 'query') ? 2200
         : 1500;
       return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };

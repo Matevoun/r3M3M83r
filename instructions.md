@@ -2146,6 +2146,23 @@ Anthony RAUCHEN est un urbexeur belge se faisant appeler **"Le Korbo"** -- site 
 ### Avatars
 #### Rebecca aka "Rebbye"
 Mathieu utilise un avatar nommé "Rebecca STAINFLOR", née le 15 juin 1982 à Avallon et habitant Paris, membre de la WDA. Elle est connue sous les pseudonymes "Rebbye" ou "Rebbye75" selon les réseaux. Elle est grande et brune. Ses réseaux incluent : - Facebook : https://www.facebook.com/Rebbye75 - Twitter : https://x.com/Rebbye75 - Linkedin : https://www.linkedin.com/in/rebbye75/ - Republike : https://www.republike.io/fr/u/Rebbye/ Son apparence a été générée par IA.
+Sa description physique :
+Sexe : Femme
+Age apparent : 28-40 ans
+Taille : ∼1m70-1m75, silhouette élancée / fine
+Teint : Clair, peau uniforme
+Visage : Ovale allongé, menton fin
+Front : Hauteur moyenne
+Yeux : En amande, couleur noisette / vert-gris clair
+Nez : Droit, fin, longueur moyenne
+Bouche : Lèvres moyennes, bien dessinées
+Sourcils : Brun moyen, arqués naturels, fournis
+Cheveux : Châtain clair / brun clair à reflets dorés
+Longueur cheveux : Longs, sous les épaules, mi-dos
+Texture cheveux : Ondulés, volume naturel important
+Coiffure habituelle : Raie au milieu, lâchés, parfois queue de cheval basse
+Signes particuliers : Aucun visible (pas de tatouage, grain de beauté marqué)
+Allure générale : Soignée, élégante, belle
 #### Jerome
 Mathieu utilise aussi l'identité d'un certain Jérôme, membre bénévole virtuel de la WDA.
 #### Olivier

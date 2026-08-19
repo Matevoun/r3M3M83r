@@ -1,5 +1,5 @@
 /**
- * reformulator/prompts.js
+ * r3M3M83r/reformulator/prompts.js
  * ---------------------------------------------------------------------------
  * Source UNIQUE de tous les prompts LLM du Reformulator.
  * Editer CE fichier, puis redemarrer Node.js (cPanel) pour prendre effet.
@@ -17,23 +17,29 @@
  * 5. Commentaires : orthographe archaique dans le code (CLEF, NENUPHAR, soeurs
  *    avec o et e separes). Pas d'emoji dans le code source.
  *
- * Bouton (saisie.php)          | purpose Node          | Constante
- * -----------------------------|-----------------------|----------------------
- * Interroger le fichier        | query-expand          | QUERY_EXPAND_PROMPT
- *                              | query-select          | QUERY_SELECT_PROMPT
- *                              | query                 | QUERY_PROMPT
- *                              | query-keywords        | QUERY_KEYWORD_PROMPT (legacy)
- * Comparer / Fusionner         | merge-smart           | MERGE_SMART_PROMPT
- *                              | merge-check           | MERGE_CHECK_PROMPT
- * Proposer emplacement         | location              | LOCATION_PROMPT
- * Reformulation avancee avec IA| rewrite (defaut)      | SAISIE_PROMPT
- * Charger & Extraire fichier   | extract               | (pas de prompt texte)
+ * Bouton / flux                 | purpose Node          | Constante
+ * ------------------------------|-----------------------|----------------------
+ * Interroger (saisie.php)       | query-expand          | QUERY_EXPAND_PROMPT
+ *                               | query-select          | QUERY_SELECT_PROMPT
+ *                               | query                 | QUERY_PROMPT
+ *                               | query-keywords        | QUERY_KEYWORD_PROMPT (legacy)
+ * Comparer / Fusionner          | merge-smart           | MERGE_SMART_PROMPT
+ *                               | merge-check           | MERGE_CHECK_PROMPT
+ * Proposer emplacement          | location              | LOCATION_PROMPT
+ * Reformulation avancee         | rewrite (defaut)      | SAISIE_PROMPT
+ * Charger & Extraire            | extract               | (pas de prompt texte)
+ * Tchat Rebecca (chat.php)      | chat-route            | CHAT_ROUTE_PROMPT
+ *                               | chat-talk             | CHAT_TALK_PROMPT
+ *                               | query (+ memoire)     | QUERY_PROMPT
+ *   Nota : Chat-Prompts.js (CHAT_ADDON) = persona + historique, lu par PHP,
+ *   injecte dans le texte user — ce n'est PAS un purpose Node.
  *
  * Historique des correctifs prompts (resume)
  * ------------------------------------------
  * 08/08/2026  STYLE_RULES + SAISIE/MERGE intelligents
  * 16/08/2026  Externalisation dans ce fichier ; portee question + attribution
  * 17/08/2026  Documentation ; FACTUALITY_RULES partagees ; QUERY_SELECT generique
+ * 19/08/2026  CHAT_ROUTE + CHAT_TALK : routage LLM sans listes de mots-clefs
  */
 
 // ---------------------------------------------------------------------------
@@ -226,6 +232,34 @@ Regles :
 ` + STYLE_RULES;
 
 // ---------------------------------------------------------------------------
+// TCHAT Rebecca (chat.php) — routage + reponse hors memoire
+// ---------------------------------------------------------------------------
+
+/**
+ * Decide s'il faut ouvrir instructions.md. AUCUNE liste de mots-clefs :
+ * le modele comprend l'intention. Reponse = un seul mot.
+ */
+const CHAT_ROUTE_PROMPT = `Tu classes une question de tchat pour le projet memoire de Mathieu CHARREYRE (fichier instructions.md).
+
+Reponds par EXACTEMENT un de ces deux mots, rien d'autre :
+MEMORY
+CHAT
+
+MEMORY = la question porte sur Mathieu, sa vie, sa famille, ses amis, ses animaux, son Domaine, son passe, des faits dans le fichier memoire, ou un suivi de ce type (pronoms renvoyant a un sujet memoire deja evoque).
+CHAT = politesse, salutation, meta (qui es-tu, comment vas-tu), heure/date actuelle, blague, discussion generale sans besoin du fichier memoire.
+
+En cas de doute leger : MEMORY (mieux chercher une fois de trop).`;
+
+/**
+ * Reponse conversationnelle courte quand CHAT_ROUTE a renvoye CHAT.
+ * Pas de consultation du fichier. Pas de "non mentionne dans le fichier".
+ */
+const CHAT_TALK_PROMPT = `Tu es Rebecca (Rebbye), avatar conversationnel du projet r3M3M83r.
+Reponds brievement et naturellement a un message de tchat hors memoire.
+Pas de consultation de fichier. Pas de "non mentionne dans le fichier".
+Tu peux etre chaleureuse. Francais clair.`;
+
+// ---------------------------------------------------------------------------
 // EXPORT (server.js : const prompts = require('./prompts.js');)
 // ---------------------------------------------------------------------------
 
@@ -239,5 +273,7 @@ module.exports = {
   MERGE_CHECK_PROMPT: MERGE_CHECK_PROMPT,
   MERGE_SMART_PROMPT: MERGE_SMART_PROMPT,
   LOCATION_PROMPT: LOCATION_PROMPT,
-  SAISIE_PROMPT: SAISIE_PROMPT
+  SAISIE_PROMPT: SAISIE_PROMPT,
+  CHAT_ROUTE_PROMPT: CHAT_ROUTE_PROMPT,
+  CHAT_TALK_PROMPT: CHAT_TALK_PROMPT
 };

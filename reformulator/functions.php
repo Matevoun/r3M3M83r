@@ -1,6 +1,6 @@
 <?php
     /**
-     * functions.php - Interface de saisie locale pour instructions.md
+     * r3M3M83r/reformulator/functions.php - Interface de saisie/interrogation locale pour instructions.md
      *
      * Ce fichier fournit une page HTML simple pour saisir un texte libre
      * et le faire analyser localement. Il ne modifie pas automatiquement

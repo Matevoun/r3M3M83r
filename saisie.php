@@ -1,5 +1,5 @@
 <?php
-    // Fichiier saisie.php — Interface de saisie memoire pour reformulator
+    // Fichier r3M3M83r/saisie.php — Interface de saisie memoire pour reformulator
     // Toute la logique metier (interrogation, extraction, appels Node) vit dans
     // reformulator/functions.php. Ici : HTML, styles, JS d'interface uniquement.
     include_once __DIR__ . '/reformulator/functions.php';
