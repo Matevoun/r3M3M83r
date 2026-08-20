@@ -700,8 +700,8 @@
         <header>
             <h1>Tchat IA — Projet r3M3M83r</h1>
             <p>
-                Interface <strong>Rebecca</strong> uniquement. Le moteur memoire est celui de <strong>r3M3M83r</strong>
-                (meme pipeline que Reformulator / saisie.php) — cette page ne fait que l'UI tchat.
+                Interface <strong>Rebecca</strong>. Motorisation mémorielle de <strong>r3M3M83r</strong>
+                (pipeline de Reformulator). Cette page ne fait que l'UI tchat.
             </p>
             <div class="topbar">
                 <label for="engineSelect" class="engine-label">Moteur :</label>
