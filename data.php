@@ -344,9 +344,20 @@ function html_footer(bool $show_back = true): string {
     $back = $show_back ? '<p><a class="back" href="sections">← Retour à la liste des sections</a></p>' : '';
     $github_raw = 'https://raw.githubusercontent.com/Matevoun/r3M3M83r/refs/heads/main/instructions.md';
     $local_md   = 'https://mathieu.charreyre.net/r3M3M83r/instructions.md';
+    // Logs reformulator (memes liens que saisie.php / chat.php)
+    $logs = '<p style="margin:.6rem 0 .2rem;font-size:.8rem;color:#666;">'
+          . '<a href="reformulator/log_proxy.php?name=error_log" style="color:#7cf;" target="_blank" rel="noopener noreferrer">Voir les erreurs</a>'
+          . ' &bull; '
+          . '<a href="reformulator/log_proxy.php?name=requests_log" style="color:#7cf;" target="_blank" rel="noopener noreferrer">Voir les requetes</a>'
+          . ' &bull; '
+          . '<a href="saisie.php" style="color:#7cf;">Reformulator</a>'
+          . ' &bull; '
+          . '<a href="chat.php" style="color:#7cf;">Rebecca (tchat)</a>'
+          . '</p>';
     $foot_text = '<div style="margin-top:1.5rem;background:#111;color:#bbb;font-size:.86rem;line-height:1.5;">'
                . '<p style="margin:.2rem 0;">Fichier brut accessible en <a href="' . $local_md . '" style="color:#7cf;" target="_blank">local</a> (<span style="color:#999;">' . $local_md . '</span>) et sur <a href="' . $github_raw . '" style="color:#7cf;" target="_blank">GitHub</a> (<span style="color:#999;">' . $github_raw . '</span>)</p><br>'
-               . '<p style="margin:.2rem 0;">Si vous êtes là, c’est que Mathieu vous a normalement autorisé à consulter cette page... ou que vous êtes un agent particulièrement persuasif.</p>'
+               . '<p style="margin:.2rem 0;">Si vous etes la, c est que Mathieu vous a normalement autorise a consulter cette page... ou que vous etes un agent particulierement persuasif.</p>'
+               . $logs
                . '</div>';
     return $back . $foot_text . '</body></html>';
 }

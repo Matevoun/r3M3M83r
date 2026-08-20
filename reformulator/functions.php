@@ -43,9 +43,10 @@
      *      - ecrire CLEF (jamais "cle" ni "clés"), NENUPHAR (jamais "nenufar"),
      *        soeurs avec O et E separes (jamais la ligature oe).
      *      - Pas de tiret cadratin, pas d'emoji en dur, pas de glyphe special.
-     *   7. Interroger : le LLM comprend l'intention (QUERY_EXPAND) puis on
-     *      localise les passages dans instructions.md. AUCUNE liste de
-     *      synonymes / mots-clefs metier a maintenir dans le code.
+     *   7. Interroger (saisie) et Rebecca (chat) partagent le meme pipeline :
+     *      build_memory_context_for_topic() + finalize_query_response_via_node().
+     *      AUCUNE liste de synonymes metier ; intention via QUERY_EXPAND.
+     *      Ne pas re-dupliquer le pipeline dans le handler POST.
      *   8. Meme exigence de comprehension pour tous les boutons.
      *   9. Matching technique (limites de mots pour termes courts) n'est pas
      *      un filtre metier : evite seulement "gan" dans "organisateur".
@@ -95,14 +96,27 @@
     // Priorite 2 : URL publique via HTTP_HOST (fallback si .port absent ou invalide).
     // Priorite 3 : URL publique codee en dur (dernier recours).
     // Toute modification de cette logique doit etre consignee dans les regles d'or.
+    /**
+     * URL publique du service Node (reformulator/).
+     * CORRECTIF 20/08/2026 : ne plus se baser aveuglement sur dirname(SCRIPT_NAME).
+     * Depuis rebecca/index.php, SCRIPT_NAME vaut .../rebecca/index.php donc
+     * dirname + "/reformulator" produisait .../rebecca/reformulator (404).
+     * On remonte les sous-dossiers d'interface connus jusqu'a la racine projet.
+     */
     function get_reformulator_base_url(): string {
-        // Sur hébergement mutualisé o2switch/Passenger, la connexion directe
-        // via 127.0.0.1:PORT n'est pas accessible depuis PHP (Passenger proxy).
-        // On utilise toujours l'URL publique — identique au comportement de test_curl.php.
+        // Sur hebergement mutualise o2switch/Passenger, connexion directe
+        // 127.0.0.1:PORT inaccessible depuis PHP — URL publique obligatoire.
         if (!empty($_SERVER['HTTP_HOST'])) {
             $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-            $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-            return $scheme . '://' . $_SERVER['HTTP_HOST'] . $basePath . '/reformulator';
+            $script = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? ''));
+            $dir = rtrim(dirname($script), '/');
+            // Sous-dossiers d'UI a remonter pour atteindre la racine r3M3M83r/
+            $uiLeaves = ['rebecca', 'data', 'reformulator', 'moteurs', 'shared', 'public'];
+            $leaf = basename($dir);
+            if (in_array($leaf, $uiLeaves, true)) {
+                $dir = rtrim(dirname($dir), '/');
+            }
+            return $scheme . '://' . $_SERVER['HTTP_HOST'] . $dir . '/reformulator';
         }
         return 'https://charreyre.net/r3M3M83r/reformulator';
     }
@@ -537,8 +551,12 @@
         return call_reformulator_service($payload);
     }
 
-    function finalize_query_response_via_node(string $question, string $localEvidence, string $instructionsContext = ''): string {
-        $payload = ['text' => $question, 'purpose' => 'query'];
+    /**
+     * Finalise une reponse memoire. $purpose = query (saisie) ou query-chat (Rebecca).
+     */
+    function finalize_query_response_via_node(string $question, string $localEvidence, string $instructionsContext = '', string $purpose = 'query'): string {
+        $purpose = ($purpose === 'query-chat') ? 'query-chat' : 'query';
+        $payload = ['text' => $question, 'purpose' => $purpose];
 
         if ($instructionsContext !== '') {
             $payload['instructionsContext'] = trim($instructionsContext);
@@ -697,13 +715,24 @@
         if ($intentExpanded !== '') {
             $selectQuestion = $topicText . "\n\nIntention elargie :\n" . $intentExpanded;
         }
-        $primaryTerms = extract_keywords($topicText);
+        // Termes primaires : mots bruts de la question EN TETE (ordre stable),
+        // puis extract_keywords. Les plus courts seront preferes au focus.
+        $primaryTerms = [];
         foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $w) {
             $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
             if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
                 $primaryTerms[] = $w;
             }
         }
+        foreach (extract_keywords($topicText) as $kw) {
+            $primaryTerms[] = $kw;
+        }
+        $primaryTerms = array_values(array_unique($primaryTerms));
+        // Stopwords generiques uniquement (pas de filtre metier)
+        $stopPrimary = ['que','sais','tu','du','des','les','une','est','sont','dans','pour','avec','comment','quoi','quoi','elle','ils'];
+        $primaryTerms = array_values(array_filter($primaryTerms, function ($t) use ($stopPrimary) {
+            return !in_array($t, $stopPrimary, true);
+        }));
         $intentTerms = $intentExpanded !== '' ? extract_keywords($intentExpanded) : [];
         $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention'];
         $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
@@ -745,11 +774,24 @@
 
         $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 80, $primaryTerms);
         if (!empty($rankedLines)) {
-            $ctx .= "PREUVES DIRECTES du fichier (citations prioritaires) :\n";
+            $ctx .= "PREUVES DIRECTES du fichier (citations prioritaires — lire en priorite) :\n";
             foreach ($rankedLines as $item) {
                 $ctx .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
             }
             $ctx .= "\n";
+            // Rappel explicite des termes de la question presents dans les preuves
+            $hitsInProofs = [];
+            $blob = normalize_for_matching(implode(' ', array_column($rankedLines, 'line')));
+            foreach ($primaryTerms as $pt) {
+                if (term_matches_in_text($blob, $pt) > 0) {
+                    $hitsInProofs[] = $pt;
+                }
+            }
+            if (!empty($hitsInProofs)) {
+                $ctx .= "Termes de la question presents dans les preuves ci-dessus : "
+                    . implode(', ', $hitsInProofs)
+                    . ". Tu dois les utiliser ; interdit de repondre \"non mentionne\".\n\n";
+            }
         }
 
         $sectionBoost = [];
@@ -1575,6 +1617,77 @@
         return substr_count($normText, $term);
     }
 
+
+    /**
+     * CORRECTIF 20/08/2026 : recentre une ligne longue sur le terme primaire
+     * demande. Les puces Chronologie/section 5 font 500-2000 car. ; le mot
+     * utile ("quad") est souvent au milieu. Le LLM ne lit que le debut -> faux
+     * "non mentionne". On extrait une fenetre centree sur le premier hit.
+     */
+    /**
+     * CORRECTIF 20/08/2026 (v2) : recentre la ligne sur le terme le plus
+     * discriminatif (le plus COURT parmi les primaires presents dans la ligne).
+     * Evite de centrer sur "saint"/"antonin" (frequents) au lieu de "quad".
+     */
+    function focus_evidence_line_on_terms(string $line, array $primaryTerms, int $window = 560): string {
+        $line = trim($line);
+        if ($line === '' || mb_strlen($line, 'UTF-8') <= $window) {
+            return $line;
+        }
+        $lineLower = mb_strtolower(remove_accents($line), 'UTF-8');
+
+        // Trier les termes primaires : plus courts d'abord (plus discriminatifs)
+        $terms = [];
+        foreach ($primaryTerms as $term) {
+            $term = normalize_for_matching((string) $term);
+            if ($term !== '' && mb_strlen($term, 'UTF-8') >= 3) {
+                $terms[] = $term;
+            }
+        }
+        usort($terms, function ($a, $b) {
+            $la = mb_strlen($a, 'UTF-8');
+            $lb = mb_strlen($b, 'UTF-8');
+            if ($la !== $lb) {
+                return $la <=> $lb;
+            }
+            return strcmp($a, $b);
+        });
+
+        $bestPos = -1;
+        $bestTerm = '';
+        foreach ($terms as $term) {
+            // Mot entier pour termes courts (<=5), sinon sous-chaine
+            if (mb_strlen($term, 'UTF-8') <= 5) {
+                if (!preg_match('/(?<![\p{L}\p{N}])' . preg_quote($term, '/') . '(?![\p{L}\p{N}])/u', $lineLower)) {
+                    continue;
+                }
+                $pos = mb_strpos($lineLower, $term, 0, 'UTF-8');
+            } else {
+                $pos = mb_strpos($lineLower, $term, 0, 'UTF-8');
+            }
+            if ($pos === false) {
+                continue;
+            }
+            $bestPos = $pos;
+            $bestTerm = $term;
+            break; // le plus court present gagne
+        }
+
+        if ($bestPos < 0) {
+            return mb_substr($line, 0, $window, 'UTF-8') . '…';
+        }
+        $half = (int) ($window / 2);
+        $start = max(0, $bestPos - $half);
+        $chunk = mb_substr($line, $start, $window, 'UTF-8');
+        if ($start > 0) {
+            $chunk = '…' . $chunk;
+        }
+        if ($start + $window < mb_strlen($line, 'UTF-8')) {
+            $chunk .= '…';
+        }
+        return $chunk;
+    }
+
     function collect_ranked_evidence_lines(array $sections, array $terms, int $maxLines = 48, array $primaryTerms = []): array {
         $normalizeList = function (array $list): array {
             return array_values(array_filter(array_map(function ($t) {
@@ -1606,18 +1719,22 @@
                     $count = term_matches_in_text($norm, $term);
                     if ($count > 0) {
                         $hitTerms++;
-                        $weight = isset($primarySet[$term]) ? 5 : 2;
-                        $score += $weight + min(3, $count);
+                        // CORRECTIF 20/08/2026 : termes primaires courts (ex. "quad")
+                        // pèsent beaucoup plus que "saint"/"antonin" trop fréquents.
                         if (isset($primarySet[$term])) {
+                            $tlen = mb_strlen($term, 'UTF-8');
+                            $weight = ($tlen <= 5) ? 40 : 12;
                             $hitPrimary++;
+                        } else {
+                            $weight = 2;
                         }
+                        $score += $weight * min(3, $count);
                     }
                 }
                 if ($hitTerms === 0) {
                     continue;
                 }
                 // Sans terme de la question d'origine : ignorer la ligne
-                // (empeche l'intention elargie d'inonder les preuves).
                 if (!empty($primarySet) && $hitPrimary === 0) {
                     continue;
                 }
@@ -1625,18 +1742,27 @@
                     $score += 8 * $hitTerms;
                 }
                 if ($hitPrimary >= 1) {
-                    $score += 12 * $hitPrimary;
+                    $score += 15 * $hitPrimary;
                 }
-                if (preg_match('/\b(cousin|cousine|neveu|niece|tante|oncle|fils|fille|pere|mere|epoux|epouse|heritier|naissance)\b/u', $norm)) {
-                    $score += 6;
-                }
+                // Bonus si la ligne contient un terme primaire rare (peu de
+                // lignes globales le portent) : calcule plus bas via inject.
                 if (preg_match('/\b[\p{Lu}][\p{L}]{2,}/u', $line)) {
                     $score += 2;
+                }
+                // Bonus massif si un terme primaire court est dans la ligne brute
+                $hasShort = false;
+                foreach ($primaryTerms as $pt) {
+                    if (mb_strlen($pt, 'UTF-8') <= 5 && term_matches_in_text($norm, $pt) > 0) {
+                        $score += 80;
+                        $hasShort = true;
+                        break;
+                    }
                 }
                 $bySection[$title][] = [
                     'score' => $score,
                     'title' => $title,
-                    'line'  => $line,
+                    'line'  => focus_evidence_line_on_terms($line, $primaryTerms, 560),
+                    'has_short' => $hasShort,
                 ];
             }
         }
@@ -1668,6 +1794,90 @@
             if (count($out) >= $maxLines) {
                 break;
             }
+        }
+
+        // CORRECTIF 20/08/2026 : garantir au moins 1-2 preuves par terme primaire.
+        // Evite qu'un terme rare ("quad") soit noye par "Saint-Antonin" frequent.
+        foreach ($primaryTerms as $pTerm) {
+            $covered = false;
+            foreach ($out as $item) {
+                if (term_matches_in_text(normalize_for_matching($item['line']), $pTerm) > 0) {
+                    $covered = true;
+                    break;
+                }
+            }
+            if ($covered) {
+                continue;
+            }
+            $injected = 0;
+            foreach ($pool as $item) {
+                if (term_matches_in_text(normalize_for_matching($item['line']), $pTerm) > 0) {
+                    $key = md5($item['line']);
+                    if (isset($seen[$key])) {
+                        continue;
+                    }
+                    $seen[$key] = true;
+                    // Insere en tete pour que le LLM voie d'abord les preuves ciblees
+                    array_unshift($out, $item);
+                    $injected++;
+                    if ($injected >= 3) {
+                        break;
+                    }
+                }
+            }
+            // Si toujours absent du pool, rescan sections (ligne contenant le terme)
+            if ($injected === 0) {
+                foreach ($sections as $title => $content) {
+                    foreach (preg_split('/\R/u', (string) $content) as $line) {
+                        $line = trim($line);
+                        if ($line === '' || mb_strlen($line, 'UTF-8') < 12) {
+                            continue;
+                        }
+                        if (term_matches_in_text(normalize_for_matching($line), $pTerm) > 0) {
+                            $key = md5($line);
+                            if (isset($seen[$key])) {
+                                continue;
+                            }
+                            $seen[$key] = true;
+                            array_unshift($out, [
+                                'score' => 999,
+                                'title' => $title,
+                                'line'  => focus_evidence_line_on_terms($line, $primaryTerms, 420),
+                            ]);
+                            $injected++;
+                            if ($injected >= 3) {
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // CORRECTIF 20/08/2026 (v3) : les lignes contenant un terme primaire
+        // COURT (ex. "quad") passent TOUJOURS en tete, avant "Saint-Antonin".
+        $shortPrimary = array_values(array_filter($primaryTerms, function ($t) {
+            return mb_strlen($t, 'UTF-8') <= 5;
+        }));
+        if (!empty($shortPrimary)) {
+            usort($out, function ($a, $b) use ($shortPrimary) {
+                $na = normalize_for_matching($a['line']);
+                $nb = normalize_for_matching($b['line']);
+                $ha = 0;
+                $hb = 0;
+                foreach ($shortPrimary as $sp) {
+                    if (term_matches_in_text($na, $sp) > 0) { $ha = 1; }
+                    if (term_matches_in_text($nb, $sp) > 0) { $hb = 1; }
+                }
+                if ($ha !== $hb) {
+                    return $hb <=> $ha; // celles avec le terme court d'abord
+                }
+                return ($b['score'] ?? 0) <=> ($a['score'] ?? 0);
+            });
+        }
+
+        // Recap maxLines (apres tri, les hits "quad" restent en tete)
+        if (count($out) > $maxLines) {
+            $out = array_slice($out, 0, $maxLines);
         }
         return $out;
     }
@@ -2213,185 +2423,64 @@
         }
 
         // ====================== INTERROGER LE FICHIER ======================
-        // CORRECTIF 05/08/2026 : 1) expansion d'intention (LLM leger)
-        // 2) selection de sections (titres + intention elargie)
-        // 3) contenu des sections
-        // 4) reponse finale (deux lectures + boussole d'intention)
-        // La recherche par mots-cles n'est qu'un secours.
-        //
-        // Garde-fou de taille : en dessous du seuil on envoie le fichier INTEGRAL.
+        // CORRECTIF 20/08/2026 : meme pipeline que chat.php (Rebecca).
+        // Plus de code duplique : build_memory_context_for_topic +
+        // finalize_query_response_via_node uniquement (source unique).
         if (isset($_POST['query_instructions']) && $input_text !== '') {
             $reformule_original = $input_text;
-            $rankedLines = [];
 
-            // 0) Comprendre vraiment la question (ancetres, amis d'enfance, etc.)
-            $intentExpanded = expand_query_intent_via_node($input_text);
+            // Moteur : meme helper que Rebecca (llm.php) si disponible
+            if (function_exists('llm_apply_selected_engine')) {
+                llm_apply_selected_engine($selected_engine);
+            }
 
-            $sections = extract_instructions_sections();
-            $fullDocument = load_instructions_content();
-            $fullDocumentLength = mb_strlen($fullDocument, 'UTF-8');
-            $fullDocumentSizeLimit = 60000; // ~15-18k tokens, sur pour la plupart des moteurs
+            $memoryContext = '';
+            $query_debug_mode = '';
+            $rankedPreview = [];
 
-            if ($fullDocumentLength > 0 && $fullDocumentLength <= $fullDocumentSizeLimit) {
-                $instructions_context = '';
-                if ($intentExpanded !== '') {
-                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
-                }
-                $instructions_context .= "Voici le contenu INTEGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
-                $query_debug_mode = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)'
-                    . ($intentExpanded !== '' ? ' + intention elargie' : '');
-            } else {
-                // CORRECTIF 16/08/2026 : le fichier fait ~580 Ko ; on ne peut pas
-                // l'envoyer en entier. La selection LLM seule rate souvent des
-                // sections pertinentes. Strategie :
-                //   1) intention elargie (synonymes, periodes, notions liees)
-                //   2) recherche LOCALE prioritaire (question + intention)
-                //   3) selection LLM en complement
-                //   4) union ordonnee par score local, jusqu'a 8 sections
-                $outline = extract_instructions_outline();
-                $selectQuestion = $input_text;
-                if ($intentExpanded !== '') {
-                    $selectQuestion = $input_text . "\n\nIntention elargie :\n" . $intentExpanded;
-                }
+            if (function_exists('build_memory_context_for_topic')) {
+                $built = build_memory_context_for_topic($input_text);
+                $memoryContext = $built['context'] ?? '';
+                $query_debug_mode = $built['debug'] ?? '';
+            }
 
-                // Termes de recherche : question + mots issus de l'intention
-                $primaryTerms = extract_keywords($input_text);
-                foreach (preg_split('/\s+/u', $input_text, -1, PREG_SPLIT_NO_EMPTY) as $w) {
-                    $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
-                    if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
-                        $primaryTerms[] = $w;
-                    }
-                }
-                $intentTerms = [];
-                if ($intentExpanded !== '') {
-                    $intentTerms = extract_keywords($intentExpanded);
-                }
-                $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention','notions','periodes','types','personnes'];
-                $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
-                    return !in_array($t, $genericNoise, true);
-                }));
-                $intentTerms = array_values(array_filter(array_unique($intentTerms), function ($t) use ($genericNoise) {
-                    return !in_array($t, $genericNoise, true);
-                }));
-                // Recherche locale large : question + synonymes / axes de l'intention
-                $searchBag = trim($input_text . ' ' . implode(' ', array_slice($intentTerms, 0, 20)));
-                $localSearchPad = search_with_counts_light($searchBag, $sections);
-
-                $relevantSections = [];
-                // PRIORITE 1 : sections qui matchent vraiment dans le fichier
-                foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
-                    if (isset($sections[$title])) {
-                        $relevantSections[$title] = $sections[$title];
-                    }
-                }
-
-                // PRIORITE 2 : selection LLM (complement, n'ecrase pas le local)
-                $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
-                if (!empty($selectedTitles)) {
-                    foreach ($selectedTitles as $title) {
-                        if (isset($sections[$title]) && !isset($relevantSections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                // Dernier recours : sections structurantes si toujours vide
-                if (empty($relevantSections)) {
-                    foreach ($outline as $title) {
-                        if (count($relevantSections) >= 3) {
-                            break;
-                        }
-                        $tNorm = mb_strtolower($title, 'UTF-8');
-                        $useful = (mb_strpos($tNorm, 'exp') !== false && mb_strpos($tNorm, 'person') !== false)
-                            || mb_strpos($tNorm, 'chronologie') !== false
-                            || mb_strpos($tNorm, 'entit') !== false
-                            || mb_strpos($tNorm, 'introduction') !== false;
-                        if ($useful && isset($sections[$title])) {
-                            $relevantSections[$title] = $sections[$title];
-                        }
-                    }
-                }
-
-                $maxSections = 8;
-                $perSectionLimit = 14000;
-                $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
-                // Preuves : termes question en priorite, intention en secours
-                $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
-
-                $instructions_context = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
-                if ($intentExpanded !== '') {
-                    $instructions_context .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
-                }
-
-                // PRIORITE 1 : preuves classees + diversifiees par section
-                $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 80, $primaryTerms);
-                if (!empty($rankedLines)) {
-                    $instructions_context .= "PREUVES DIRECTES du fichier (citations prioritaires — "
-                        . "N'INVENTE RIEN en dehors de ces faits et du contexte ci-dessous) :\n";
-                    foreach ($rankedLines as $item) {
-                        $instructions_context .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
-                    }
-                    $instructions_context .= "\n";
-                }
-
-                // PRIORITE 2 : contenu des sections, ordonnees par densite de preuves locales
-                // (Chronologie avant un pavé Domaine si elle matche mieux la question).
-                $sectionBoost = [];
-                foreach ($rankedLines as $item) {
-                    $t = $item['title'];
-                    $sectionBoost[$t] = ($sectionBoost[$t] ?? 0) + (int) ($item['score'] ?? 1);
-                }
-                $orderedTitles = array_keys($relevantSections);
-                usort($orderedTitles, function ($a, $b) use ($sectionBoost) {
-                    $sa = $sectionBoost[$a] ?? 0;
-                    $sb = $sectionBoost[$b] ?? 0;
-                    if ($sb !== $sa) {
-                        return $sb <=> $sa;
-                    }
-                    return 0;
-                });
-                $instructions_context .= "Contenu des sections (contexte elargi, secondaire par rapport aux preuves ci-dessus) :\n";
-                foreach ($orderedTitles as $title) {
-                    $content = $relevantSections[$title];
-                    $block = trim($content);
-                    if (mb_strlen($block, 'UTF-8') > $perSectionLimit) {
-                        $block = build_section_excerpt_for_query($content, $queryTerms, $perSectionLimit);
-                    }
-                    $instructions_context .= "\n--- Section : $title ---\n" . $block . "\n";
-                }
-                $localHits = count($localSearchPad['sections'] ?? []);
-                $query_debug_mode = count($relevantSections) . ' section(s)'
-                    . ' (local=' . $localHits
-                    . ', llm=' . count($selectedTitles ?? [])
-                    . ($intentExpanded !== '' ? ', intention' : '')
-                    . ')'
-                    . ' — fichier '
-                    . number_format($fullDocumentLength, 0, ',', ' ') . ' car. > seuil '
-                    . number_format($fullDocumentSizeLimit, 0, ',', ' ');
+            // Fallback minimal si le build echoue
+            if ($memoryContext === '' && function_exists('load_instructions_excerpt')) {
+                $memoryContext = load_instructions_excerpt();
+                $query_debug_mode = 'fallback excerpt (build_memory_context vide)';
             }
 
             $instructions_loaded = true;
             $instructions_line_count = count_instructions_lines();
 
-            $query_debug = "Moteur : " . ($selected_engine ?: strtoupper($llmInfo['engineName'] ?? 'AUTO')) . "\n";
+            $engLabel = $selected_engine !== '' ? $selected_engine : 'AUTO';
+            if (empty($selected_engine) && function_exists('get_llm_info')) {
+                $_li = get_llm_info();
+                $engLabel = strtoupper((string)($_li['engineName'] ?? 'AUTO'));
+            }
+            $query_debug = "Moteur : " . $engLabel . "\n";
+            $query_debug .= "Pipeline : build_memory_context_for_topic + finalize_query (identique chat.php)\n";
             $query_debug .= "Contexte transmis : " . $query_debug_mode . "\n";
-            if (!empty($rankedLines)) {
-                $query_debug .= "Preuves prioritaires retenues (" . count($rankedLines) . ") :\n";
-                foreach (array_slice($rankedLines, 0, 12) as $item) {
-                    $query_debug .= "  [" . $item['title'] . "] " . mb_substr($item['line'], 0, 120, 'UTF-8') . "\n";
+            // Apercu des premieres preuves (si presentes dans le contexte)
+            if (preg_match_all('/^- \[([^\]]+)\] (.+)$/mu', $memoryContext, $mm, PREG_SET_ORDER)) {
+                $query_debug .= "Preuves prioritaires retenues (" . count($mm) . ") :\n";
+                foreach (array_slice($mm, 0, 12) as $item) {
+                    $query_debug .= "  [" . $item[1] . "] " . mb_substr($item[2], 0, 120, 'UTF-8') . "\n";
                 }
             }
 
-            // Appel LLM final : la question et le contenu reel (integral ou sections selectionnees)
-            // sont transmis ensemble, le moteur cherche et repond lui-meme.
-            $finalResponse = finalize_query_response_via_node($input_text, '', $instructions_context);
+            // Appel LLM final — meme fonction que Rebecca (sans CHAT_ADDON)
+            $finalResponse = finalize_query_response_via_node($input_text, '', $memoryContext);
 
             if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
                 $query_result = $finalResponse;
-                $reformule_msg = 'Réponse générée par l\'IA (' . $query_debug_mode . ')';
+                $reformule_msg = 'Reponse generee par l\'IA (' . $query_debug_mode . ')';
+            } elseif ($finalResponse !== '') {
+                $query_result = $finalResponse;
+                $reformule_msg = 'Reponse generee par l\'IA (' . $query_debug_mode . ')';
             } else {
-                $query_result = "Je n'ai pas trouvé d'information pertinente dans tes mémoires pour cette question.";
-                $reformule_msg = 'Aucune information trouvée.';
+                $query_result = "Je n'ai pas trouve d'information pertinente dans tes memoires pour cette question.";
+                $reformule_msg = 'Aucune information trouvee.';
             }
         }
 

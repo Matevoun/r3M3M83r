@@ -148,7 +148,8 @@ const prompts = require('./prompts.js');
 const STYLE_RULES = prompts.STYLE_RULES;
 const QUERY_KEYWORD_PROMPT = prompts.QUERY_KEYWORD_PROMPT;
 const QUERY_EXPAND_PROMPT = prompts.QUERY_EXPAND_PROMPT;
-const QUERY_PROMPT = prompts.QUERY_PROMPT;
+const QUERY_PROMPT = prompts.QUERY_PROMPT,
+  QUERY_CHAT_PROMPT = prompts.QUERY_CHAT_PROMPT;
 const QUERY_SELECT_PROMPT = prompts.QUERY_SELECT_PROMPT;
 const MERGE_CHECK_PROMPT = prompts.MERGE_CHECK_PROMPT;
 const MERGE_SMART_PROMPT = prompts.MERGE_SMART_PROMPT;
@@ -164,6 +165,7 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
   else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
   else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
+  else if (purpose === 'query-chat') messages.push({ role: 'system', content: QUERY_CHAT_PROMPT });
   else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
   else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
   else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
@@ -171,7 +173,7 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   else if (purpose === 'chat-talk') messages.push({ role: 'system', content: CHAT_TALK_PROMPT });
   else messages.push({ role: 'system', content: SAISIE_PROMPT });
   if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
-  const userContent = (purpose === 'query')
+  const userContent = (purpose === 'query' || purpose === 'query-chat')
     ? 'Recherche dans instructions.md : ' + text
     : (purpose === 'query-select' || purpose === 'query-expand' || purpose === 'chat-route' || purpose === 'chat-talk')
       ? text
@@ -187,7 +189,7 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   const maxTokens = (purpose === 'merge-smart') ? 4000
     : (purpose === 'chat-route') ? 16
     : (purpose === 'chat-talk') ? 400
-    : (purpose === 'query') ? 2200
+    : (purpose === 'query' || purpose === 'query-chat') ? 2200
     : 1500;
   return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
 };
@@ -221,14 +223,15 @@ const LLM_ENGINES = {
       else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
       else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
       else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
-      else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
+      else if (purpose === 'query-chat') messages.push({ role: 'system', content: QUERY_CHAT_PROMPT });
+  else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
       else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
       else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
       else if (purpose === 'chat-route') messages.push({ role: 'system', content: CHAT_ROUTE_PROMPT });
       else if (purpose === 'chat-talk') messages.push({ role: 'system', content: CHAT_TALK_PROMPT });
       else messages.push({ role: 'system', content: SAISIE_PROMPT });
       if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
-      const userContent = (purpose === 'query')
+      const userContent = (purpose === 'query' || purpose === 'query-chat')
         ? 'Recherche dans instructions.md : ' + text
         : (purpose === 'query-select' || purpose === 'query-expand' || purpose === 'chat-route' || purpose === 'chat-talk')
           ? text
@@ -243,7 +246,7 @@ const LLM_ENGINES = {
       const maxTokens = (purpose === 'merge-smart') ? 4000
         : (purpose === 'chat-route') ? 16
         : (purpose === 'chat-talk') ? 400
-        : (purpose === 'query') ? 2200
+        : (purpose === 'query' || purpose === 'query-chat') ? 2200
         : 1500;
       return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
     }

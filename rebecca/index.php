@@ -1,7 +1,7 @@
 <?php
     /**
      * ============================================================================
-     * r3M3M83r/chat.php — Interface de tchat strict sur instructions.md
+     * r3M3M83r/rebecca/index.php — Interface tchat Rebecca (ex chat.php)
      * ============================================================================
      *
      * ROLE :
@@ -38,7 +38,7 @@
      *  4. $memoryContext = resultat de build_memory_context_for_topic()
      *     -> contient : Intention elargie + PREUVES DIRECTES + sections classees
      *  5. $questionForLLM = CHAT_ADDON (historique) + Question actuelle
-     *  6. Appel finalize_query_response_via_node($questionForLLM, '', $memoryContext)
+     *  6. Appel finalize_query_response_via_node($questionForLLM, '', $memoryContext, 'query-chat')
      *     -> Node utilise QUERY_PROMPT (strict) + contexte memoire
      *  7. Reponse JSON {reply, engine, model, debug}
      *  8. Log dans reformulator/log/requests.log + access.log (comme tracker.php)
@@ -62,7 +62,8 @@
      */
 
     // ==================== INCLUDES ====================
-    include_once __DIR__ . '/reformulator/functions.php'; // Source de verite moteur
+    include_once __DIR__ . '/../reformulator/functions.php'; // Pipeline memoire + Node
+    include_once __DIR__ . '/../reformulator/llm.php';      // Selection moteur partagee
 
     // ==================== CONSTANTES ====================
     // CORRECTIF 19/08/2026 : CHAT_PROMPT_JS pointait vers un nom de fichier
@@ -83,27 +84,33 @@
     // capitalisation exacte du fichier reellement present sur le serveur,
     // il sera trouve sans avoir a renommer quoi que ce soit.
     function find_chat_prompt_js(): string {
+        // Cherche d'abord dans rebecca/, puis a la racine r3M3M83r (compat).
         $candidates = [
-            'chat_prompts.js',
             'Chat-Prompts.js',
+            'chat_prompts.js',
             'Chat_Prompts.js',
             'chat-prompts.js',
             'ChatPrompts.js',
             'chatprompts.js',
         ];
-        foreach ($candidates as $name) {
-            $path = __DIR__ . '/' . $name;
-            if (is_file($path)) {
-                return $path;
+        $dirs = [__DIR__, dirname(__DIR__)];
+        foreach ($dirs as $dir) {
+            foreach ($candidates as $name) {
+                $path = $dir . '/' . $name;
+                if (is_file($path)) {
+                    return $path;
+                }
             }
         }
-        // Dernier recours : balayage du dossier (insensible a la casse) --
-        // couvre toute variante de nommage non anticipee ci-dessus.
-        $files = @scandir(__DIR__);
-        if (is_array($files)) {
+        // Dernier recours : balayage rebecca/ puis racine projet.
+        foreach ([__DIR__, dirname(__DIR__)] as $dir) {
+            $files = @scandir($dir);
+            if (!is_array($files)) {
+                continue;
+            }
             foreach ($files as $file) {
                 if (preg_match('/^chat.*prompt.*\.js$/i', $file)) {
-                    return __DIR__ . '/' . $file;
+                    return $dir . '/' . $file;
                 }
             }
         }
@@ -122,7 +129,7 @@
      * (comme saisie.php pour REFORMULER), et les erreurs eventuelles.
      */
     function chat_log_request(string $engine, int $msgLen, string $message = '', string $extra = '') {
-        $logFile = __DIR__ . '/reformulator/log/requests.log';
+        $logFile = dirname(__DIR__) . '/reformulator/log/requests.log';
         $dir = dirname($logFile);
         if (!is_dir($dir)) @mkdir($dir, 0755, true);
         $ip = trim(explode(',', (string)($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'inconnue'))[0]);
@@ -138,10 +145,10 @@
             . PHP_EOL;
         @file_put_contents($logFile, $line, FILE_APPEND | LOCK_EX);
 
-        $accessLog = __DIR__ . '/access.log';
+        $accessLog = dirname(__DIR__) . '/access.log';
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? '-';
         $accessLine = "------------------------------\n[" . date('d/m/Y H:i:s') . " UTC" . date('P') . "] Chat IA (" . $engine . ") IP : " . $ip
-            . "\nMode : chat.php"
+            . "\nMode : rebecca/index.php"
             . "\nURL : " . (($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? ''))
             . "\nUser-Agent : " . $ua
             . ($clean !== '' ? "\nQuestion : " . $clean : '')
@@ -150,7 +157,7 @@
     }
 
     function chat_log_error(string $detail): void {
-        $logFile = __DIR__ . '/reformulator/log/error.log';
+        $logFile = dirname(__DIR__) . '/reformulator/log/error.log';
         $dir = dirname($logFile);
         if (!is_dir($dir)) @mkdir($dir, 0755, true);
         $line = '[' . date('Y-m-d H:i:s') . '] CHAT_ERROR ' . trim($detail) . PHP_EOL;
@@ -301,10 +308,8 @@
             // sujet -- voir chat_is_small_talk() plus haut. Ca evite d'aller
             // chercher dans le fichier pour "Salut, comment vas-tu ?".
             // Routage LLM (MEMORY vs CHAT) — pas de liste de mots en dur
-            global $selected_engine;
-            if ($engineReq !== '') {
-                $selected_engine = $engineReq;
-            }
+            // Selection moteur via reformulator/llm.php (partage avec saisie.php)
+            llm_apply_selected_engine($engineReq);
             $route = chat_route_needs_memory($message, $historyText);
             $needsMemory = !empty($route['needs_memory']);
             $memoryContext = '';
@@ -319,10 +324,16 @@
                 $debugInfo .= ' | ' . ($built['debug'] ?? 'memoire');
             }
 
-            // Fallback si jamais le build echoue (fichier trop petit ou fonction manquante)
-            if ($memoryContext === '' && function_exists('load_instructions_excerpt')) {
+            // Fallback si le build echoue (timeout, erreur). Ne PAS ecraser le debug route.
+            if ($memoryContext === '' && !$isChatOnly && function_exists('build_memory_context_for_topic')) {
+                // 2e tentative legere : meme appel (souvent cold-start Node)
+                $built2 = build_memory_context_for_topic($retrievalQuery);
+                $memoryContext = $built2['context'] ?? '';
+                $debugInfo .= ' | retry build: ' . ($built2['debug'] ?? 'vide');
+            }
+            if ($memoryContext === '' && !$isChatOnly && function_exists('load_instructions_excerpt')) {
                 $memoryContext = load_instructions_excerpt();
-                $debugInfo = 'fallback excerpt - build_memory_context a echoue';
+                $debugInfo .= ' | fallback excerpt (contexte faible — reponse a prendre avec prudence)';
             }
 
             // Log question exacte (requests.log + access.log)
@@ -344,15 +355,13 @@
 
             if (function_exists('finalize_query_response_via_node') || function_exists('call_reformulator_service')) {
                 try {
-                    global $selected_engine;
-                    $selected_engine = $engineReq; // '' = auto cote Node
-                    $_POST['selected_engine'] = $engineReq;
+                    llm_apply_selected_engine($engineReq);
 
                     if ($isChatOnly) {
                         // Reponse rapide sans pipeline memoire
                         $finalReply = chat_talk_via_node($questionForLLM);
                     } else {
-                        $finalReply = finalize_query_response_via_node($questionForLLM, '', $memoryContext);
+                        $finalReply = finalize_query_response_via_node($questionForLLM, '', $memoryContext, 'query-chat');
                     }
 
                     if ($engineReq !== '') {
@@ -376,7 +385,7 @@
                 $payload = [
                     'text' => $questionForLLM,
                     'instructionsContext' => $memoryContext,
-                    'purpose' => 'query',
+                    'purpose' => 'query-chat',
                     'engine' => $engineReq
                 ];
                 $ch = curl_init($url);
@@ -425,7 +434,7 @@
     if (isset($_GET['action']) && $_GET['action'] === 'reset_llm') {
         $baseUrl = function_exists('get_reformulator_base_url') ? get_reformulator_base_url() : '';
         if ($baseUrl) { @file_get_contents(rtrim($baseUrl,'/').'/llm-info?reset=1'); }
-        header('Location: chat.php?reset=ok');
+        header('Location: ./?reset=ok');
         exit;
     }
 
@@ -441,8 +450,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="robots" content="noindex,nofollow">
-        <title>Tchat IA — r3M3M83r (mémoire conversation)</title>
-        <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+        <title>Rebecca — Tchat memoire r3M3M83r</title>
+        <link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
         <style>
             /* ===== RESET + BASE ===== */
             *{box-sizing:border-box}
@@ -555,7 +564,9 @@
                 color:#fff;
                 border-bottom-right-radius:5px;
             }
-            .msg.assistant{
+            .bubble-body{line-height:1.45;word-wrap:break-word}
+        .bubble-body strong{font-weight:600}
+        .msg.assistant{
                 align-self:flex-start;
                 background:#fff;
                 border:1px solid #e5e7eb;
@@ -689,16 +700,17 @@
         <header>
             <h1>Tchat IA — Projet r3M3M83r</h1>
             <p>
-                Chaque requête interroge <strong>instructions.md</strong> via le même pipeline que <strong>reformulator</strong>.
+                Interface <strong>Rebecca</strong> uniquement. Le moteur memoire est celui de <strong>r3M3M83r</strong>
+                (meme pipeline que Reformulator / saisie.php) — cette page ne fait que l'UI tchat.
             </p>
             <div class="topbar">
                 <label for="engineSelect" class="engine-label">Moteur :</label>
                 <div class="engine-row">
                     <select id="engineSelect" aria-label="Choix moteur IA">
-                        <option value="">AUTO (<?= htmlspecialchars(strtoupper($currentEngine)) ?>)</option>
-                        <?php foreach($enginesList as $eng): $eng=trim(strtolower($eng)); if($eng==='') continue; ?>
-                        <option value="<?= htmlspecialchars($eng) ?>" <?= $eng===$currentEngine?'selected':'' ?>><?= htmlspecialchars(strtoupper($eng)) ?></option>
-                        <?php endforeach; ?>
+                        <?php
+                            $enginePref = ''; // le JS restaure localStorage apres
+                            echo llm_render_engine_options($enginePref, $llmInfo);
+                        ?>
                     </select>
                     <button class="secondary" id="resetEngineBtn" title="Vide cache Node + recharge">RAZ</button>
                     <button class="secondary" id="clearChatBtn" title="Vide historique localStorage">Vider</button>
@@ -832,7 +844,20 @@
             });
             }
 
-            function render(){
+
+        /** Escape HTML puis **gras**, *italique*, sauts de ligne ; retire ## titres. */
+        function formatChatHtml(raw) {
+            if (!raw) return '';
+            let s = String(raw);
+            s = s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            s = s.replace(/^#{1,6}\s*/gm, '');
+            s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            s = s.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+            s = s.replace(/\n/g, '<br>');
+            return s;
+        }
+
+        function render(){
             messagesEl.innerHTML='';
             history.forEach(m=>{
                 const div = document.createElement('div');
@@ -841,7 +866,9 @@
                 // pouvoir ajouter toolbar/meta/debug APRES sans les ecraser
                 // (textContent sur div remplacerait tout enfant existant).
                 const bubbleText = document.createElement('div');
-                bubbleText.textContent = m.content;
+                bubbleText.className = 'bubble-body';
+                // Affichage tchat : prose + gras leger, sans titres markdown bruts
+                bubbleText.innerHTML = formatChatHtml(m.content);
                 div.appendChild(bubbleText);
 
                 // CORRECTIF : les messages utilisateur n'ont plus AUCUN bloc
@@ -922,7 +949,7 @@
             inputEl.disabled=true;
 
             try{
-                const res = await fetch('chat.php', {
+                const res = await fetch('', {
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
                 body: JSON.stringify({
@@ -973,7 +1000,7 @@
             document.getElementById('resetEngineBtn').onclick=()=>{
             if(confirm('Reset moteur LLM (vide cache Node) ? L\'historique du tchat sera conserve.')){
                 statusEl.textContent='Reset moteur en cours ...';
-                fetch('chat.php?action=reset_llm')
+                fetch('?action=reset_llm')
                 .then(()=>{ statusEl.textContent='Moteur réinitialisé (historique conservé)'; setTimeout(()=>statusEl.textContent='',3000); })
                 .catch(()=>{ statusEl.textContent='Reset envoyé'; setTimeout(()=>statusEl.textContent='',3000); });
                 // Ne recharge PAS la page, sinon on risque de relancer une migration ou perdre le focus
@@ -986,9 +1013,9 @@
             <p style="margin:0;">
                 <a href="<?php echo htmlspecialchars(defined('CPANEL_URL') ? CPANEL_URL : 'https://nombre.o2switch.net:2083/', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" title="Ouvrir le cPanel o2switch Node.js">Ouvrir cPanel o2switch</a>
                 &bull;
-                <a href="reformulator/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
+                <a href="../reformulator/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
                 &bull;
-                <a href="reformulator/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" title="Voir les requetes effectuees">Voir les requetes</a>
+                <a href="../reformulator/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" title="Voir les requetes effectuees">Voir les requetes</a>
             </p>
         </footer>
 

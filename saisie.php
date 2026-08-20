@@ -3,6 +3,7 @@
     // Toute la logique metier (interrogation, extraction, appels Node) vit dans
     // reformulator/functions.php. Ici : HTML, styles, JS d'interface uniquement.
     include_once __DIR__ . '/reformulator/functions.php';
+    include_once __DIR__ . '/reformulator/llm.php';
 ?>
 
 <!DOCTYPE html>
@@ -288,28 +289,14 @@
         </div>
       <p class="notice">Le bouton "Reformulation avancee avec IA" corrige, reformule et transpose à la troisième personne, "Proposer emplacement" propose où ranger le souvenir dans le fichier d'instructions, et “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
       <input type="hidden" name="instructions_context" value="<?php echo html_escape($instructions_context); ?>">
-      <?php
-        // Construction de la liste des moteurs disponibles pour le sélecteur.
-        $availableEngines = $llmInfo['availableEngines'] ?? [];
-        $currentEngineName = strtolower($llmInfo['engineName'] ?? 'groq');
-        // Si la liste est vide (service non joignable), on propose les moteurs connus.
-        if (empty($availableEngines)) {
-            $availableEngines = ['groq', 'cerebras', 'mistral', 'openrouter'];
-        }
-        $engineLabels = ['groq' => 'Groq', 'cerebras' => 'Cerebras', 'mistral' => 'Mistral', 'openrouter' => 'OpenRouter'];
-      ?>
+      <!-- Selection moteur : reformulator/llm.php (partage Rebecca / Reformulator) -->
       <div class="engine-select-row">
         <label for="selected_engine">Moteur IA :</label>
         <select id="selected_engine" name="selected_engine">
-          <option value="" <?php echo ($selected_engine === '') ? 'selected' : ''; ?>>Auto — <?php echo html_escape(strtoupper($currentEngineName)); ?> (défaut)</option>
-          <?php foreach ($availableEngines as $eng): ?>
-          <option value="<?php echo html_escape($eng); ?>" <?php echo ($selected_engine === $eng) ? 'selected' : ''; ?>>
-            <?php echo html_escape($engineLabels[$eng] ?? ucfirst($eng)); ?>
-          </option>
-          <?php endforeach; ?>
+          <?php echo llm_render_engine_options($selected_engine, $llmInfo); ?>
         </select>
         <?php if ($selected_engine !== ''): ?>
-          <span class="engine-badge"><?php echo html_escape(strtoupper($selected_engine)); ?> sélectionné</span>
+          <span class="engine-badge"><?php echo html_escape(strtoupper($selected_engine)); ?> selectionne</span>
         <?php endif; ?>
       </div>
       <div class="btn-row">
