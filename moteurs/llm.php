@@ -1,6 +1,6 @@
 <?php
 /**
- * r3M3M83r/reformulator/llm.php — Selection moteur LLM partagee
+ * r3M3M83r/moteurs/llm.php — Selection moteur LLM partagee
  * (Rebecca + saisie.php + tout le moteur r3M3M83r).
  * Emplacement : avec functions.php / server.js / prompts.js (pas a la racine).
  *

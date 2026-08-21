@@ -1,5 +1,5 @@
 /**
- * r3M3M83r/reformulator/server.js
+ * r3M3M83r/moteurs/server.js
  * Version avec support upload de fichiers + Mistral par defaut + logique dynamique modeles
  * Mise a jour 03/08/2026 - Mathieu CHARREYRE
  *
@@ -24,7 +24,7 @@
  *   4. Les modeles OpenRouter :free tournent souvent (HTTP 404). Preferer
  *      openrouter/free ou verifier la disponibilite avant de changer le defaut.
  *   5. Ne jamais laisser une erreur Multer ou Express renvoyer du HTML :
- *      toujours repondre en JSON et logger dans reformulator/log/error.log.
+ *      toujours repondre en JSON et logger dans moteurs/log/error.log.
  *
  * CORRECTIF 04/07/2026 :
  *   - Creation explicite du dossier uploads/ avant Multer.
@@ -72,10 +72,31 @@ const logError = (message) => {
   writeLog(ERROR_LOG_FILE, line);
   console.error(message);
 };
-const logRequest = (req) => {
+/**
+ * Journal humain des requetes LLM.
+ * Une ligne = date + IP + action + texte de la question (tronque a 500 car.).
+ */
+const logRequest = function(req, textOverride) {
   const clientIp = (req.headers['x-forwarded-for'] || req.ip || (req.socket && req.socket.remoteAddress) || 'inconnue').toString().split(',')[0].trim();
-  const textLength = typeof (req.body && req.body.text) === 'string' ? req.body.text.length : 0;
-  const line = '[' + formatTimestamp() + '] ' + req.method + ' ' + req.originalUrl + ' IP=' + clientIp + ' text_length=' + textLength + '\n';
+  var rawText = '';
+  if (typeof textOverride === 'string' && textOverride.length > 0) {
+    rawText = textOverride;
+  } else if (req.body && typeof req.body.text === 'string') {
+    rawText = req.body.text;
+  }
+  var purpose = 'rewrite';
+  if (req.body && typeof req.body.purpose === 'string' && req.body.purpose.trim() !== '') {
+    purpose = req.body.purpose.trim();
+  }
+  var preview = String(rawText).replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
+  if (preview.length > 500) {
+    preview = preview.substring(0, 500) + '...';
+  }
+  // Format lisible (pas seulement text_length)
+  var line = '[' + formatTimestamp() + '] IP=' + clientIp
+    + ' | action=' + purpose
+    + ' | requete=' + (preview !== '' ? preview : '(vide)')
+    + '\n';
   writeLog(REQUESTS_LOG_FILE, line);
 };
 const ensureLogFile = (filePath) => {
@@ -462,7 +483,9 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 };
 
 // Routes statiques
-app.get('/status', function(req, res) { res.type('text/plain').send('Reformulator service is alive'); });
+app.get('/status', function(req, res) { res.type('text/plain').send('Moteurs service is alive'); });
+app.get('/r3M3M83r/moteurs/status', function(req, res) { res.type('text/plain').send('Moteurs service is alive'); });
+app.get('/moteurs/status', function(req, res) { res.type('text/plain').send('Moteurs service is alive'); });
 app.get('/error.log', function(req, res) { res.redirect(301, '/log/error.log'); });
 app.get('/requests.log', function(req, res) { res.redirect(301, '/log/requests.log'); });
 app.get('/log/error.log', function(req, res) {
@@ -478,10 +501,20 @@ app.get('/log/requests.log', function(req, res) {
   res.sendFile(REQUESTS_LOG_FILE);
 });
 app.get('/', function(req, res) {
-  res.json(Object.assign({ status: 'ok', routes: ['/status','/llm-info','/reformuler'] }, getCurrentEngineInfo()));
+  res.json(Object.assign({ status: 'ok', base: 'moteurs', routes: ['/status','/llm-info','/reformuler'] }, getCurrentEngineInfo()));
+});
+app.get('/r3M3M83r/moteurs', function(req, res) {
+  res.json(Object.assign({ status: 'ok', base: 'moteurs', routes: ['/status','/llm-info','/reformuler'] }, getCurrentEngineInfo()));
+});
+app.get('/r3M3M83r/moteurs/', function(req, res) {
+  res.json(Object.assign({ status: 'ok', base: 'moteurs', routes: ['/status','/llm-info','/reformuler'] }, getCurrentEngineInfo()));
 });
 app.get('/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
+// CORRECTIF 21/08/2026 : sous Passenger, req.path peut etre
+// /r3M3M83r/moteurs/llm-info (URL complete) et non /llm-info.
+app.get('/r3M3M83r/moteurs/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
 app.get('/r3M3M83r/reformulator/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
+app.get('/moteurs/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
 
 const registerReformulationRoute = function(routePath) {
   app.post(routePath, async function(req, res) {
@@ -767,8 +800,6 @@ const handleFileUpload = function(req, res, next) {
 
 // Route principale avec upload + mode extraction
 app.post('/reformuler', handleFileUpload, async function(req, res) {
-  logRequest(req);
-
   let text = (req.body && req.body.text) || '';
   const file = req.file;
 
@@ -837,6 +868,8 @@ app.post('/reformuler', handleFileUpload, async function(req, res) {
   if (!text.trim()) return res.status(400).json({ error: 'Texte absent' });
 
   try {
+    // Journal humain : IP + question complete (apres extraction fichier si besoin)
+    logRequest(req, text);
     var result = await reformulate(text, context, purpose, preferredEngine);
     res.json({ cleaned: result.cleaned, engine: result.engine, model: result.model, attempts: result.attempts });
   } catch (error) {
@@ -851,6 +884,15 @@ app.post('/reformuler', handleFileUpload, async function(req, res) {
 // requête est redéléguée telle quelle vers /reformuler, qui applique déjà
 // handleFileUpload. L'appliquer deux fois aurait tenté de reparser un corps
 // multipart déjà consommé par le premier passage.
+// Compat chemins Passenger (URL complete avec prefixe application)
+app.post('/r3M3M83r/moteurs/reformuler', function(req, res) {
+  req.url = '/reformuler';
+  app.handle(req, res);
+});
+app.post('/moteurs/reformuler', function(req, res) {
+  req.url = '/reformuler';
+  app.handle(req, res);
+});
 app.post('/r3M3M83r/reformulator/reformuler', function(req, res) {
   req.url = '/reformuler';
   app.handle(req, res);

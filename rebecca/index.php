@@ -62,8 +62,8 @@
      */
 
     // ==================== INCLUDES ====================
-    include_once __DIR__ . '/../reformulator/functions.php'; // Pipeline memoire + Node
-    include_once __DIR__ . '/../reformulator/llm.php';      // Selection moteur partagee
+    include_once __DIR__ . '/../moteurs/functions.php'; // Pipeline memoire + Node
+    include_once __DIR__ . '/../moteurs/llm.php';      // Selection moteur partagee
 
     // ==================== CONSTANTES ====================
     // CORRECTIF 19/08/2026 : CHAT_PROMPT_JS pointait vers un nom de fichier
@@ -308,7 +308,7 @@
             // sujet -- voir chat_is_small_talk() plus haut. Ca evite d'aller
             // chercher dans le fichier pour "Salut, comment vas-tu ?".
             // Routage LLM (MEMORY vs CHAT) — pas de liste de mots en dur
-            // Selection moteur via reformulator/llm.php (partage avec saisie.php)
+            // Selection moteur via moteurs/llm.php (partage avec saisie.php)
             llm_apply_selected_engine($engineReq);
             $route = chat_route_needs_memory($message, $historyText);
             $needsMemory = !empty($route['needs_memory']);
@@ -414,7 +414,7 @@
             if ($finalReply === '') {
                 chat_log_error('reponse vide | ' . $debugInfo);
                 http_response_code(500);
-                echo json_encode(['error' => "Le moteur n'a pas répondu. Vérifie que Node tourne (reformulator/server.js). Debug: $debugInfo"], JSON_UNESCAPED_UNICODE);
+                echo json_encode(['error' => "Le moteur n'a pas répondu. Vérifie que Node tourne (moteurs/server.js). Debug: $debugInfo"], JSON_UNESCAPED_UNICODE);
                 exit;
             }
 
@@ -700,8 +700,8 @@
         <header>
             <h1>Tchat IA — Projet r3M3M83r</h1>
             <p>
-                Interface <strong>Rebecca</strong>. Motorisation mémorielle de <strong>r3M3M83r</strong>
-                (pipeline de Reformulator). Cette page ne fait que l'UI tchat.
+                Interface <strong>Rebecca</strong> uniquement. Le moteur memoire est celui de <strong>r3M3M83r</strong>
+                (meme pipeline que Reformulator / saisie.php) — cette page ne fait que l'UI tchat.
             </p>
             <div class="topbar">
                 <label for="engineSelect" class="engine-label">Moteur :</label>
@@ -1013,9 +1013,9 @@
             <p style="margin:0;">
                 <a href="<?php echo htmlspecialchars(defined('CPANEL_URL') ? CPANEL_URL : 'https://nombre.o2switch.net:2083/', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" title="Ouvrir le cPanel o2switch Node.js">Ouvrir cPanel o2switch</a>
                 &bull;
-                <a href="../reformulator/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
+                <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
                 &bull;
-                <a href="../reformulator/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" title="Voir les requetes effectuees">Voir les requetes</a>
+                <a href="../moteurs/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" title="Voir les requetes effectuees">Voir les requetes</a>
             </p>
         </footer>
 

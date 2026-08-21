@@ -1,0 +1,32 @@
+moteurs/ — moteur LLM partage (Rebecca + Reformulator / saisie.php)
+================================================================
+
+Contenu :
+  server.js      Express + appels LLM
+  app.js         Point d'entree Passenger (require server.js)
+  prompts.js     Tous les prompts (editer ici, puis restart Node)
+  functions.php  Pipeline memoire PHP (build_memory_context, etc.)
+  llm.php        Selection moteur partagee (select HTML)
+  log_proxy.php  Affichage logs
+  log/           requests.log + error.log (cree au runtime)
+  uploads/       temporaires extraction PDF (cree au runtime)
+  node_modules/  a copier depuis l'ancien reformulator/ OU npm install
+  package.json   a copier depuis l'ancien reformulator/
+
+Deploy o2switch (IMPORTANT) :
+  1. Copier ce dossier moteurs/ sur le serveur (avec node_modules ou npm install).
+  2. cPanel -> Setup Node.js App :
+       - Application root : .../r3M3M83r/moteurs  (plus reformulator)
+       - Application URL  : /r3M3M83r/moteurs     (ou garder l'URL si rewrite)
+       - Application startup file : app.js  (ou server.js)
+  3. Restart l'app Node.
+  4. Verifier : https://VOTRE_DOMAINE/r3M3M83r/moteurs/llm-info
+  5. Mettre a jour saisie.php + rebecca/ (includes deja pointent vers moteurs/).
+
+Compat :
+  reformulator/*.php restent des stubs qui incluent moteurs/ le temps
+  de migrer favoris et cPanel. Tu pourras supprimer reformulator/ ensuite
+  si plus rien ne pointe dessus.
+
+Ne PAS laisser deux Node Apps (reformulator ET moteurs) actives en parallele
+avec les memes cles : une seule app Node = moteurs/.

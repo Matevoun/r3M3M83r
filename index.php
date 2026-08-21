@@ -135,7 +135,7 @@
                     <p>Discuter naturellement. Rebecca interroge la memoire quand c'est pertinent, sinon repond en conversation.</p>
                     <span class="go">Ouvrir le tchat →</span>
                 </a>
-                <a class="card" href="saisie.php" target="_blank" rel="noopener noreferrer" title="Saisie — Memoire virtuelle de Mathieu CHARREYRE">
+                <a class="card" href="reformulator/saisie.php" target="_blank" rel="noopener noreferrer" title="Saisie — Memoire virtuelle de Mathieu CHARREYRE">
                     <span class="label">Saisie</span>
                     <h2>Reformulator</h2>
                     <p>Interroger, reformuler, proposer un emplacement, comparer / fusionner des notes avec le fichier.</p>
@@ -144,7 +144,7 @@
             </div>
         </div>
         <footer>
-            <span class="disclaimer">Verifier les faits importants dans le <a href="sections" target="_blank" rel="noopener noreferrer" title="Fichier mémoriel de Mathieu CHARREYRE">fichier source</a>.</span>
+            <span class="disclaimer">Verifier les faits importants dans le <a href="https://mathieu.charreyre.net/r3M3M83r/instructions.md" target="_blank" rel="noopener noreferrer" title="Fichier mémoriel de Mathieu CHARREYRE">fichier source</a>.</span>
             Projet <a href="https://mathieu.charreyre.net/r3M3M83r" title="r3M3M83r" title="r3M3M83r">r3M3M83r</a>
         </footer>
     </body>

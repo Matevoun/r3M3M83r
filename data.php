@@ -346,13 +346,13 @@ function html_footer(bool $show_back = true): string {
     $local_md   = 'https://mathieu.charreyre.net/r3M3M83r/instructions.md';
     // Logs reformulator (memes liens que saisie.php / chat.php)
     $logs = '<p style="margin:.6rem 0 .2rem;font-size:.8rem;color:#666;">'
-          . '<a href="reformulator/log_proxy.php?name=error_log" style="color:#7cf;" target="_blank" rel="noopener noreferrer">Voir les erreurs</a>'
+          . '<a href="moteurs/log_proxy.php?name=error_log" style="color:#7cf;" title="Voir les erreurs" target="_blank" rel="noopener noreferrer">Voir les erreurs</a>'
           . ' &bull; '
-          . '<a href="reformulator/log_proxy.php?name=requests_log" style="color:#7cf;" target="_blank" rel="noopener noreferrer">Voir les requetes</a>'
+          . '<a href="moteurs/log_proxy.php?name=requests_log" style="color:#7cf;" title="Voir les requetes" target="_blank" rel="noopener noreferrer">Voir les requetes</a>'
           . ' &bull; '
-          . '<a href="saisie.php" style="color:#7cf;">Reformulator</a>'
+          . '<a href="reformulator/saisie.php" style="color:#7cf;" title="Ouvrir le reformulator" target="_blank" rel="noopener noreferrer">Reformulator</a>'
           . ' &bull; '
-          . '<a href="chat.php" style="color:#7cf;">Rebecca (tchat)</a>'
+          . '<a href="rebecca/index.php" style="color:#7cf;" title="Ouvrir Rebecca (tchat)" target="_blank" rel="noopener noreferrer">Rebecca (tchat)</a>'
           . '</p>';
     $foot_text = '<div style="margin-top:1.5rem;background:#111;color:#bbb;font-size:.86rem;line-height:1.5;">'
                . '<p style="margin:.2rem 0;">Fichier brut accessible en <a href="' . $local_md . '" style="color:#7cf;" target="_blank">local</a> (<span style="color:#999;">' . $local_md . '</span>) et sur <a href="' . $github_raw . '" style="color:#7cf;" target="_blank">GitHub</a> (<span style="color:#999;">' . $github_raw . '</span>)</p><br>'

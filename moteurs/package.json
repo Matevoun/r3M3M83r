@@ -1,8 +1,8 @@
 {
-  "name": "Reformulator",
-  "version": "1.5.0",
+  "name": "r3M3M83r",
+  "version": "2.0.1",
   "private": true,
-  "description": "Service local de reformulation de texte pour saisie.php. Envoie du texte vers un LLM via l'API Mistral/Groq/OpenAI et renvoie le texte corrige.",
+  "description": "Projet mémoriel digital de Mathieu CHARREYRE, avec interrogations par LLM via API.",
   "author": "Mathieu CHARREYRE",
   "scripts": {
     "start": "node server.js"

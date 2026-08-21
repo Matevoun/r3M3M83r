@@ -1,8 +1,8 @@
 <?php
 /**
- * r3M3M83r/reformulator/log_proxy.php
+ * r3M3M83r/moteurs/log_proxy.php
  *
- * Affiche les fichiers de log de reformulator avec les entrees les plus
+ * Affiche les fichiers de log du moteur (moteurs/) avec les entrees les plus
  * recentes en premier (ordre inverse chronologique).
  * Rendu HTML dans un navigateur, texte brut en CLI ou avec ?plain=1.
  *
@@ -101,7 +101,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
-<title><?php echo $title; ?> — reformulator</title>
+<title><?php echo $title; ?> — moteurs</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Menlo,Consolas,'Courier New',monospace;background:#0f1117;color:#c9d1d9;font-size:.88rem;line-height:1.5}
@@ -138,7 +138,7 @@ button.btn-danger:hover{background:#991b1b}
 
     <!-- Boutons améliorés -->
     <button class="btn" onclick="window.close()" style="background:#e53e3e;color:white;">✕ Fermer cet onglet</button>
-    <a class="btn" href="../saisie.php" target="_self" style="background:#2f855a;">← Retour à la saisie</a>
+    <a class="btn" href="../reformulator/saisie.php" target="_self" style="background:#2f855a;">← Retour à la saisie</a>
   </div>
 </div>
 <?php if (empty($lines)): ?>
@@ -172,7 +172,7 @@ function closeTab() {
     window.close();
     // Fallback si le navigateur bloque la fermeture
     setTimeout(() => {
-        window.location.href = '../saisie.php';
+        window.location.href = '../reformulator/saisie.php';
     }, 800);
 }
 

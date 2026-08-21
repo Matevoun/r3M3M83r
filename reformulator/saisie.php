@@ -1,9 +1,9 @@
 <?php
     // Fichier r3M3M83r/saisie.php — Interface de saisie memoire pour reformulator
     // Toute la logique metier (interrogation, extraction, appels Node) vit dans
-    // reformulator/functions.php. Ici : HTML, styles, JS d'interface uniquement.
-    include_once __DIR__ . '/reformulator/functions.php';
-    include_once __DIR__ . '/reformulator/llm.php';
+    // moteurs/functions.php. Ici : HTML, styles, JS d'interface uniquement.
+    include_once __DIR__ . '/../moteurs/functions.php';
+    include_once __DIR__ . '/../moteurs/llm.php';
 ?>
 
 <!DOCTYPE html>
@@ -13,11 +13,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow">
     <title>Saisie memoire — CHARREYRE</title>
-    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
-    <link rel="icon" href="favicon/favicon.svg" type="image/svg+xml" sizes="any">
-    <link rel="icon" href="favicon/favicon.ico">
-    <link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
-    <link rel="manifest" href="favicon/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
+    <link rel="icon" href="../favicon/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="../favicon/favicon.ico">
+    <link rel="apple-touch-icon" href="../favicon/apple-touch-icon.png">
+    <link rel="manifest" href="../favicon/site.webmanifest">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
     <style>
@@ -168,7 +168,7 @@
   </div>
   <div class="msg-err" style="font-size:.9rem;margin-top:-.4rem;margin-bottom:.8rem;">
     <?php if ($diagnosis === 'down'): ?>
-      Dans cPanel &#8594; <strong>Node.js Apps</strong> &#8594; chercher l&rsquo;application <strong>reformulator</strong> &#8594; bouton <strong>Restart</strong>. Si l&rsquo;app n&rsquo;appara&icirc;t pas, elle a peut-&ecirc;tre &eacute;t&eacute; arr&ecirc;t&eacute;e ou d&eacute;sactiv&eacute;e.
+      Dans cPanel &#8594; <strong>Node.js Apps</strong> &#8594; chercher l&rsquo;application <strong>moteurs</strong> (ex-reformulator) &#8594; bouton <strong>Restart</strong>. Si l&rsquo;app n&rsquo;appara&icirc;t pas, elle a peut-&ecirc;tre &eacute;t&eacute; arr&ecirc;t&eacute;e ou d&eacute;sactiv&eacute;e.
       <?php if ($diagnosisDetail !== ''): ?>
         <br><span style="color:#555;">Détail technique : <?php echo html_escape($diagnosisDetail); ?></span>
       <?php endif; ?>
@@ -289,7 +289,7 @@
         </div>
       <p class="notice">Le bouton "Reformulation avancee avec IA" corrige, reformule et transpose à la troisième personne, "Proposer emplacement" propose où ranger le souvenir dans le fichier d'instructions, et “Interroger” interroge le fichier d'instructions pour répondre à une question.</p>
       <input type="hidden" name="instructions_context" value="<?php echo html_escape($instructions_context); ?>">
-      <!-- Selection moteur : reformulator/llm.php (partage Rebecca / Reformulator) -->
+      <!-- Selection moteur : moteurs/llm.php (partage Rebecca / Reformulator) -->
       <div class="engine-select-row">
         <label for="selected_engine">Moteur IA :</label>
         <select id="selected_engine" name="selected_engine">
@@ -328,7 +328,7 @@
         <pre id="test-output" style="margin:0; padding:1rem; background:#f7f9ff; color:#111; overflow:auto; min-height:240px; white-space:pre-wrap; word-break:break-word;">Chargement du benchmark en cours ...</pre>
       </div>
       <div class="modal-footer" id="modal-footer" style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
-        <span style="font-size:.9rem;">Si le chargement n&rsquo;aboutit pas : <a id="modal-fallback" href="reformulator/test_curl.php" target="_blank" rel="noopener noreferrer" style="color:#0f1f4a;text-decoration:underline;">Ouvrir dans un nouvel onglet</a></span>
+        <span style="font-size:.9rem;">Si le chargement n&rsquo;aboutit pas : <a id="modal-fallback" href="../moteurs/test_curl.php" target="_blank" rel="noopener noreferrer" style="color:#0f1f4a;text-decoration:underline;">Ouvrir dans un nouvel onglet</a></span>
         <button id="copy-test-output" type="button" style="background:#374e8c;color:#fff;border:none;padding:.4rem .85rem;border-radius:5px;cursor:pointer;font-size:.9rem;flex-shrink:0;">Copier le rapport</button>
       </div>
     </div>
@@ -360,9 +360,9 @@
     <p style="font-size:.82rem; margin-top:.5rem; color:#444;">
       <a href="<?php echo html_escape(CPANEL_URL); ?>" target="_blank" rel="noopener noreferrer" alt="Ouvrir cPanel o2switch Node.js" title="Ouvrir le cPanel o2switch Node.js">Ouvrir cPanel o2switch</a>
       •
-      <a href="reformulator/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" alt="Voir les retours d'erreurs" title="Voir les retours d'erreurs">Voir les erreurs</a>
+      <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" alt="Voir les retours d'erreurs" title="Voir les retours d'erreurs">Voir les erreurs</a>
       •
-      <a href="reformulator/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" alt="Voir les requêtes effectuées" title="Voir les requêtes effectuées">Voir les requêtes</a>
+      <a href="../moteurs/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" alt="Voir les requêtes effectuées" title="Voir les requêtes effectuées">Voir les requêtes</a>
     </p>
   </div>
 </div>
@@ -407,7 +407,7 @@ function openTestModal() {
             engineParam = '?engine=' + encodeURIComponent(engineSelect.value);
         }
 
-        fetch('./reformulator/test_curl.php' + engineParam, {
+        fetch('../moteurs/test_curl.php' + engineParam, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'text/plain'

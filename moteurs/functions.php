@@ -1,6 +1,6 @@
 <?php
     /**
-     * r3M3M83r/reformulator/functions.php - Interface de saisie/interrogation locale pour instructions.md
+     * r3M3M83r/moteurs/functions.php - Interface de saisie/interrogation locale pour instructions.md
      *
      * Ce fichier fournit une page HTML simple pour saisir un texte libre
      * et le faire analyser localement. Il ne modifie pas automatiquement
@@ -17,7 +17,7 @@
      * relatives au fichier de mémoire.
      *
      * Ce service Node.js est attendu comme application cPanel / O2Switch,
-     * avec le script `reformulator/server.js` démarré et accessible depuis PHP.
+     * avec le script `moteurs/server.js` démarré et accessible depuis PHP.
      *
      * `server.js` est la source de verite pour la configuration LLM :
      *   - moteur actif (LLM_ENGINE)
@@ -26,17 +26,17 @@
      *   - URL de console accessible par l'interface
      *
      * `saisie.php` reste une interface legere et ne contient pas de logique
-     * de reformulation LLM. Voir `reformulator/server.js` pour la logique
+     * de reformulation LLM. Voir `moteurs/server.js` pour la logique
      * moteur / modèle et les routes `/llm-info` et `/reformuler`.
      *
      * Les logs sont écrits dans :
-     *   - `reformulator/log/requests.log` (requêtes)
-     *   - `reformulator/log/error.log` (erreurs PHP)
+     *   - `moteurs/log/requests.log` (requêtes)
+     *   - `moteurs/log/error.log` (erreurs PHP)
      *
      * REGLES D'OR (immuables - a relire avant toute modification) :
      *   1. Toute modification doit etre documentee clairement dans ce fichier.
-     *   2. Ne pas deplacer la logique metier vers reformulator/server.js sans note.
-     *   3. Le backend Node.js est gere par reformulator/server.js ; ici on reste interface.
+     *   2. Ne pas deplacer la logique metier vers moteurs/server.js sans note.
+     *   3. Le backend Node.js est gere par moteurs/server.js ; ici on reste interface.
      *   4. Toute nouvelle route ou dependance externe doit etre decrite dans les commentaires.
      *   5. En cas de panne du service, le code doit basculer proprement vers un fallback local.
      *   6. Orthographe archaique OBLIGATOIRE dans le code et les commentaires :
@@ -58,7 +58,7 @@
      *     "Erreur" dans le texte (faux positifs si un vrai document contient ce
      *     mot, et le detail de l'erreur reelle etait perdu). Toute extraction
      *     ratee est desormais aussi tracee via error_log() (donc dans
-     *     reformulator/log/error.log).
+     *     moteurs/log/error.log).
      *
      * CORRECTIF 20/07/2026 (v3) : la recherche du bouton "Interroger" souffrait
      * de deux limites cumulees :
@@ -88,6 +88,8 @@
     // vide, le contexte transmis au LLM etait vide, et le LLM repondait -- a
     // raison, vu ce qu'il recevait -- "Le contexte fourni ne mentionne pas ce
     // sujet" pour absolument toutes les questions.
+    // CORRECTIF 21/08/2026 : ce fichier vit dans /moteurs/ (partage Rebecca +
+    // saisie.php). SOURCE_FILE reste a la racine r3M3M83r (un niveau au-dessus).
     define('SOURCE_FILE', dirname(__DIR__) . '/instructions.md');
 
     // Calcule l'URL de base du service reformulator.
@@ -116,9 +118,9 @@
             if (in_array($leaf, $uiLeaves, true)) {
                 $dir = rtrim(dirname($dir), '/');
             }
-            return $scheme . '://' . $_SERVER['HTTP_HOST'] . $dir . '/reformulator';
+            return $scheme . '://' . $_SERVER['HTTP_HOST'] . $dir . '/moteurs';
         }
-        return 'https://charreyre.net/r3M3M83r/reformulator';
+        return 'https://charreyre.net/r3M3M83r/moteurs';
     }
 
     define('REFORMULATOR_BASE_URL', get_reformulator_base_url());
@@ -147,7 +149,7 @@
         // CORRECTIF 23/07/2026 (v4) : server.js est desormais un fichier
         // FRERE de functions.php (tous deux dans /reformulator/), plus un
         // sous-dossier imbrique -- l'ancien chemin pointait vers
-        // .../reformulator/reformulator/server.js (inexistant).
+        // .../reformulator/moteurs/server.js (inexistant).
         $filePath = __DIR__ . '/server.js';
         if (!is_file($filePath) || !is_readable($filePath)) {
             return [];
@@ -197,9 +199,9 @@
         return $info;
     }
 
-    // Appelle la route `/llm-info` exposée par reformulator/server.js pour récupérer
+    // Appelle la route `/llm-info` exposée par moteurs/server.js pour récupérer
     // la configuration LLM active. Si le service Node.js n'est pas joignable, on bascule
-    // sur un fallback local en lisant `reformulator/server.js` directement.
+    // sur un fallback local en lisant `moteurs/server.js` directement.
     // CORRECTIF 05/07/2026 (v4) : classifie precisement l'echec de /llm-info au
     // lieu de toujours afficher "Service Node.js inaccessible". Distingue :
     //   - 'down'      : panne reelle (timeout, connexion refusee) -> Node.js ne tourne pas
@@ -408,7 +410,7 @@
     //   - transposer je/moi -> Mathieu (3e personne)
     //   - synthetiser intelligemment (ex. 15 lignes -> 4-7) sans inventer
     //   - rendre un texte pret a coller dans instructions.md
-    // Voir SAISIE_PROMPT dans reformulator/server.js (CORRECTIF 08/08/2026).
+    // Voir SAISIE_PROMPT dans moteurs/server.js (CORRECTIF 08/08/2026).
     function reformuler_via_node(string $text, string $instructionsContext = ''): string {
         global $selected_engine;
         $payload = ['text' => $text];
@@ -728,11 +730,31 @@
             $primaryTerms[] = $kw;
         }
         $primaryTerms = array_values(array_unique($primaryTerms));
+        // CORRECTIF 21/08/2026 : noms propres de la question (Philippe, AnSo...)
+        // gardes en tete pour le ranking (pseudo, surnom, etc.).
+        $properFromQuestion = [];
+        foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $rawW) {
+            $clean = preg_replace('/[^\p{L}\p{N}]/u', '', $rawW);
+            if ($clean === '' || mb_strlen($clean, 'UTF-8') < 3) {
+                continue;
+            }
+            // Majuscule initiale hors debut de phrase trop generique
+            if (preg_match('/^\p{Lu}/u', $clean)) {
+                $properFromQuestion[] = normalize_for_matching($clean);
+            }
+        }
         // Stopwords generiques uniquement (pas de filtre metier)
         $stopPrimary = ['que','sais','tu','du','des','les','une','est','sont','dans','pour','avec','comment','quoi','elle','ils','quand','ete','fait','date','dates','annee','annees','fois','aussi','donc','puis','entre','sous','vers','chez','dont','cette','cet','ces','aux','par','sur','plus','tres','bien','tout','tous','toute','toutes','comme','mais','car','ou','ni','si','ne','pas','peu','leur','leurs','son','sa','ses','mon','ma','mes','ton','ta','tes','nos','vos'];
         $primaryTerms = array_values(array_filter($primaryTerms, function ($t) use ($stopPrimary) {
             return !in_array($t, $stopPrimary, true);
         }));
+        if (!empty($properFromQuestion)) {
+            $properFromQuestion = array_values(array_filter($properFromQuestion, function ($t) use ($stopPrimary) {
+                return $t !== '' && !in_array($t, $stopPrimary, true);
+            }));
+            // Noms propres en tete (ranking + injection prioritaires)
+            $primaryTerms = array_values(array_unique(array_merge($properFromQuestion, $primaryTerms)));
+        }
         $intentTerms = $intentExpanded !== '' ? extract_keywords($intentExpanded) : [];
         $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention'];
         $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
@@ -1792,6 +1814,10 @@
                 // Bonus fort si la ligne porte un terme primaire RARE
                 if ($rarePrimaryHits > 0) {
                     $score += 100 * $rarePrimaryHits;
+                }
+                // CORRECTIF 21/08/2026 : pseudo/surnom + nom propre de la question
+                if ($hitPrimary > 0 && preg_match('/surnom|pseudo|surnomme|appele|dit\b|aka\b/iu', $line)) {
+                    $score += 60;
                 }
                 if (preg_match('/\b[\p{Lu}][\p{L}]{2,}/u', $line)) {
                     $score += 2;
