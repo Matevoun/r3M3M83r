@@ -729,7 +729,7 @@
         }
         $primaryTerms = array_values(array_unique($primaryTerms));
         // Stopwords generiques uniquement (pas de filtre metier)
-        $stopPrimary = ['que','sais','tu','du','des','les','une','est','sont','dans','pour','avec','comment','quoi','quoi','elle','ils'];
+        $stopPrimary = ['que','sais','tu','du','des','les','une','est','sont','dans','pour','avec','comment','quoi','elle','ils','quand','ete','fait','date','dates','annee','annees','fois','aussi','donc','puis','entre','sous','vers','chez','dont','cette','cet','ces','aux','par','sur','plus','tres','bien','tout','tous','toute','toutes','comme','mais','car','ou','ni','si','ne','pas','peu','leur','leurs','son','sa','ses','mon','ma','mes','ton','ta','tes','nos','vos'];
         $primaryTerms = array_values(array_filter($primaryTerms, function ($t) use ($stopPrimary) {
             return !in_array($t, $stopPrimary, true);
         }));
@@ -1703,6 +1703,50 @@
         }
         $primarySet = array_fill_keys($primaryTerms, true);
 
+        // CORRECTIF 21/08/2026 : poids selon rarite (DF = nb de lignes qui
+        // portent le terme). "domaine" / "ete" / "quand" matchent des centaines
+        // de lignes et noyaient "piscine" / "quad". Les termes rares pèsent fort.
+        $dfPrimary = [];
+        foreach ($primaryTerms as $pt) {
+            $dfPrimary[$pt] = 0;
+        }
+        if (!empty($primaryTerms)) {
+            foreach ($sections as $_t => $content) {
+                foreach (preg_split('/\R/u', (string) $content) as $ln) {
+                    $ln = trim($ln);
+                    if ($ln === '' || mb_strlen($ln, 'UTF-8') < 20) {
+                        continue;
+                    }
+                    $nln = normalize_for_matching($ln);
+                    foreach ($primaryTerms as $pt) {
+                        if (term_matches_in_text($nln, $pt) > 0) {
+                            $dfPrimary[$pt]++;
+                        }
+                    }
+                }
+            }
+        }
+        $primaryWeight = [];
+        foreach ($primaryTerms as $pt) {
+            $df = (int) ($dfPrimary[$pt] ?? 0);
+            // DF bas = terme discriminatif (ex. piscine ~5 lignes) -> poids eleve
+            if ($df <= 0) {
+                $primaryWeight[$pt] = 8;
+            } elseif ($df <= 8) {
+                $primaryWeight[$pt] = 120; // rare : piscine, quad, kymco...
+            } elseif ($df <= 25) {
+                $primaryWeight[$pt] = 50;
+            } elseif ($df <= 80) {
+                $primaryWeight[$pt] = 18;
+            } else {
+                $primaryWeight[$pt] = 4; // tres frequent : domaine, saint...
+            }
+            $tlen = mb_strlen($pt, 'UTF-8');
+            if ($tlen <= 5 && $primaryWeight[$pt] < 40) {
+                $primaryWeight[$pt] = max($primaryWeight[$pt], 40);
+            }
+        }
+
         $bySection = [];
         foreach ($sections as $title => $content) {
             $lines = preg_split('/\R/u', (string) $content);
@@ -1715,16 +1759,17 @@
                 $hitTerms = 0;
                 $hitPrimary = 0;
                 $score = 0;
+                $rarePrimaryHits = 0;
                 foreach ($terms as $term) {
                     $count = term_matches_in_text($norm, $term);
                     if ($count > 0) {
                         $hitTerms++;
-                        // CORRECTIF 20/08/2026 : termes primaires courts (ex. "quad")
-                        // pèsent beaucoup plus que "saint"/"antonin" trop fréquents.
                         if (isset($primarySet[$term])) {
-                            $tlen = mb_strlen($term, 'UTF-8');
-                            $weight = ($tlen <= 5) ? 40 : 12;
+                            $weight = (int) ($primaryWeight[$term] ?? 12);
                             $hitPrimary++;
+                            if (($dfPrimary[$term] ?? 999) <= 8) {
+                                $rarePrimaryHits++;
+                            }
                         } else {
                             $weight = 2;
                         }
@@ -1744,12 +1789,13 @@
                 if ($hitPrimary >= 1) {
                     $score += 15 * $hitPrimary;
                 }
-                // Bonus si la ligne contient un terme primaire rare (peu de
-                // lignes globales le portent) : calcule plus bas via inject.
+                // Bonus fort si la ligne porte un terme primaire RARE
+                if ($rarePrimaryHits > 0) {
+                    $score += 100 * $rarePrimaryHits;
+                }
                 if (preg_match('/\b[\p{Lu}][\p{L}]{2,}/u', $line)) {
                     $score += 2;
                 }
-                // Bonus massif si un terme primaire court est dans la ligne brute
                 $hasShort = false;
                 foreach ($primaryTerms as $pt) {
                     if (mb_strlen($pt, 'UTF-8') <= 5 && term_matches_in_text($norm, $pt) > 0) {
@@ -1796,9 +1842,20 @@
             }
         }
 
-        // CORRECTIF 20/08/2026 : garantir au moins 1-2 preuves par terme primaire.
-        // Evite qu'un terme rare ("quad") soit noye par "Saint-Antonin" frequent.
-        foreach ($primaryTerms as $pTerm) {
+        // CORRECTIF 20/08/2026 + 21/08/2026 : injecter d'abord les termes rares.
+        // Evite qu'un terme rare ("piscine", "quad") soit noye par "domaine".
+        $primaryForInject = $primaryTerms;
+        if (!empty($dfPrimary)) {
+            usort($primaryForInject, function ($a, $b) use ($dfPrimary) {
+                $da = (int) ($dfPrimary[$a] ?? 9999);
+                $db = (int) ($dfPrimary[$b] ?? 9999);
+                if ($da !== $db) {
+                    return $da <=> $db;
+                }
+                return strcmp($a, $b);
+            });
+        }
+        foreach ($primaryForInject as $pTerm) {
             $covered = false;
             foreach ($out as $item) {
                 if (term_matches_in_text(normalize_for_matching($item['line']), $pTerm) > 0) {

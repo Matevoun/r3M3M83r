@@ -87,10 +87,11 @@ const QUERY_EXPAND_PROMPT = `Tu prepares une recherche dans le fichier memoire i
 Lis la question (ou le texte) comme un humain :
 1. Quelle est l'intention reelle ?
 2. Quels mots, synonymes, notions proches, periodes ou lieux seraient utiles pour RETROUVER l'info dans un gros fichier memoire — meme si le fichier n'emploie pas exactement les memes mots que la question ?
+3. Si l'objet porte un surnom ou un autre nom courant (ex. "piscine" vs "bassin", marque/modele vs type generique), inclus TOUTES les formulations possibles dans les axes — le fichier peut n'en utiliser qu'une.
 
 Reponds en 4 a 8 lignes, structure libre :
 Intention :
-Axes de recherche : (formulations et notions selon le sens — pas une liste predefinie)
+Axes de recherche : (formulations, synonymes, surnoms — pas une liste predefinie)
 Sections utiles probables : (si pertinent)
 
 Ne reponds PAS a la question. N'invente aucun fait biographique.`;
