@@ -863,9 +863,21 @@ obtenus au 3 août 2023.
 **Lignée de transmission du Domaine Saint-Antonin (branche maternelle)**
 
 Pour mémoire, la chaîne de transmission de la moitié du Domaine est la suivante :
-Marie Thérèse BAUDOUIN-THUS (veuve SICARD) → Fanette SICARD épouse BOIZARD
-(fille unique, héritière 1991) → Anne MONTJOL épouse CHARREYRE (fille, héritière par
-partage 2005) → Mathieu CHARREYRE (fils unique, héritier 2023).
+- Annibal THUS (1er propriétaire - 26 septembre 1636, par legs du Sieur (Jean-Baptiste ?) des MARTINS, Seigneur de Puyloubier, Viguier de Marseille)
+- Sébastian THUS (2e propriétaire - frère - vers 1644/1645)
+- Nicolas THUS (3e propriétaire - fils - vers 1650)
+- Antoine THUS (4e propriétaire - fils - date inconnue)
+- Marguerite THUS (5e propriétaire - fille - vers 1732)
+- Jean-Baptiste THUS (6e propriétaire - fils - 1774)
+- Jean-Baptiste Joseph Marie Augustin Mélite THUS (7e propriétaire - fils - 1801)
+- Amédée François Marie THUS (8e propriétaire - fils - 1844)
+- Jean-Marie Étienne LEYDIER (9e propriétaire - par tutelle du jeune Marius BAUDOIN-THUS - 1878 ou 1880)
+- Marius Amédée Louis BAUDOIN-THUS (10e propriétaire - fils, héritier après majorité - 1885)
+- Marie-Thérèse Charlotte Louise BAUDOIN-THUS épouse puis veuve SICARD (11e propriétaire - fille - avant 1972)
+- Fanette Mathilde Honorine SICARD épouse BOIZARD (12e propriétaire - fille unique - 1991)
+- Anne Nicole Jacqueline MONTJOL épouse CHARREYRE (13e propriétaire - fille, héritière par partage 2005)
+- Mathieu Christian Jean CHARREYRE (14e propriétaire - fils unique - 2023)
+- Ambre Alfreda Anne CHARREYRE-LESAGE (15e propriétaire - fille unique -2024).
 
 #### Animaux domestiques
 La ménagerie : 3 chats (Ankou, Spotty, Elvira) et un chien Luna (née 01/08/2018). Sabbath est décédée le 27 mars 2026 à 11h45 à la clinique Les Vétos Parisiens (145 rue de la Pompe, 75116 Paris), d'une insuffisance rénale après une hospitalisation depuis le samedi 21 mars 2026, et Morticia le 23 Juillet 2026 à Saint-Antonin des suite de son cancer. Sabbath et Belzébuth étaient les deux chats du coeur d'AnSo — elle les adorait l'un et l'autre. Perdre Sabbath ce 27 mars 2026, après avoir déjà perdu Belze le 30 septembre 2023, est une double peine pour elle. Luna a été sauvée à plusieurs reprises par Mathieu : dès fin 2020 (en démontrant à Jonathan RABINO qu'elle n'était pas dangereuse, et en la repêchant deux fois de la piscine du Domaine), puis définitivement en 2024 après la tragédie (Jonathan RABINO ("Jo"), ancien chevrier et second maître de Luna, a causé cette tragédie le 21/06/2024 : drogué et bourré après une fête de la Musique, il a tué accidentellement sa compagne Julie ALLEGRO (mère de leur fils Noah) en rentrant de Vauvenargues. Leur camionnette s'est encastrée dans un arbre près du Domaine ; Julie est morte sur le coup, et il a fallu 5 heures aux pompiers pour la sortir. Jonathan est emprisonné au centre pénitentiaire d'Aix-Luynes pour homicide involontaire (3 ans)).
@@ -910,6 +922,7 @@ Mais Luna s'échappait régulièrement de l'enclos de Joe pour venir rejoindre M
 Après la tragédie de juin 2024 (mort de Julie ALLEGRO, Jonathan emprisonné), Isabelle DEL MORAL, mère de Jonathan, procédait à l'inventaire de l'exploitation caprine à vendre — et voulait faire piquer Luna dans la foulée. Mathieu a mis l'AEP (Animaux en Péril, Jouques) dans les pattes d'Isabelle pour bloquer l'euthanasie. L'AEP, qui elle-même trouvait Luna trop impressionnante à gérer, lui a finalement confié la chienne.
 
 Luna adore l'eau — une passion qui ne date pas des piscines du Domaine. Au Bois de Boulogne, elle est incapable de résister au lac et s'y jette systématiquement.
+Luna adore courrir. Elle peut atteindre les 60 kms/h !
 
 Luna vit désormais rue de la Faisanderie, vautrée sur le canapé en cuir, où elle passe sa vie à voler les croquettes des chats.
 
@@ -932,18 +945,37 @@ Fin janvier 2026, opération de stérilisation complète (l'utérus était infla
 C'est Ambre qui l'a nommée : « Eva » était envisagé au départ, mais c'est « Elvira » qui a été retenu.
 
 ### Patrimoine Familial
-Le Domaine Saint-Antonin, transmis dans la famille depuis 1636, est le coeur de son identité. Acquis le 26 septembre 1636 par Annibal THUS, chanoine de Fréjus, auprès de Sieur (Jean-Baptiste ?) des MARTINS, Seigneur de Puyloubier, Viguier de Marseille, puis légué à son frère cadet Sébastian THUS. 100 hectares, 92% de forêts, avec ouvrages anciens (ponts, tunnel XIXème), sanctuaire animalier (ASPAS, LPO), zone Natura 2000. Reconnu comme zone spéciale de conservation (ZSC), contribuant à la préservation des habitats et espèces animales/végétales. Depuis 2017, hospitalité aux ruches de deux apiculteurs pour sauvegarde des abeilles. Depuis 2019, refuge animalier officiel ASPAS et LPO. Bâtiments : bâtisse principale provençale typique, pigeonnier carré daté de 1643 (fleuron du domaine), chapelle domestique XVIe siècle abritant un ancien caveau, dépendances (bergerie, anciennes écuries, poulailler, clapier à lapins, soue à cochons). Mathieu le gère comme gardien, pas propriétaire jouisseur : prêts en commodat à exploitants autonomes, vision écologique et responsable.
-Depuis 2024, Mathieu travaille à structurer l'avenir du Domaine avec des projets agricoles. **Valentin GINEFRI**, expert du bio et des cultures en PACA, qui a été intégré au business plan de Charly pour concevoir et piloter une structure agricole à but financier, s'est rapproché de Mathieu d'abord pour canaliser les ressources du Domaine Saint-Antonin et ensuite pour aider Mathieu à toucher potentiellement des aides PAC. Le projet a été lancé sous la forme d'une MicroBA puis officialisé en octobre 2025 sous le nom **Terres Saint-Antonin**. Site internet : https://terres.saint-antonin.net.
-En octobre 2025, la structure a été reconnue par la Préfecture des Bouches-du-Rhône comme structure agricole dédiée à la mise en valeur durable de 88 hectares 37 ares du Domaine Saint-Antonin (parcelles cadastrales détaillées dans l’accusé de réception préfectoral). Depuis le 01 novembre 2025, Terres Saint-Antonin est officiellement reconnue par l'INSEE sous le numéro de SIRET **519 384 226 00030**. Ces pas formels renforcent l’engagement pluriséculaire du Domaine Saint-Antonin en faveur d’une agriculture respectueuse, en harmonie avec la biodiversité et les pratiques ancestrales de prêt à usage.
-Le conflit d'indivision (depuis 2009) le détruit émotionnellement, vu comme une violence contre cet héritage vivant.
+#### Domaine Saint-Antonin
+Le Domaine Saint-Antonin, transmis dans la famille depuis 1636, est le coeur de son identité. Acquis le 26 septembre 1636 par Annibal THUS, chanoine de Fréjus, auprès de Sieur (Jean-Baptiste ?) des MARTINS, Seigneur de Puyloubier, Viguier de Marseille, puis légué à son frère cadet Sébastian THUS. 100 hectares actuellement (bien plus à lépoque !), 92% de forêts, avec ouvrages anciens (ponts, tunnel XIXème), sanctuaire animalier (ASPAS, LPO), zone Natura 2000. Reconnu comme zone spéciale de conservation (ZSC), contribuant à la préservation des habitats et espèces animales/végétales. Depuis 2017, hospitalité aux ruches d'apiculteurs pour sauvegarde des abeilles (via Commodat). Depuis 2019, refuge animalier officiel ASPAS et LPO. Bâtiments : bâtisse principale provençale typique, pigeonnier carré daté de 1643 (fleuron du Domaine), chapelle domestique XVIe siècle abritant un ancien caveau, dépendances (bergerie, anciennes écuries, poulailler, clapier à lapins, soue à cochons). Mathieu le gère comme gardien, pas propriétaire jouisseur : prêts en commodat à exploitants autonomes, vision écologique et responsable.
 
-#### Commodats et Exploitants du Domaine Saint-Antonin
+Le conflit d'indivision avec les cousins VILLIERS (depuis 2009) détruit émotionnellement Mathieu, vu comme une violence contre cet héritage vivant.
+
+#### Espace auatique du Domaine Saint-Antonin
+Sur le Domaine Saint-Antonin, trois bassins structurent l’espace aquatique, chacun chargé d’histoire et de fonctionnalité.
+
+Le premier, situé sur la terrasse du XIXe siècle face à la maison des maîtres, est un bassin central en pierres dites « Louis XIV », datant du XVIIe siècle. De forme polygonale aux contours chantournés, il mesure environ trois mètres de côté pour une profondeur d'environs trente centimètres. Alimenté par le Canal de Provence (contrat eaux d'arrosage), il arbore en son centre un jet d’eau et, à l’avant, une conque métallique pour les oiseaux, surmontée d’une petite statue sculptée. Un renfoncement arrondi au sol permet d’isoler les poissons lors des nettoyages. Endommagé par le gel et les racines, il a été entièrement restauré en juin 2016 par **Daniel MIRA**, maçon spécialisé en vieilles pierres.
+Il fut initialement démonté dans une localité inconnue du pays d’Aix par l’arrière-grand-père de Mathieu, le Dr **Émile SICARD** surnommé **Papoune** par la famille, puis remonté sur ordre de ce dernier dans les années 1930.
+Depuis, il reste en eau toute l’année, abritant poissons et plantes aquatiques en culture.
+
+Le second bassin, situé près de la ferme, est un ancien réservoir carré de quatre mètres de côté pour 1,20 mètre de profondeur, soit un volume d’environ dix-neuf mètres cubes.
+Dernier maillon avant l’alimentation du lavoir-fontaine du Domaine situé dans la ferme, il faisait partie d’un système aujourd’hui disparu, probablement aménagé lors de la mise en service du Canal du Verdon entre 1865 et 1875. Une vidéo familiale atteste de son usage aussi comme lieu de baignade en 1965.
+Entièrement restauré entre juillet 2021 et mai 2022 après qu’un arbre y ait poussé entre 1965 et 2020, il fut enfin remis en eau le 25 mai 2022 par Jean-Michel FRIEDMANN et Mathieu.
+Aujourd’hui, il abrite poissons et îlots végétalisés, tandis qu’une pompe solaire assure périodiquement l’oxygénation de l’eau.
+Son apport en eau actuel dépend aussi du Canal de Provence (contrat eaux d'arrosage).
+
+Le troisième bassin, surnommé « la Piscine », fut construit en 1991 sur ordre de l’arrière-grand-mère maternelle de Mathieu, **Marie-Thérèse Charlotte Louise BAUDOIN-THUS** surnommée **Mamoune** par la famille, et réalisé par **Lucien BOUFFARD**, maçon de Jouques. De forme rectangulaire (7 x 4 x 2,5 mètres, soit environ soixante-dix mètres cubes), il fut creusé au coeur d’un imposant bloc rocheux soutenant la maison, endommageant trois dents de pelleteuse lors des travaux. Ses parpaings des années 1990 crépis sont ornés de pierres de pavement provenant du premier pont du Canal du Verdon, volées partiellement à l’époque et posées en bordure par ordre de sa grand-mère **Fanette Mathilde Honorine SICARD** surnommée **Fa** par la famille.
+Il est traité chimiquement à la main par Mathieu.
+Son cahier des charges initial, établi par Mamoune, exigeait qu’il permette à Mathieu, alors adolescent, de plonger d’un bout à l’autre sans jamais toucher les parois, justifiant sa profondeur et sa longueur.
+Alimenté encore par le Canal de Provence (contrat eaux d'arrosage), il n’est mis en eau qu’en période estivale en raison des coûts et de la complexité de l’entretien (chlore, algicide, floculant, etc.). Mathieu le remplit principalement pour qu’Ambre, sa fille, puisse en profiter.
+Pendant l’hiver, un filet noir le recouvre pour éviter l’accumulation de déchets végétaux.
+
+##### Commodats et Exploitants du Domaine Saint-Antonin
 
 Depuis plusieurs années, le Domaine Saint-Antonin renoue avec son histoire agricole en privilégiant l'agriculture biologique et les pratiques culturales respectueuses des équilibres naturels. Pour faire revivre cet écosystème riche, Mathieu met à disposition les parcelles du Domaine sous forme de **prêts à usage** (ou **commodat**, conformément aux [articles 1875 à 1891 du Code civil](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070721/LEGISCTA000006136396/)). Ce système juridique permet aux partenaires exploitants de disposer gratuitement d'un lieu pour réaliser leurs projets agricoles, tout en contribuant au développement écologique et à la biodiversité du Domaine.
 
 Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structure dédiée à la préservation et à la valorisation du patrimoine du Domaine Saint-Antonin. Plus d'informations sur le concept : [https://saint-antonin.net/biodiversite](https://saint-antonin.net/biodiversite).
 
-###### Commodats de Gardiennage / Logement (caducs)
+###### **Commodats de Gardiennage / Logement (caducs)**
 
 **AUBREE Yvette**
 - **Date** : 06 octobre 2017 (mais en fait elle et son mari Jean-Jacques DANGLARD sont arrivés en 1984)
@@ -961,7 +993,7 @@ Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structu
 - **Durée** : Caduque — Jean-Michel parti le 24 novembre 2023 en cambriolant le Domaine (environ 5 000 € de matériel électrique emporté, ardoise EDF de 600 €).
 - **Note** : Également connu sous le pseudonyme "Egnee" ou "L'Araignée Noire". Ancien membre de la "Cour des Fous" (team de Katastars). Rencontré par Mathieu le 6 avril 2001 dans les Catacombes de Paris (secteur derrière la Salle Z, Grand Réseau Sud). Hébergé au Domaine depuis le 8 juillet 2020, puis formalisé en garde forestier avec commodat en mars 2022. Formation de Garde Particulier payée par Mathieu en décembre 2020 (400 €). Départ brutal sans préavis alors que Mathieu était à Paris, avec l'aide de son frère Aurélien avec qui il était pourtant brouillé. Depuis, il appelle Mathieu "Le Connard" auprès de leurs contacts communs.
 
-###### Baux Agricoles Historiques (XIXe siècle)
+###### **Baux Agricoles Historiques (XIXe siècle)**
 
 **DECANIS Joseph (marinier) + épouse**
 - **Date** : 12 décembre 1878
@@ -977,7 +1009,7 @@ Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structu
 - **Bien** : Grand Vallon (vendu lors de la sortie d'indivi de Florence en 2002-2005)
 - **Statut** : Caduque
 
-###### Commodats Modernes (2019-2025)
+###### **Commodats Modernes (2019-2025)**
 
 Depuis 2017, tous les commodats sont gérés par l'Association TOUN. La durée standard est de 9 ans renouvelables tacitement, sauf mention contraire.
 
@@ -1169,7 +1201,7 @@ Depuis 2017, tous les commodats sont gérés par l'Association TOUN. La durée s
 - **Site internet** : [https://terres.saint-antonin.net](https://terres.saint-antonin.net)
 - **Statut** : **En place** — Reconnaissance préfectorale (Préfecture des Bouches-du-Rhône, octobre 2025) et enregistrement INSEE (01 novembre 2025)
 
-###### Exploitants Actuels (2026)
+###### **Exploitants Actuels (2026)**
 
 Liste des exploitants toujours en activité sur le Domaine (mise à jour juin 2026) :
 
@@ -1186,6 +1218,9 @@ Liste des exploitants toujours en activité sur le Domaine (mise à jour juin 20
 - **Mathieu CHARREYRE** (Terres Saint-Antonin) – Agriculture raisonnée
 
 Plus d'informations et parcelles disponibles : [https://saint-antonin.net/biodiversite](https://saint-antonin.net/biodiversite)
+
+Depuis 2024, Mathieu travaille à structurer l'avenir du Domaine avec des projets agricoles. **Valentin GINEFRI**, expert du bio et des cultures en PACA, qui a été intégré au business plan de **Charles-César d'AMAT** pour concevoir et piloter une structure agricole à but financier, s'est rapproché de Mathieu d'abord pour canaliser les ressources du Domaine Saint-Antonin et ensuite pour aider Mathieu à toucher potentiellement des aides PAC. Le projet a été lancé sous la forme d'une MicroBA puis officialisé en octobre 2025 sous le nom **Terres Saint-Antonin**. Site internet : https://terres.saint-antonin.net.
+En octobre 2025, la structure a été reconnue par la Préfecture des Bouches-du-Rhône comme structure agricole dédiée à la mise en valeur durable de 88 hectares 37 ares du Domaine Saint-Antonin (parcelles cadastrales détaillées dans l’accusé de réception préfectoral). Depuis le 01 novembre 2025, Terres Saint-Antonin est officiellement reconnue par l'INSEE sous le numéro de SIRET **519 384 226 00030**. Ces pas formels renforcent l’engagement pluriséculaire du Domaine Saint-Antonin en faveur d’une agriculture respectueuse, en harmonie avec la biodiversité et les pratiques ancestrales de prêt à usage.
 
 ### Propriétés Immobilières Parisiennes
 Mathieu possède plusieurs biens immobiliers Parisiens, hérités, reflétant son attachement familial et historique.
