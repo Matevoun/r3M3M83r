@@ -360,9 +360,9 @@
     <p style="font-size:.82rem; margin-top:.5rem; color:#444;">
       <a href="<?php echo html_escape(CPANEL_URL); ?>" target="_blank" rel="noopener noreferrer" alt="Ouvrir cPanel o2switch Node.js" title="Ouvrir le cPanel o2switch Node.js">Ouvrir cPanel o2switch</a>
       •
-      <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" alt="Voir les retours d'erreurs" title="Voir les retours d'erreurs">Voir les erreurs</a>
-      •
       <a href="../moteurs/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" alt="Voir les requêtes effectuées" title="Voir les requêtes effectuées">Voir les requêtes</a>
+      •
+      <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" alt="Voir les retours d'erreurs" title="Voir les retours d'erreurs">Voir les erreurs</a>
     </p>
   </div>
 </div>

@@ -1013,9 +1013,9 @@
             <p style="margin:0;">
                 <a href="<?php echo htmlspecialchars(defined('CPANEL_URL') ? CPANEL_URL : 'https://nombre.o2switch.net:2083/', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" title="Ouvrir le cPanel o2switch Node.js">Ouvrir cPanel o2switch</a>
                 &bull;
-                <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
-                &bull;
                 <a href="../moteurs/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" title="Voir les requetes effectuees">Voir les requetes</a>
+                &bull;
+                <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
             </p>
         </footer>
 
