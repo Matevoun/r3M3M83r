@@ -129,7 +129,7 @@
      * (comme saisie.php pour REFORMULER), et les erreurs eventuelles.
      */
     function chat_log_request(string $engine, int $msgLen, string $message = '', string $extra = '') {
-        $logFile = dirname(__DIR__) . '/reformulator/log/requests.log';
+        $logFile = dirname(__DIR__) . '/moteurs/log/requests.log';
         $dir = dirname($logFile);
         if (!is_dir($dir)) @mkdir($dir, 0755, true);
         $ip = trim(explode(',', (string)($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'inconnue'))[0]);
@@ -157,7 +157,7 @@
     }
 
     function chat_log_error(string $detail): void {
-        $logFile = dirname(__DIR__) . '/reformulator/log/error.log';
+        $logFile = dirname(__DIR__) . '/moteurs/log/error.log';
         $dir = dirname($logFile);
         if (!is_dir($dir)) @mkdir($dir, 0755, true);
         $line = '[' . date('Y-m-d H:i:s') . '] CHAT_ERROR ' . trim($detail) . PHP_EOL;

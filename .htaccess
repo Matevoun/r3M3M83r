@@ -29,24 +29,28 @@ Options -Indexes
 
 # Réécriture transparente : instructions.md -> tracker.php (envoie un email + sert le fichier)
 RewriteEngine On
+# Tracker de consultation
 RewriteRule ^instructions\.md$ tracker.php [L,QSA]
 
 # Alias sans extension .php pour les agents IA qui bloquent les URLs .php
-# data.php?s=list    → sections
-# data.php?s=XXXX    → section/XXXX
-# data.php?s=N       → sN  (ex: s3, s7, s11)
-RewriteRule ^sections$          data.php?s=list  [L,QSA]
-RewriteRule ^section/(.+)$      data.php?s=$1    [L,QSA]
-RewriteRule ^s([0-9]+)$         data.php?s=$1    [L,QSA]
-RewriteRule ^faq$               data.php?s=faq   [L,QSA]
-RewriteRule ^table$             data.php?s=table [L,QSA]
-RewriteRule ^profil$            data.php         [L,QSA]
-RewriteRule ^saisie$            saisie.php       [L,QSA]
+# Alias publics (inchangés pour les clients) → consultation/data.php
+RewriteRule ^sections$ consultation/data.php?s=list [L,QSA]
+RewriteRule ^section/(.+)$ consultation/data.php?s=$1 [L,QSA]
+RewriteRule ^s([0-9]+)$ consultation/data.php?s=$1 [L,QSA]
+RewriteRule ^faq$ consultation/data.php?s=faq [L,QSA]
+RewriteRule ^table$ consultation/data.php?s=table [L,QSA]
+RewriteRule ^profil$ consultation/data.php [L,QSA]
 
-# Alias direct pour mot-cle de section unique (ex. /BERTHIER → data.php?s=BERTHIER)
+# Filet ancienne URL directe data.php (favoris / agents)
+RewriteRule ^data\.php$ consultation/data.php [L,QSA]
+
+# Saisie (déjà déplacée)
+RewriteRule ^saisie$ reformulator/saisie.php [L,QSA]
+
+# Alias direct pour mot-clef de section unique (ex. /BERTHIER → data.php?s=BERTHIER)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([A-Za-z0-9_-]{2,50})$ data.php?s=$1 [L,QSA]
+RewriteRule ^([A-Za-z0-9_-]{2,50})$ consultation/data.php?s=$1 [L,QSA]
 
 # Bloquer l'accès public au log uniquement (tracker.php est protégé côté PHP)
 <FilesMatch "^access\.log$">

@@ -1,41 +1,63 @@
 <?php
 /**
- * tracker.php — Traceur de consultations pour instructions.md et data.php
+ * tracker.php — Traceur des consultations "lecture memoire" (instructions.md + data.php)
  *
- * RÔLE
- *   Loggue chaque accès au profil personnel (instructions.md ou data.php) :
- *     - Dans access.log (dans ce même dossier) : une ligne par hit
- *     - Par mail à webmaster@wda-fr.org : détail complet de la requête
+ * ---------------------------------------------------------------------------
+ * ROLE
+ *   Journalise les acces en LECTURE au profil personnel dans access.log
+ *   (meme dossier que ce script). Format multi-lignes lisible, consomme par
+ *   le panneau Admin CHARREYRE (action=access_log).
  *
- * DEUX MODES D'APPEL
- *   1. Via .htaccess (instructions.md direct) :
- *      → RewriteRule ^instructions\.md$ tracker.php
- *      → tracker.php log + mail + readfile(instructions.md) + exit
+ *   Ce script ne gere PAS les questions LLM de Rebecca / Reformulator :
+ *   ces interfaces ecrivent AUSSI dans access.log, mais en direct
+ *   (rebecca/index.php -> chat_log_request ; moteurs/functions.php ->
+ *   log_reformulator_request), sans passer par tracker.php.
  *
- *   2. Via require_once depuis data.php :
- *      → data.php définit TRACKER_SOURCE='data.php' et TRACKER_SECTION avant l'include
- *      → tracker.php log + mail + return (data.php gère lui-même la sortie)
+ * ---------------------------------------------------------------------------
+ * DEUX MODES D'APPEL (uniquement)
+ *   1. Via .htaccess (URL instructions.md) :
+ *        RewriteRule ^instructions\.md$ tracker.php
+ *      -> log access.log + readfile(instructions.md) + exit
  *
- * PROTECTION ACCÈS DIRECT
- *   Si quelqu'un appelle /r3M3M83r/tracker.php directement dans le navigateur,
- *   le script répond 403. La condition vérifie que l'URI contient "tracker.php"
- *   ET que TRACKER_SOURCE n'est pas défini (= pas un appel légitime depuis data.php).
+ *   2. Via require_once depuis data.php (parcours /sections) :
+ *        define('TRACKER_SOURCE', 'data.php');
+ *        define('TRACKER_SECTION', ...);
+ *        require_once tracker.php;
+ *      -> log access.log + return (data.php envoie la reponse HTML/texte)
  *
- * DÉTECTION DU TYPE DE VISITEUR
- *   Le User-Agent est analysé pour distinguer : IAs connues (ChatGPT, Claude, Gemini,
- *   Copilot, Perplexity, LLMs génériques), scripts/bots techniques, crawlers SEO,
- *   bots réseaux sociaux, navigateurs humains, User-Agent absent.
+ * ---------------------------------------------------------------------------
+ * PROTECTION ACCES DIRECT
+ *   URL /tracker.php tapee dans le navigateur sans TRACKER_SOURCE -> HTTP 403.
  *
- * SÉCURITÉ
- *   - IP extraite de X-Forwarded-For (o2switch est derrière un reverse proxy)
- *   - urldecode sur URI et Referer (lisibilité du log)
- *   - mail() envoyé avec From: mathieu@charreyre.net (domaine hébergé = SPF/DKIM valides)
+ * ---------------------------------------------------------------------------
+ * DETECTION VISITEUR
+ *   User-Agent classe : IAs (ChatGPT, Claude, Gemini, Copilot, Perplexity,
+ *   LLM generiques), scripts/bots, crawlers SEO, bots reseaux sociaux,
+ *   navigateur humain, UA absent / indetermine.
  *
+ * ---------------------------------------------------------------------------
+ * SECURITE
+ *   - IP : X-Forwarded-For puis X-Real-IP puis REMOTE_ADDR (o2switch proxy)
+ *   - urldecode sur URI et Referer
+ *   - Mail par visite : DESACTIVE (Note dans le log). Resume eventuel via
+ *     send_daily_summary.php si present.
+ *
+ * ---------------------------------------------------------------------------
  * FICHIERS
- *   - access.log : log brut, une ligne par hit, utilisé uniquement par tracker.php (protégé par FilesMatch dans .htaccess)
- *   - instructions.md : fichier servi en mode 1 (readfile transparent)
+ *   - access.log          (racine r3M3M83r/) : journal partage
+ *       * ecrit par tracker.php (modes 1 et 2 ci-dessus)
+ *       * ecrit aussi par rebecca/ et reformulator/saisie.php (questions IA)
+ *       * lu par Admin/index.php (?action=access_log)
+ *       * protege par FilesMatch dans .htaccess
+ *   - instructions.md     : servi en mode 1 uniquement
+ *   - tracker_error_log   : erreurs PHP de ce script (ini_set error_log)
+ *   - moteurs/log/requests.log : journal TECHNIQUE LLM (Node + PHP), distinct
+ *     (etapes finales query/rewrite... ; pas les consultations de fichier)
  *
- * CRÉÉ : mars 2026   MODIFIÉ : mars 2026
+ * ---------------------------------------------------------------------------
+ * CREATED : mars 2026
+ * MODIFIE : 22/08/2026 — doc alignee architecture moteurs/ + rebecca + Admin
+ * ---------------------------------------------------------------------------
  */
 
 if (function_exists('ini_set')) {
@@ -44,24 +66,22 @@ if (function_exists('ini_set')) {
 }
 
 
-// Bloquer l'accès direct à tracker.php (URL tapée directement dans le navigateur)
-// Exception : si appelé en include depuis data.php (constante TRACKER_SOURCE définie)
+// Bloquer l'acces direct a tracker.php (URL tapee dans le navigateur)
+// Exception : include depuis data.php (constante TRACKER_SOURCE definie)
 if (!defined('TRACKER_SOURCE') && strpos($_SERVER['REQUEST_URI'] ?? '', 'tracker.php') !== false) {
     http_response_code(403);
     exit;
 }
 
-// Détermine le contexte d'appel :
-//   $_tracker_via_data = true  → appelé depuis data.php (ne pas faire readfile en fin de script)
-//   $_tracker_via_data = false → appelé depuis .htaccess (mode transparent, readfile à la fin)
-//   $_tracker_section          → section demandée (null si fichier complet)
+// Contexte d'appel :
+//   $_tracker_via_data = true  -> data.php (pas de readfile en fin)
+//   $_tracker_via_data = false -> .htaccess / instructions.md (readfile)
+//   $_tracker_section          -> section demandee (null si fichier complet)
 $_tracker_via_data = defined('TRACKER_SOURCE') && constant('TRACKER_SOURCE') === 'data.php';
 $_tracker_section  = defined('TRACKER_SECTION') ? constant('TRACKER_SECTION') : null;
 
-// --- Collecte des informations de la requête ------------------------------------
-// L'IP est extraite de X-Forwarded-For en priorité car o2switch est derrière un
-// reverse proxy : REMOTE_ADDR contiendrait l'IP du proxy, pas du visiteur réel.
-// On prend le premier élément s'il y a plusieurs IPs chaînées (ex. via VPN).
+// --- Collecte requete ------------------------------------------------------------
+// IP : X-Forwarded-For en priorite (o2switch derriere reverse proxy)
 $date    = date('d/m/Y H:i:s') . ' UTC' . date('P');
 $ip      = trim(explode(',', (string)(
                $_SERVER['HTTP_X_FORWARDED_FOR'] ??
@@ -70,24 +90,17 @@ $ip      = trim(explode(',', (string)(
                'inconnue'
            ))[0]);
 $ua      = $_SERVER['HTTP_USER_AGENT'] ?? '—';
-$referer = urldecode($_SERVER['HTTP_REFERER']    ?? '—');  // décodé pour lisibilité
+$referer = urldecode($_SERVER['HTTP_REFERER']    ?? '—');
 $method  = $_SERVER['REQUEST_METHOD']  ?? 'GET';
-// Reconstruction de l'URL complète (REQUEST_URI = chemin + query string, déjà urlencodé)
 $_path   = urldecode($_SERVER['REQUEST_URI']     ?? '/r3M3M83r/instructions.md');
 $_scheme = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['SERVER_PORT'] ?? 80) == 443) ? 'https' : 'http';
 $_host   = $_SERVER['HTTP_HOST'] ?? 'mathieu.charreyre.net';
 $url     = $_scheme . '://' . $_host . $_path;
 
-// --- Log fichier ---------------------------------------------------------------
-// Écrit dans access.log (même dossier, protégé par FilesMatch dans .htaccess).
-// LOCK_EX évite les corruptions en cas de hits simultanés.
-// Le résultat de l'envoi mail est ajouté juste après (MAIL_OK / MAIL_FAIL).
 $logFile = __DIR__ . '/access.log';
-
-// --- Corps du mail ---
 $to = 'webmaster@wda-fr.org';
 
-// --- Détection de la source de la requête ---
+// --- Detection source ------------------------------------------------------------
 $_ua_lower = strtolower($ua);
 if (preg_match('/gpt|chatgpt|openai/i', $ua)) {
     $_source = 'IA — ChatGPT / OpenAI';
@@ -115,15 +128,12 @@ if (preg_match('/gpt|chatgpt|openai/i', $ua)) {
     $_source = 'Indéterminé';
 }
 
-// --- Discrimination Bot / Humain ------------------------------------------------
-// On distingue les visites provenant d'un vrai navigateur humain des autres.
 $_visitorType = ($_source === 'Navigateur humain') ? 'Humain' : 'Bot / Script / IA';
 
 $_visitorLabel = ($_source === 'Navigateur humain')
     ? 'Humain (navigateur)'
     : 'Bot / Script / IA — ' . $_source;
 
-// Ligne formatée pour un journal humain, avec des blocs lisibles.
 $_row = function(string $label, string $value): string {
     return $label . ' : ' . $value . "\n";
 };
@@ -140,8 +150,6 @@ $logLine .= "Note : Mail de notification désactivée.\n";
 $logLine .= "\n";
 file_put_contents($logFile, $logLine, FILE_APPEND | LOCK_EX);
 
-// Ne pas envoyer de notification pour les consultations clairement identifiées
-// comme provenant d'un navigateur humain. Cela réduit les faux positifs.
 $_shouldMail = false;
 
 if ($_tracker_via_data) {
@@ -171,19 +179,14 @@ if ($_tracker_via_data) {
              . "https://mathieu.charreyre.net/r3M3M83r/instructions.md";
 }
 
-// Le mail par visite est désactivé. Les consultations sont journalisées uniquement
-// et un résumé quotidien est envoyé séparément par send_daily_summary.php.
+// Mail par visite desactive. Journal uniquement ; resume eventuel : send_daily_summary.php
 
-// --- Servir instructions.md de façon transparente (mode .htaccess uniquement) ---
-// En mode data.php (TRACKER_SOURCE défini), on s'arrête ici : data.php gère la sortie.
-// En mode .htaccess, on sert le fichier complet avec les bons headers pour les IAs :
-//   - Content-Length exact : permet à l'IA de détecter une troncature
-//   - CORS ouvert          : nécessaire pour les fetch cross-origin des agents IA
-//   - X-Robots-Tag         : empêche l'indexation par les moteurs de recherche
+// Mode data.php : data.php gere la sortie
 if ($_tracker_via_data) {
     return;
 }
 
+// Mode instructions.md : servir le fichier
 $file = __DIR__ . '/instructions.md';
 if (!is_readable($file)) {
     http_response_code(500);
@@ -195,6 +198,6 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('X-Robots-Tag: noindex, nofollow');
-header('Content-Length: ' . filesize($file));  // taille exacte = détection troncature
+header('Content-Length: ' . filesize($file));
 readfile($file);
 exit;

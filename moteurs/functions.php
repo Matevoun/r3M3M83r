@@ -378,13 +378,36 @@
         @chmod($filePath, 0644);
     }
 
-    function log_reformulator_request(string $text): void {
-        $date = date('d/m/Y H:i:s') . ' Europe/Paris';
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'inconnue';
+    /**
+     * Journalise une action saisie.php :
+     *  - moteurs/log/requests.log (technique, 1 ligne)
+     *  - access.log a la racine r3M3M83r (format Admin / tracker, IP client reelle)
+     */
+    function log_reformulator_request(string $text, string $action = 'REFORMULER'): void {
+        $date = date('Y-m-d H:i:s');
+        $ip = trim(explode(',', (string)(
+            $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? 'inconnue'
+        ))[0]);
         $cleanText = trim(preg_replace('/\s+/u', ' ', str_replace(["\r", "\n"], ' ', $text)));
-        $length = mb_strlen($cleanText, 'UTF-8');
-        $line = sprintf("[%s] REFORMULER IP=%s length=%d text=%s\n", $date, $ip, $length, $cleanText);
+        if (mb_strlen($cleanText, 'UTF-8') > 500) {
+            $cleanText = mb_substr($cleanText, 0, 500, 'UTF-8') . '...';
+        }
+        $line = sprintf("[%s] PHP %s IP=%s len=%d text=%s\n", $date, $action, $ip, mb_strlen($cleanText, 'UTF-8'), $cleanText);
         append_requests_log($line);
+
+        // Format compatible Admin (access.log) — meme style que Rebecca / tracker
+        $accessLog = dirname(__DIR__) . '/access.log';
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? '-';
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        $accessLine = "------------------------------\n"
+            . '[' . date('d/m/Y H:i:s') . ' UTC' . date('P') . '] Reformulator (' . $action . ') IP : ' . $ip . "\n"
+            . "Mode : reformulator/saisie.php\n"
+            . 'URL : ' . $host . $uri . "\n"
+            . 'User-Agent : ' . $ua . "\n"
+            . ($cleanText !== '' ? 'Question : ' . $cleanText . "\n" : '')
+            . "\n";
+        @file_put_contents($accessLog, $accessLine, FILE_APPEND | LOCK_EX);
     }
 
     if (function_exists('date_default_timezone_set')) {
@@ -2479,7 +2502,7 @@
                 $instructions_loaded = true;
                 $instructions_line_count = count_instructions_lines();
             }
-            log_reformulator_request($input_text);
+            log_reformulator_request($input_text, 'REFORMULER');
             $cleaned = reformuler_via_node($input_text, $instructions_context);
             if ($cleaned !== '') {
                 $reformule_interpretation = $cleaned;
@@ -2492,6 +2515,7 @@
         // Bouton "Proposer emplacement"
         if (isset($_POST['proposer_emplacement']) && $input_text !== '') {
             $reformule_original = $input_text;
+            log_reformulator_request($input_text, 'EMPLACEMENT');
             if ($instructions_context === '') {
                 $instructions_context = build_instructions_context_for_text($input_text);
                 $instructions_loaded = true;
@@ -2511,6 +2535,7 @@
         // finalize_query_response_via_node uniquement (source unique).
         if (isset($_POST['query_instructions']) && $input_text !== '') {
             $reformule_original = $input_text;
+            log_reformulator_request($input_text, 'INTERROGER');
 
             // Moteur : meme helper que Rebecca (llm.php) si disponible
             if (function_exists('llm_apply_selected_engine')) {
@@ -2573,6 +2598,7 @@
         // emplacement. Texte du champ = infos NOUVELLES (Geneanet, notes...).
         if (isset($_POST['merge_smart']) && $input_text !== '') {
             $reformule_original = $input_text;
+            log_reformulator_request($input_text, 'MERGE');
             $built = build_memory_context_for_topic($input_text);
             $memoryCtx = $built['context'] ?? '';
             $query_debug = "Mode : Comparer / Fusionner\n";

@@ -1,12 +1,13 @@
 # Mathieu CHARREYRE — Fichier de memoire pour IAs
 
-Ce dossier contient le fichier de reference complet de Mathieu CHARREYRE, destine a etre lu par les IAs avant tout echange. Il decrit son identite, sa biographie, ses projets, sa famille, ses associations et ses valeurs. Document vivant, mis a jour regulierement.
+Ce dossier contient le fichier de reference complet de Mathieu CHARREYRE, destine a etre lu par les IAs avant tout echange.
+Il decrit son identite, sa biographie, ses projets, sa famille, ses associations et ses valeurs.
+Document vivant, mis a jour regulierement.
 
 > Si ce fichier depasse ta fenetre de contexte, utilise le service de sections ci-dessous pour charger uniquement les parties pertinentes a ta requete.
 
 ## Regles absolues (a respecter dans toutes les reponses)
 
-- Vouvoiement systematique envers Mathieu
 - Noms de famille en MAJUSCULES (CHARREYRE, LESAGE-MUNCH, MONTJOL...)
 - Pas de tiret cadratin ni demi-cadratin dans le texte courant
 - Pas d'emojis
@@ -17,7 +18,7 @@ Ce dossier contient le fichier de reference complet de Mathieu CHARREYRE, destin
 
 ## Fichier complet
 
-- [instructions.md](https://mathieu.charreyre.net/r3M3M83r/): Portrait complet et memoire vivante de Mathieu CHARREYRE (~2936 lignes, ~55 000 tokens). Lire en entier si la fenetre de contexte le permet.
+- [instructions.md](https://mathieu.charreyre.net/r3M3M83r/): Portrait complet et memoire vivante de Mathieu CHARREYRE (plus de 3700 lignes). Lire en entier si la fenetre de contexte le permet.
 - [instructions.md GitHub](https://raw.githubusercontent.com/Matevoun/r3M3M83r/refs/heads/main/instructions.md): Meme fichier, miroir GitHub public.
 
 ## Index des sections (chargement cible si fichier tronque)
@@ -38,7 +39,7 @@ L'URL `https://mathieu.charreyre.net/r3M3M83r/sections` liste toutes les section
 - [Section 10 — Defis actuels](https://mathieu.charreyre.net/r3M3M83r/s10): Conflit indivision Saint-Antonin, conflits chasseurs, licitation
 - [Section 11 — Annexes](https://mathieu.charreyre.net/r3M3M83r/s11): Adresses historiques, sites web, CV professionnel, references mediatiques
 - [Section 12 — Entites](https://mathieu.charreyre.net/r3M3M83r/s12): WDA, TOUN, FSS, Club-Replugged, Terres Saint-Antonin, chasse/ASPAS, Sardines & Haricots
-- [Section 13 — Projets](https://mathieu.charreyre.net/r3M3M83r/s13): Parking Saint-Antonin, voyage a Londres, tatouage
+- [Section 13 — Projets](https://mathieu.charreyre.net/r3M3M83r/s13): Parking Saint-Antonin, voyage a Londres, tatouage, ...
 
 ## Recherche par mot clef
 - Si le fichier complet est trop volumineux ou si vous cherchez un sujet precis, utilisez la recherche de sections :
@@ -48,7 +49,8 @@ L'URL `https://mathieu.charreyre.net/r3M3M83r/sections` liste toutes les section
 
 ## Interfaces
 
-- [Interface de saisie](https://mathieu.charreyre.net/r3M3M83r/saisie.php): Interface pour alimenter le fichier (reformulation via Mistral/GROQ/LLM)
+- [Interface de saisie](https://mathieu.charreyre.net/r3M3M83r/reformulator/saisie.php): Interface pour alimenter le fichier (reformulation via Mistral/GROQ/LLM)
+- [Interface de saisie](https://mathieu.charreyre.net/r3M3M83r/rebecca/index.php): Interface de tchat sur le fichier (via Mistral/GROQ/LLM)
 - [Index des sections](https://mathieu.charreyre.net/r3M3M83r/sections): Navigation interactive par section pour humains et IAs
 
 ## Dépôt Github public

@@ -76,7 +76,31 @@ const logError = (message) => {
  * Journal humain des requetes LLM.
  * Une ligne = date + IP + action + texte de la question (tronque a 500 car.).
  */
+/**
+ * Journal technique (moteurs/log/requests.log).
+ * CORRECTIF 22/08/2026 : une seule ligne par action UTILISATEUR.
+ * On ignore les etapes internes (chat-route, query-expand, query-select)
+ * qui polluaient le log (4 lignes pour une question).
+ */
+const LOG_FINAL_PURPOSES = {
+  'query': true,
+  'query-chat': true,
+  'rewrite': true,
+  'location': true,
+  'merge-smart': true,
+  'merge-check': true,
+  'extract': true,
+  'chat-talk': true
+};
 const logRequest = function(req, textOverride) {
+  var purpose = 'rewrite';
+  if (req.body && typeof req.body.purpose === 'string' && req.body.purpose.trim() !== '') {
+    purpose = req.body.purpose.trim().toLowerCase();
+  }
+  // Etapes pipeline : pas dans requests.log (bruit)
+  if (!LOG_FINAL_PURPOSES[purpose]) {
+    return;
+  }
   const clientIp = (req.headers['x-forwarded-for'] || req.ip || (req.socket && req.socket.remoteAddress) || 'inconnue').toString().split(',')[0].trim();
   var rawText = '';
   if (typeof textOverride === 'string' && textOverride.length > 0) {
@@ -84,15 +108,32 @@ const logRequest = function(req, textOverride) {
   } else if (req.body && typeof req.body.text === 'string') {
     rawText = req.body.text;
   }
-  var purpose = 'rewrite';
-  if (req.body && typeof req.body.purpose === 'string' && req.body.purpose.trim() !== '') {
-    purpose = req.body.purpose.trim();
-  }
   var preview = String(rawText).replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
-  if (preview.length > 500) {
-    preview = preview.substring(0, 500) + '...';
+  // Retirer le bloc persona Rebecca prepend (CHAT_ADDON) pour ne garder que la question
+  var addonIdx = preview.indexOf('Historique recent');
+  if (addonIdx === -1) addonIdx = preview.indexOf('CONSIGNE TCHAT');
+  if (addonIdx === 0) {
+    // Cherche la fin du addon : souvent la question humaine est apres le dernier bloc
+    var qMark = preview.lastIndexOf('?');
+    // Si le texte commence par CONSIGNE, essayer d'extraire apres "Historique..."
+    var hist = preview.indexOf('{{CHAT_HISTORY}}');
+    if (hist === -1) hist = preview.indexOf('Historique recent');
+    if (hist !== -1) {
+      var after = preview.substring(hist).replace(/^Historique recent[^:]*:\s*/i, '');
+      // apres historique il reste parfois la question reelle en fin de payload PHP
+      // Mieux : chercher "Question :" explicite
+    }
   }
-  // Format lisible (pas seulement text_length)
+  if (/^CONSIGNE TCHAT/i.test(preview) || /^Tu es Rebecca/i.test(preview)) {
+    // Payload tchat = addon + question : on loggue un marqueur court
+    preview = '[message tchat — voir access.log pour la question exacte]';
+  } else if (preview.indexOf('Question :') === 0 || preview.indexOf('Question:') === 0) {
+    // expand/select ne passent plus ici ; si un residual
+    preview = preview.replace(/^Question\s*:\s*/i, '');
+  }
+  if (preview.length > 400) {
+    preview = preview.substring(0, 400) + '...';
+  }
   var line = '[' + formatTimestamp() + '] IP=' + clientIp
     + ' | action=' + purpose
     + ' | requete=' + (preview !== '' ? preview : '(vide)')

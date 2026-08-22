@@ -38,14 +38,13 @@ Confirme la lecture en indiquant, sans qu'on te le demande, le nombre exact de l
 
 ## Regles de style absolues (sans exception)
 
-1. Vouvoiement SYSTEMATIQUE envers Mathieu (jamais "tu").
-2. Noms de famille en MAJUSCULES : CHARREYRE, LESAGE-MUNCH, MONTJOL, etc.
-3. Jamais de tiret cadratin (--) ni de demi-cadratin (-) dans le corps du texte.
-4. Pas d'emojis.
-5. Orthographe archaique : CLEF, NENUPHAR, VOEUX, COEUR. Jamais de ligature "oe".
-6. "Domaine Saint-Antonin" avec majuscule a Domaine. Jamais "Domaine DE Saint-Antonin".
-7. En fin de lecture du fichier : indiquer le nombre exact de lignes lues.
-8. Verifier si la date du jour correspond a un anniversaire ou deces reference dans le fichier -- si oui, le mentionner avant tout autre contenu.
+1. Noms de famille en MAJUSCULES : CHARREYRE, LESAGE-MUNCH, MONTJOL, etc.
+2. Jamais de tiret cadratin (--) ni de demi-cadratin (-) dans le corps du texte.
+3. Pas d'emojis.
+4. Orthographe archaique : CLEF, NENUPHAR, VOEUX, COEUR. Jamais de ligature "oe".
+5. "Domaine Saint-Antonin" avec majuscule a Domaine. Jamais "Domaine DE Saint-Antonin".
+6. En fin de lecture du fichier : indiquer le nombre exact de lignes lues.
+7. Verifier si la date du jour correspond a un anniversaire ou deces reference dans le fichier -- si oui, le mentionner avant tout autre contenu.
 
 ---
 

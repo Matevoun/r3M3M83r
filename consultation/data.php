@@ -67,7 +67,7 @@
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 // Chemin absolu vers instructions.md (dans le même dossier que ce script)
-define('SOURCE_FILE', __DIR__ . '/instructions.md');
+define('SOURCE_FILE', __DIR__ . '/../instructions.md');
 
 // ─── En-têtes par défaut (text/plain pour les IAs) ─────────────────────────
 // Note : le mode ?s=list peut remplacer Content-Type par text/html si le client
@@ -101,7 +101,7 @@ if (!in_array($section, ['all', 'list', 'faq', 'table'], true) && mb_strlen($sec
 // puis fait return (pas de readfile ici, c'est data.php qui gère la sortie).
 define('TRACKER_SOURCE',  'data.php');
 define('TRACKER_SECTION', $section !== 'all' ? $section : null);
-require_once __DIR__ . '/tracker.php';
+require_once __DIR__ . '/../tracker.php';
 
 // ─── Lecture du fichier ──────────────────────────────────────────────────────
 
@@ -177,11 +177,11 @@ function html_shell(string $title): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>{$t}</title>
-<link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
-<link rel="icon" href="favicon/favicon.svg" type="image/svg+xml" sizes="any">
-<link rel="icon" href="favicon/favicon.ico">
-<link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
-<link rel="manifest" href="favicon/site.webmanifest">
+<link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
+<link rel="icon" href="../favicon/favicon.svg" type="image/svg+xml" sizes="any">
+<link rel="icon" href="../favicon/favicon.ico">
+<link rel="apple-touch-icon" href="../favicon/apple-touch-icon.png">
+<link rel="manifest" href="../favicon/site.webmanifest">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
 <style>
@@ -350,9 +350,9 @@ function html_footer(bool $show_back = true): string {
           . ' &bull; '
           . '<a href="moteurs/log_proxy.php?name=requests_log" style="color:#7cf;" title="Voir les requetes" target="_blank" rel="noopener noreferrer">Voir les requetes</a>'
           . ' &bull; '
-          . '<a href="reformulator/saisie.php" style="color:#7cf;" title="Ouvrir le reformulator" target="_blank" rel="noopener noreferrer">Reformulator</a>'
+          . '<a href="../reformulator/saisie.php" style="color:#7cf;" title="Ouvrir le reformulator" target="_blank" rel="noopener noreferrer">Reformulator</a>'
           . ' &bull; '
-          . '<a href="rebecca/index.php" style="color:#7cf;" title="Ouvrir Rebecca (tchat)" target="_blank" rel="noopener noreferrer">Rebecca (tchat)</a>'
+          . '<a href="../rebecca/index.php" style="color:#7cf;" title="Ouvrir Rebecca (tchat)" target="_blank" rel="noopener noreferrer">Rebecca (tchat)</a>'
           . '</p>';
     $foot_text = '<div style="margin-top:1.5rem;background:#111;color:#bbb;font-size:.86rem;line-height:1.5;">'
                . '<p style="margin:.2rem 0;">Fichier brut accessible en <a href="' . $local_md . '" style="color:#7cf;" target="_blank">local</a> (<span style="color:#999;">' . $local_md . '</span>) et sur <a href="' . $github_raw . '" style="color:#7cf;" target="_blank">GitHub</a> (<span style="color:#999;">' . $github_raw . '</span>)</p><br>'
