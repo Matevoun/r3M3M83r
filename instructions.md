@@ -389,6 +389,7 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 - **2026 (07 juillet)** : Mail de Me **Emilie DAUTZENBERG** (nouvelle avocate du Domaine Saint-Antonin en gestion du dossier de sortie d'indivision des cousins VILLIERS, à Aix-en-Provence) informant Mathieu CHARREYRE de la réception d'une injonction du Tribunal Judiciaire d'Aix-en-Provence (RG 24/03953). La minute, datée du 11 mai 2026 (reçue avec retard), est signée par Sophie LEYDIER, Première Vice-Présidente, Juge de la Mise en Etat. Elle enjoint Mathieu CHARREYRE (défendeur, représenté par Me DAUTZENBERG) de conclure avant le **15 septembre 2026**. L'affaire est renvoyée au **lundi 09 novembre 2026** (Chambre Générale A). Demandeurs : Charlotte Rozanne Fanette Marie VILLIERS et Antoine Christian Maxence Marie VILLIERS (représentés par Me Philippe KLEIN de la SCP RIBON-KLEIN). Cela s'inscrit dans le conflit d'indivision persistant sur le Domaine Saint-Antonin.
 - **2026 (23 juillet)** : Décès de la chatte **Morticia** aux alentours de 10h45 à Saint-Antonin, des suites de son cancer. Elle n'a vraisemblablement plus réussi à respirer. Enterrement prévu autour de la Chapelle du Domaine Saint-Antonin.
 -- **2026 (24 juillet)** : Enterrement de **Morticia** avec AnSo, Esther MERCIER et Ambre, derrière la Chapelle, dans le parc Emile du Domaine Saint-Antonin. Premier chat de la ménagerie à être enterré et non incinéré.
+-- **2026 (23 août)** — Après-midi : Mathieu commence le développement de **PixelGod**, un god game isométrique de type Populous destiné à Android, en Godot Engine.
 
 Cette chronologie révèle un homme dont la vie est rythmée par des jalons visionnaires (WDA en 1988) et des épreuves familiales (conflit depuis 2009), alternant création et résistance.
 
@@ -3717,6 +3718,25 @@ Texte type annonce :
 Discrétion : petit panneau visible route Vauvenargues si besoin ("Emplacements disponibles – Contribution TOUN – Préservation Domaine"). Tester 1 place d'abord.
 
 Statut (février 2026) : Projet en réflexion/lancement. Compatible urbanisme (usage accessoire zone agricole existant, pas travaux), Natura 2000 (impact minime). À surveiller indivision (via TOUN pour cadrer).
+
+### PixelGod (God Game / Populous-like)
+Projet : développement d’un god game isométrique portable sur Android, inspiré de Populous (1989), en Godot Engine.
+
+Description :
+Mathieu a eu l’idée le 23 août 2026 dans l’après-midi, lassé de l’absence de clone correct sur mobile.
+Rendu isométrique 100 % vectoriel/natif.
+Mécaniques principales déjà en place (version 0.6) :
+- Couple pionnier initial (Adam et Ève)
+- Habitations à 3 niveaux (Tente 1 place / Chalet Bois 2 places / Maison Pierre 3 places)
+- Mana avec jauge style éprouvette et coûts en cascade
+- Chevaliers par fusion (même genre, niveau max 5)
+- Onde divine sélective limitée à 3 cases
+- Exode, mortalité par vieillesse, restes de squelette
+- Forêts procédurales, ombrage des pentes, transitions géologiques
+- Contrôles tactiles fiables avec bouton bascule Élever/Creuser
+
+Statut : en développement actif (version 0.6 au 29 août 2026).
+Objectif principal : version portable Android jouable.
 
 ### Voyage à Londres (AnSo + Ambre)
 Projet : Emmener Anne-Sophie LESAGE-MÜNCH et Ambre à Londres.

@@ -651,7 +651,7 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
     loadingOverlay.classList.add('open');
   }
 
-  fetch('saisie.php?extract_only=1', {
+  fetch(window.location.pathname + '?extract_only=1', {
     method: 'POST',
     body: formData
   })
@@ -676,5 +676,12 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
   });
 });
 </script>
+
+<?php
+  if (function_exists('r3m3m83r_node_health_ui')) {
+      echo r3m3m83r_node_health_ui('../moteurs/node_health.php');
+  }
+?>
+
 </body>
 </html>

@@ -1019,5 +1019,11 @@
             </p>
         </footer>
 
+        <?php
+            if (function_exists('r3m3m83r_node_health_ui')) {
+                echo r3m3m83r_node_health_ui('../moteurs/node_health.php');
+            }
+        ?>
+
     </body>
 </html>
