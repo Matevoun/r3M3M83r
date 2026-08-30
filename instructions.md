@@ -562,9 +562,9 @@ Mathieu reste intimement persuadé que Florence le considère comme un simple d'
 
 Les surnoms **"Picho"** (pour Dominique) et **"Grocho"** (pour Florence) ont été inventés par Mathieu lui-même quand il avait environ **3-4 ans** — il ignore pourquoi précisément, mais un raisonnement enfantin pourrait expliquer le choix : Dominique était **petite et fragile**, ce qui aurait pu inspirer "Picho" ; Florence paraissait plus **robuste et grande**, d'où "Grocho". Florence a **toujours été vexée** de ce surnom et ne l'a jamais bien accepté.
 
-**Cousin (fils de Dominique, adversaire dans l'indivision)** : **Antoine, Christian, Maxence, Marie VILLIERS**, surnommé **"Tonio"** — réalisateur. Né le **15 mars 1985** à Paris. Il hérite en 2009, au décès de sa mère Dominique, de sa quote-part (25%) du Domaine Saint-Antonin (Jouques). Marié à **Clara DEBRAY** ; un enfant (**Adèle VILLIERS** née en 2023). C'est lui (et sa soeur VILLIERS) qui représente l'autre côté de l'indivision conflictuelle face à Mathieu.
+**Cousin (fils de Dominique, adversaire dans l'indivision CHARREYRE)** : **Antoine, Christian, Maxence, Marie VILLIERS**, surnommé **"Tonio"** — réalisateur. Né le **15 mars 1985** à Paris. Il hérite en 2009, au décès de sa mère Dominique MONTJOL, de sa quote-part (25%) du Domaine Saint-Antonin (Jouques). Marié à **Clara DEBRAY** ; un enfant (**Adèle VILLIERS** née en 2023). C'est lui (et sa soeur VILLIERS) qui représente l'autre côté de l'indivision conflictuelle face à Mathieu.
 
-**Cousine (fille de Dominique, adversaire dans l'indivision)** : **Charlotte, Rozanne, Fanette, Marie VILLIERS**, surnommée **"Dandoune"** — avocate. Née le **2 juillet 1989** à Paris. Elle hérite également en 2009, au décès de sa mère Dominique, de sa quote-part (25%) du Domaine Saint-Antonin (Jouques). Considérée par Mathieu comme la plus agressive et la plus de mauvaise foi des deux dans le conflit d'indivision.
+**Cousine (fille de Dominique, adversaire dans l'indivision CHARREYRE)** : **Charlotte, Rozanne, Fanette, Marie VILLIERS**, surnommée **"Dandoune"** — avocate dans le pénal. Née le **2 juillet 1989** à Paris. Elle hérite également en 2009, au décès de sa mère Dominique MONTJOL, de sa quote-part (25%) du Domaine Saint-Antonin (Jouques). Considérée par Mathieu comme la plus agressive et la plus de mauvaise foi des deux dans le conflit d'indivision. En 2018 ou 2019, Charlotte VILLIERS a dit à Mathieu qu'elle "ne lui avait jamais demandé de faire un enfant" !
 
 ---
 
@@ -2716,8 +2716,8 @@ Et la question qui reste, plus grave : **quand tout ce que ceux qui ont une têt
 
 ## 10. Défis Actuels et Perspectives : Conflits et Avenir
 
-### Conflit d'indivision et licitation
-Conflit Saint-Antonin : Licitation redoutée, transmission à Ambre compromise. Gère seul, fatigué mais pas cassé. Mathieu subit depuis 2009 une pression juridique constante de la part de ses cousins VILLIERS (Antoine et Charlotte), héritiers de leur mère Dominique MONTJOL, décédée en 2009. Ils cherchent à sortir de l'indivision par tous les moyens, y compris des assignations bancales et des expertises contradictoires (1,4 M€ vs 900 k€), sans jamais proposer de solution intelligente ou respectueuse du patrimoine. Mathieu porte ce fardeau seul, sans aucun allié familial.
+### Conflit d'indivision CHARREYRE/VILLIERS et licitation
+Conflit Saint-Antonin : Licitation redoutée, transmission à Ambre compromise. Gère seul, fatigué mais pas cassé. Mathieu subit depuis 2009 une pression juridique constante de la part de ses cousins VILLIERS (Antoine et Charlotte), héritiers de leur mère Dominique MONTJOL, décédée en 2009. Ils cherchent à sortir de l'indivision et nuire par tous les moyens, y compris des assignations bancales et des expertises contradictoires (1,4 M€ vs 900 k€), sans jamais proposer de solution intelligente ou respectueuse du patrimoine. Mathieu porte ce fardeau seul, sans aucun allié familial.
 **Mise à jour juillet 2026** : Le 07 juillet 2026, Me Emilie DAUTZENBERG transmet à Mathieu une injonction du Tribunal Judiciaire d’Aix-en-Provence (RG 24/03953, minute du 11 mai 2026) l’enjoignant de conclure avant le 15 septembre 2026. Renvoi de l’affaire au 09 novembre 2026. Les cousins VILLIERS (Charlotte et Antoine), via Me Philippe KLEIN, poursuivent leurs actions.
 
 ### Isolement et épuisement : une vie en apnée
@@ -2727,13 +2727,13 @@ Mathieu est **relativement seul**. À part Anne-Sophie et Ambre qui partagent sa
 **Famille hostile et perdue :**
 
 - Sa tante paternelle **Élisabeth PAULY** et sa fille **Edith PAULY** ont tenté, avant le décès de sa mère Anne, de monter celle-ci contre lui (probablement pour détourner l'héritage ou le faire passer pour un incapable).
-- Ses **cousins maternels VILLIERS** (Antoine et Charlotte) l'attaquent lâchement sur plein de fronts pour sortir de l'indivision au lieu de faire cela intelligemment et respectueusement.
-- Ses **cousins paternels PAULY** le prennent tous pour un demeuré et ne lui parlent presque plus. Même Philippe, le plus sympa, reste distant et condescendant.
-- Sa **tante maternelle Florence VIEUVILLE** reste bloquée sur le fait que ses parents (Henri et Anne) étaient d'après elle des gens néfastes, qu'elle considère comme la principale cause de sa sortie d'indivision en 2002-2005. Elle continue de le prendre pour un con et fait des alliances dans son dos avec les cousins VILLIERS contre lui.
+- Ses **cousins maternels VILLIERS** (Antoine et Charlotte) l'attaquent lâchement sur plein de fronts pour sortir de l'indivision et nuire au lieu de faire cela intelligemment et respectueusement.
+- Ses **cousins paternels PAULY** le prennent tous pour un simple d'esprit et ne lui parlent presque plus. Même Philippe, le plus sympa, reste distant et condescendant. En août 2026, il est tombé sur ce fichier mémoriel, et n'a pas apprécié, alors que Mathieu lui avait déjà envoyé à plusieurs reprises le point de vue exposé sur sa personne.
+- Sa **tante maternelle Florence VIEUVILLE** reste bloquée sur le fait que ses parents (Henri et Anne) étaient d'après elle des gens néfastes, qu'elle considère comme la principale cause de sa sortie d'indivision en 2002-2005. Elle continue de prendre Mathieu pour un simple d'esprit et fait surement des alliances dans son dos avec les cousins VILLIERS contre lui.
 
 **Amis perdus :**
 
-Mathieu a perdu la totalité de ce qu'il considérait comme ses amis intimes jusqu'en 2009. La **trahison de Julien GAUTIER** (qui a vendu une grande partie de la collection WDA dans son dos pour environ 75 000 euros) a marqué la fin de cette époque. Dans la foulée, **Charles de LEUSSE** a cessé tout contact avec Mathieu, prétextant auprès de leurs amis communs que Mathieu lui devrait de l'argent.
+Mathieu a perdu la totalité de ce qu'il considérait comme ses amis intimes jusqu'en 2009. La **trahison de Julien GAUTIER** (qui a vendu une grande partie de la collection WDA dans son dos pour environ 75.000 euros) a marqué la fin de cette époque. Dans la foulée, **Charles de LEUSSE** a cessé tout contact avec Mathieu, prétextant auprès de leurs amis communs que Mathieu lui devrait de l'argent.
 
 Depuis, Mathieu n'a plus aucune relation amicale véritable, à part un peu **Charles-César d'AMAT** (qui s'en fout en fait) et **Fabien REMBLIER**. Toutes les personnes qu'il croise le détestent ou le méprisent.
 
