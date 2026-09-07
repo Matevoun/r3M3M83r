@@ -129,30 +129,20 @@
      * (comme saisie.php pour REFORMULER), et les erreurs eventuelles.
      */
     function chat_log_request(string $engine, int $msgLen, string $message = '', string $extra = '') {
-        $logFile = dirname(__DIR__) . '/moteurs/log/requests.log';
-        $dir = dirname($logFile);
-        if (!is_dir($dir)) @mkdir($dir, 0755, true);
-        $ip = trim(explode(',', (string)($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'inconnue'))[0]);
+        $ip = trim(explode(',', (string)($_SERVER['HTTP_X_FORWARDED_FOR']?? $_SERVER['REMOTE_ADDR']?? 'inconnue'))[0]);
         $clean = trim(preg_replace('/\s+/u', ' ', str_replace(["\r", "\n"], ' ', $message)));
         if (mb_strlen($clean, 'UTF-8') > 500) {
-            $clean = mb_substr($clean, 0, 500, 'UTF-8') . '...';
+            $clean = mb_substr($clean, 0, 500, 'UTF-8'). '...';
         }
-        $line = '[' . date('Y-m-d H:i:s') . '] CHAT engine=' . $engine
-            . ' ip=' . $ip
-            . ' len=' . $msgLen
-            . ($extra !== '' ? ' ' . $extra : '')
-            . ' text=' . $clean
-            . PHP_EOL;
-        @file_put_contents($logFile, $line, FILE_APPEND | LOCK_EX);
-
-        $accessLog = dirname(__DIR__) . '/access.log';
-        $ua = $_SERVER['HTTP_USER_AGENT'] ?? '-';
-        $accessLine = "------------------------------\n[" . date('d/m/Y H:i:s') . " UTC" . date('P') . "] Chat IA (" . $engine . ") IP : " . $ip
-            . "\nMode : rebecca/index.php"
-            . "\nURL : " . (($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? ''))
-            . "\nUser-Agent : " . $ua
-            . ($clean !== '' ? "\nQuestion : " . $clean : '')
-            . "\n\n";
+        // Ne log plus dans requests.log, c'est functions.php qui le fait deja (evite doublon)
+        $accessLog = dirname(__DIR__). '/access.log';
+        $ua = $_SERVER['HTTP_USER_AGENT']?? '-';
+        $accessLine = "------------------------------\n[". date('d/m/Y H:i:s'). " UTC". date('P'). "] Chat IA (". $engine. ") IP : ". $ip
+        . "\nMode : rebecca/index.php"
+        . "\nURL : ". (($_SERVER['HTTP_HOST']?? ''). ($_SERVER['REQUEST_URI']?? ''))
+        . "\nUser-Agent : ". $ua
+        . ($clean!== ''? "\nQuestion : ". $clean : '')
+        . "\n\n";
         @file_put_contents($accessLog, $accessLine, FILE_APPEND | LOCK_EX);
     }
 
@@ -246,6 +236,7 @@
                 echo json_encode(['error' => 'Message vide']);
                 exit;
             }
+            $startTime = microtime(true);
 
             // --- 1) Charge addon tchat depuis fichier JS externe (modulable) ---
             // Contient la consigne pour gerer les pronoms via {{CHAT_HISTORY}}
@@ -321,7 +312,17 @@
             } elseif (function_exists('build_memory_context_for_topic')) {
                 $built = build_memory_context_for_topic($retrievalQuery);
                 $memoryContext = $built['context'] ?? '';
-                $debugInfo .= ' | ' . ($built['debug'] ?? 'memoire');
+                $debugData = $built['debug'] ?? [];
+                // Initialiser $debugInfo avec le texte lisible
+                $debugInfo = '';
+                $metrics = [];
+                if (is_array($debugData)) {
+                    $debugInfo = $debugData['text'] ?? '';
+                    $metrics  = $debugData['metrics'] ?? [];
+                } else {
+                    // Fallback (ancien format chaîne)
+                    $debugInfo = (string)$debugData;
+                }
             }
 
             // Fallback si le build echoue (timeout, erreur). Ne PAS ecraser le debug route.
@@ -336,9 +337,11 @@
                 $debugInfo .= ' | fallback excerpt (contexte faible — reponse a prendre avec prudence)';
             }
 
-            // Log question exacte (requests.log + access.log)
+            // LOG UNIQUE : requests.log (avec moteur) + access.log
+            $engineForLog = $engineReq!== ''? $engineReq : 'auto';
+            log_reformulator_request($message, 'query-chat', $engineForLog);
             chat_log_request(
-                $engineReq !== '' ? $engineReq : 'auto',
+                $engineForLog,
                 mb_strlen($message, 'UTF-8'),
                 $message,
                 $isChatOnly ? 'mode=chat' : 'mode=memoire'
@@ -394,7 +397,7 @@
                     CURLOPT_POST => true,
                     CURLOPT_POSTFIELDS => json_encode($payload),
                     CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-                    CURLOPT_TIMEOUT => 90
+                    CURLOPT_TIMEOUT => 25
                 ]);
                 $resp = curl_exec($ch);
                 $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -414,7 +417,10 @@
             if ($finalReply === '') {
                 chat_log_error('reponse vide | ' . $debugInfo);
                 http_response_code(500);
-                echo json_encode(['error' => "Le moteur n'a pas répondu. Vérifie que Node tourne (moteurs/server.js). Debug: $debugInfo"], JSON_UNESCAPED_UNICODE);
+                echo json_encode([
+                    'error' => "Le moteur n'a pas répondu. Vérifie que Node tourne (moteurs/server.js).",
+                    '_debug' => $debugInfo
+                ], JSON_UNESCAPED_UNICODE);
                 exit;
             }
 
@@ -423,7 +429,7 @@
                 'reply' => $finalReply,
                 'engine' => $usedEngine,
                 'model' => $usedModel,
-                'debug' => $debugInfo . "\nPrompt tchat (persona) : " . $chatAddonSourceInfo,
+                'debug' => $debugInfo,   // $chatAddonSourceInfo déjà inclus plus haut
                 'via' => 'query-strict-memoire-conversation'
             ], JSON_UNESCAPED_UNICODE);
             exit;
@@ -945,6 +951,28 @@
             inputEl.value='';
             statusEl.textContent='Interrogation ...';
             loadingEl.classList.add('open');
+
+            // --- MESSAGE PROGRESSIF CLIENT ---
+            const loadingTextEl = document.querySelector('.loading-text');
+            const loadingSteps = [
+                'Interrogation de instructions.md ...<br>Expansion intention + preuves + appel LLM',
+                'Le service IA est contacté',
+                '...',
+                'Patienter encore un peu',
+                'On y croit ...',
+                'Les moteurs doivent être lents aujourd\'hui !',
+                '...',
+                'Les moteurs semblent bien occupés ...',
+                '...',
+            ];
+            if (loadingTextEl) loadingTextEl.innerHTML = loadingSteps[0];
+            let loadingStep = 0;
+            const loadingTimer = setInterval(() => {
+                loadingStep = Math.min(loadingStep + 1, loadingSteps.length - 1);
+                if (loadingTextEl) loadingTextEl.innerHTML = loadingSteps[loadingStep];
+            }, 5000);
+            // ---------------------------------
+
             sendBtn.disabled=true;
             inputEl.disabled=true;
 
@@ -970,6 +998,7 @@
                 history.push({role:'assistant', content:'Erreur: '+e.message+' (Node tourne ?)', engine:'error'});
                 render(); scrollToBottom(false); statusEl.textContent='Erreur';
             }finally{
+                clearInterval(loadingTimer);   // ← arrête le minuteur ici
                 loadingEl.classList.remove('open');
                 sendBtn.disabled=false;
                 inputEl.disabled=false;

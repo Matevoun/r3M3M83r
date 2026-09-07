@@ -49,16 +49,33 @@
 // ---------------------------------------------------------------------------
 
 /** Orthographe et forme — appende aux prompts qui produisent du francais. */
-const STYLE_RULES = `
-Regles de style OBLIGATOIRES (calquees sur instructions.md - Regles d'Or) :
-- Orthographe archaique : CLEF (jamais "cle"/"cles"), NENUPHAR (jamais "nenufar").
+// Regles de style OBLIGATOIRES (calquees sur instructions.md - Regles d'Or)
+
+// Divise STYLE_RULES en sous-parties pour une meilleure lisibilité
+const STYLE_RULES_ORTHOGRAPHY = `
+- Orthographe : CLEF (jamais "cle"), NENUPHAR (jamais "nenuphar").
 - Pas de ligature oe : ecrire OE separes (COEUR, VOEUX, soeurs avec o et e distincts).
-- Noms de famille en MAJUSCULES (CHARREYRE, MONTJOL). Prenoms : majuscule initiale (Mathieu).
-- Domaine Saint-Antonin : majuscule a Domaine ; jamais "Domaine de Saint-Antonin".
 - Pas de tiret cadratin/demi-cadratin a la place d'une virgule ou parenthese.
-- Pas d'emoji ni de smiley.
-- Parler de Mathieu a la 3e personne (jamais "je" a sa place).
+- Noms propres en MAJUSCULES (ex. : CHARREYRE, SAINT-ANTONIN).
+- Domaine Saint-Antonin : majuscule a Domaine ; jamais "Domaine de Saint-Antonin".
 `;
+
+const STYLE_RULES_FORMATTING = `
+- Utilise des guillemets Francais (<< >>).
+- Les dates sont au format JJ/MM/AAAA.
+`;
+
+const STYLE_RULES_NUMBERS = `
+- Les nombres sont ecrits en toutes lettres de 0 a 16.
+`;
+
+const STYLE_RULES_TONE = `
+- Parler de Mathieu a la 3e personne (jamais "je" a sa place).
+- Ton : humain, chaleureux, un peu complice.
+- Emojis : 0 a 2 maximum, pas a chaque phrase.
+`;
+
+const STYLE_RULES = STYLE_RULES_ORTHOGRAPHY + STYLE_RULES_FORMATTING + STYLE_RULES_NUMBERS + STYLE_RULES_TONE;
 
 /** Interdiction d'inventer — socle de QUERY et utile en rappel ailleurs. */
 const FACTUALITY_RULES = `

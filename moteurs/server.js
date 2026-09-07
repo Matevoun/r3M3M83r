@@ -198,7 +198,7 @@ const PORT = process.env.PORT || 3000;
 
 const DEFAULT_LLM_ENGINE = 'mistral';
 const LLM_ENGINE = (process.env.LLM_ENGINE || DEFAULT_LLM_ENGINE).toLowerCase();
-const DEFAULT_FALLBACK_ORDER = 'mistral,groq,cerebras,openrouter';
+const DEFAULT_FALLBACK_ORDER = 'openrouter,groq,mistral,cerebras';
 const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_ORDER)
   .split(',')
   .map(function(item) { return item.trim().toLowerCase(); })
@@ -275,8 +275,8 @@ const LLM_ENGINES = {
     modelEnv: 'GROQ_MODEL',
     apiBase: process.env.GROQ_API_BASE || 'https://api.groq.com/openai/v1',
     engineUrl: 'https://console.groq.com/home',
-    defaultModel: 'llama-3.3-70b-versatile',
-    models: ['llama-3.3-70b-versatile','llama-3.1-8b-instant','llama-4-scout-17b-16e-instruct','gemma2-9b-it','qwen-qwq-32b','compound-beta-mini'],
+    defaultModel: 'mixtral-8x7b-32768',
+    models: ['mixtral-8x7b-32768', 'llama-3.1-8b-instant'],
     createPayload: function(text, model, context, purpose) {
       context = context || '';
       purpose = purpose || 'rewrite';
@@ -286,7 +286,7 @@ const LLM_ENGINES = {
       else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
       else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
       else if (purpose === 'query-chat') messages.push({ role: 'system', content: QUERY_CHAT_PROMPT });
-  else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
+      else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
       else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
       else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
       else if (purpose === 'chat-route') messages.push({ role: 'system', content: CHAT_ROUTE_PROMPT });
@@ -320,13 +320,11 @@ const LLM_ENGINES = {
     modelEnv: 'CEREBRAS_MODEL',
     apiBase: process.env.CEREBRAS_API_BASE || 'https://api.cerebras.ai/v1',
     engineUrl: 'https://cloud.cerebras.ai',
-    defaultModel: 'gpt-oss-120b',
-    models: ['gpt-oss-120b', 'zai-glm-4.7'],
+    defaultModel: 'llama-3.1-8b',
+    models: ['llama-3.1-8b', 'mixtral-8x7b'],
     createPayload: createOpenAICompatiblePayload,
   },
   // OpenRouter
-  // CORRECTIF 03/08/2026 : les slugs :free tournent tres souvent (404).
-  // On privilegie openrouter/free (auto-route vers un modele gratuit disponible).
   openrouter: {
     name: 'OpenRouter',
     apiKeyEnv: 'OPENROUTER_API_KEY',
@@ -334,13 +332,7 @@ const LLM_ENGINES = {
     apiBase: process.env.OPENROUTER_API_BASE || 'https://openrouter.ai/api/v1',
     engineUrl: 'https://openrouter.ai',
     defaultModel: 'openrouter/free',
-    models: [
-      'openrouter/free',
-      'meta-llama/llama-3.3-8b-instruct:free',
-      'google/gemma-3-27b-it:free',
-      'meta-llama/llama-4-scout:free',
-      'openai/gpt-oss-120b',
-    ],
+    models: ['openrouter/free', 'meta-llama/llama-3.3-8b-instruct:free', 'google/gemma-3-27b-it:free', 'meta-llama/llama-4-scout:free'],
     createPayload: createOpenAICompatiblePayload,
   },
 };
@@ -370,6 +362,12 @@ const getAvailableEngines = function() {
 const getCurrentEngineInfo = function() {
   var engine = getEngineConfig(LLM_ENGINE);
   var selectedModel = getEngineModel(LLM_ENGINE);
+  var apiKeys = {};
+  Object.keys(LLM_ENGINES).forEach(function(name) {
+    var eng = LLM_ENGINES[name];
+    var key = process.env[eng.apiKeyEnv] || '';
+    apiKeys[name] = key ? 'present' : 'absent';
+  });
   return {
     defaultEngine: LLM_ENGINE,
     engineName: engine && engine.name ? engine.name : LLM_ENGINE,
@@ -378,6 +376,7 @@ const getCurrentEngineInfo = function() {
     fallbackOrder: LLM_FALLBACK_ORDER,
     availableEngines: getAvailableEngines(),
     modelCandidates: engine && engine.models ? engine.models : [],
+    apiKeysStatus: apiKeys,
   };
 };
 
@@ -438,6 +437,8 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
     console.log('[AUTO ENGINE] Ordre fallback : ' + engineOrder.join(', '));
   }
 
+  var allErrors = []; // collecte les erreurs individuelles pour un log unique
+
   for (var i = 0; i < engineOrder.length; i++) {
     var engineName = engineOrder[i];
     var engine = getEngineConfig(engineName);
@@ -452,7 +453,7 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 
     // Tentative de requête au moteur LLM
     var retryCount = 0;
-    var maxRetries = 2;
+    var maxRetries = 1;   // une seule nouvelle tentative maximum
 
     while (true) {
       var model = getEngineModel(engineName);
@@ -463,6 +464,7 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 
       try {
         var response = await axios.post(requestUrl, payload, {
+          timeout: 15000,   // 15 secondes max par requête
           headers: {
             'Authorization': 'Bearer ' + apiKey,
             'Content-Type': 'application/json',
@@ -473,18 +475,25 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 
         console.log('[SUCCESS] ' + engineName + ' a répondu');
         attempts.push({ engine: engineName, model: model, status: 'success', error: null });
-        return {
-          cleaned: response.data.choices[0].message.content.trim(),
-          engine: engineName,
-          model: model,
-          attempts: attempts
-        };
+        if (response.data && response.data.choices && response.data.choices[0] && response.data.choices[0].message) {
+          var cleaned = response.data.choices[0].message.content;
+          if (cleaned) {
+            return {
+              cleaned: cleaned.trim(),
+              engine: engineName,
+              model: model,
+              attempts: attempts
+            };
+          }
+        }
+        // Si la structure est invalide, on continue vers le moteur suivant
+        console.log('[WARN] ' + engineName + ' a répondu mais structure inattendue');
+        continue;
 
       } catch (error) {
         lastError = error;
         var status = (error.response && error.response.status) ? error.response.status : 'unknown';
 
-        // Extraire le message d'erreur réel de la réponse API
         var errMsg = '';
         if (error.response && error.response.data) {
           var d = error.response.data;
@@ -500,7 +509,7 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 
         if (status === 429 && retryCount < maxRetries) {
           retryCount++;
-          var waitMs = 3000;
+          var waitMs = 1500;
           var retryAfter = extractRetryAfterSeconds(error);
           if (retryAfter > 0) waitMs = Math.min(retryAfter * 1000, 10000);
           console.log('[RETRY] ' + engineName + ' dans ' + (waitMs / 1000) + 's (tentative ' + retryCount + '/' + maxRetries + ')');
@@ -509,15 +518,17 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
         }
 
         attempts.push({ engine: engineName, model: model, status: 'HTTP ' + status, error: errMsg });
-        logError('Moteur ' + engineName + ' échoué (HTTP ' + status + ') : ' + errMsg);
-        break; // passer au moteur suivant
+        // Ne plus loguer ici : on loguera une seule fois après la boucle
+        allErrors.push(engineName + ':' + status + ' ' + errMsg);
+        break;
       }
     }
   }
 
   // Tous les moteurs ont échoué
-  var summary = attempts.map(function(a) { return a.engine + ':' + a.status; }).join(', ');
-  logError('Tous les moteurs ont échoué. Séquence : ' + summary);
+  if (allErrors.length > 0) {
+    logError('Tous les moteurs ont échoué. Séquence : ' + allErrors.join(', '));
+  }
   var finalErr = lastError || new Error('Aucun moteur LLM disponible');
   finalErr.attempts = attempts;
   throw finalErr;
@@ -926,17 +937,19 @@ app.post('/reformuler', handleFileUpload, async function(req, res) {
 // handleFileUpload. L'appliquer deux fois aurait tenté de reparser un corps
 // multipart déjà consommé par le premier passage.
 // Compat chemins Passenger (URL complete avec prefixe application)
-app.post('/r3M3M83r/moteurs/reformuler', function(req, res) {
-  req.url = '/reformuler';
-  app.handle(req, res);
-});
-app.post('/moteurs/reformuler', function(req, res) {
-  req.url = '/reformuler';
-  app.handle(req, res);
-});
-app.post('/r3M3M83r/reformulator/reformuler', function(req, res) {
-  req.url = '/reformuler';
-  app.handle(req, res);
+// Liste des préfixes à supporter
+const passengerPrefixes = [
+  '/r3M3M83r/moteurs',
+  '/moteurs',
+  '/r3M3M83r/reformulator'
+];
+
+// Crée une route unique pour tous les préfixes
+passengerPrefixes.forEach(prefix => {
+  app.post(`${prefix}/reformuler`, function(req, res) {
+    req.url = '/reformuler';
+    app.handle(req, res);
+  });
 });
 
 // CORRECTIF 04/07/2026 : middleware d'erreur Express global (4 arguments).

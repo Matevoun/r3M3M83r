@@ -279,8 +279,8 @@
     function fetch_llm_info_once(string $url): array {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 8);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
         $result = curl_exec($ch);
         $error  = curl_error($ch);
@@ -362,20 +362,50 @@
 
     function ensure_reformulator_log_file(string $filePath): void {
         $dir = dirname($filePath);
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0755, true);
-        }
+        if (!is_dir($dir)) @mkdir($dir, 0755, true);
         if (!file_exists($filePath)) {
             @file_put_contents($filePath, '', LOCK_EX);
             @chmod($filePath, 0644);
         }
     }
 
+    // CORRECTIF 06/09/2026 : anti-doublon atomic + moteur obligatoire
     function append_requests_log(string $line): void {
         $filePath = get_requests_log_path();
         ensure_reformulator_log_file($filePath);
-        @file_put_contents($filePath, $line, FILE_APPEND | LOCK_EX);
-        @chmod($filePath, 0644);
+
+        $fp = @fopen($filePath, 'c+');
+        if (!$fp) {
+            @file_put_contents($filePath, $line, FILE_APPEND | LOCK_EX);
+            return;
+        }
+        flock($fp, LOCK_EX);
+        $content = stream_get_contents($fp);
+        $newReq = '';
+        if (preg_match('/requete=(.*)$/', $line, $m)) $newReq = trim($m[1]);
+        $shouldWrite = true;
+        if ($newReq!== '' && $content!== false && $content!== '') {
+            $lines = array_filter(explode("\n", $content));
+            $last10 = array_slice(array_reverse($lines), 0, 15);
+            foreach ($last10 as $old) {
+                // ignore IP et engine, compare juste le texte de la requete
+                if (strpos($old, mb_substr($newReq,0,50))!== false) {
+                    if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/',$old,$mt)) {
+                        $t = strtotime($mt[1]);
+                        if ($t && (time()-$t) < 45) { // 45s anti retry JS / curl
+                            $shouldWrite = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if ($shouldWrite) {
+            fseek($fp, 0, SEEK_END);
+            fwrite($fp, $line);
+        }
+        flock($fp, LOCK_UN);
+        fclose($fp);
     }
 
     /**
@@ -383,31 +413,25 @@
      *  - moteurs/log/requests.log (technique, 1 ligne)
      *  - access.log a la racine r3M3M83r (format Admin / tracker, IP client reelle)
      */
-    function log_reformulator_request(string $text, string $action = 'REFORMULER'): void {
+    function log_reformulator_request(string $text, string $action = 'REFORMULER', string $engine = ''): void {
         $date = date('Y-m-d H:i:s');
-        $ip = trim(explode(',', (string)(
-            $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? 'inconnue'
-        ))[0]);
-        $cleanText = trim(preg_replace('/\s+/u', ' ', str_replace(["\r", "\n"], ' ', $text)));
-        if (mb_strlen($cleanText, 'UTF-8') > 500) {
-            $cleanText = mb_substr($cleanText, 0, 500, 'UTF-8') . '...';
+        $ip = trim(explode(',', (string)($_SERVER['HTTP_X_FORWARDED_FOR']??$_SERVER['HTTP_X_REAL_IP']??$_SERVER['REMOTE_ADDR']??'inconnue'))[0]);
+        $clean = trim(preg_replace('/\s+/u',' ',str_replace(["\r","\n"],' ',$text)));
+        if (mb_strlen($clean,'UTF-8')>500) $clean = mb_substr($clean,0,500,'UTF-8').'...';
+        if ($engine === '') {
+            global $selected_engine;
+            $engine = (string)($selected_engine?? 'auto');
+            // NE JAMAIS appeler get_llm_info() ici = boucle HTTP qui log l'IP serveur 109...
+            if ($engine === '') $engine = 'auto';
         }
-        $line = sprintf("[%s] PHP %s IP=%s len=%d text=%s\n", $date, $action, $ip, mb_strlen($cleanText, 'UTF-8'), $cleanText);
+        $engPart = ' | engine='.$engine;
+        $line = sprintf("[%s] IP=%s | action=%s%s | requete=%s\n", $date, $ip, $action, $engPart, $clean);
         append_requests_log($line);
 
-        // Format compatible Admin (access.log) — meme style que Rebecca / tracker
-        $accessLog = dirname(__DIR__) . '/access.log';
-        $ua = $_SERVER['HTTP_USER_AGENT'] ?? '-';
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        $uri = $_SERVER['REQUEST_URI'] ?? '';
-        $accessLine = "------------------------------\n"
-            . '[' . date('d/m/Y H:i:s') . ' UTC' . date('P') . '] Reformulator (' . $action . ') IP : ' . $ip . "\n"
-            . "Mode : reformulator/saisie.php\n"
-            . 'URL : ' . $host . $uri . "\n"
-            . 'User-Agent : ' . $ua . "\n"
-            . ($cleanText !== '' ? 'Question : ' . $cleanText . "\n" : '')
-            . "\n";
-        @file_put_contents($accessLog, $accessLine, FILE_APPEND | LOCK_EX);
+        $accessLog = dirname(__DIR__).'/access.log';
+        $ua = $_SERVER['HTTP_USER_AGENT']??'-';
+        $accessLine = "------------------------------\n[".date('d/m/Y H:i:s').' UTC'.date('P')."] Reformulator (".$action.$engPart.") IP : ".$ip."\nMode : reformulator/saisie.php\nURL : ".($_SERVER['HTTP_HOST']??'').($_SERVER['REQUEST_URI']??'')."\nUser-Agent : ".$ua."\n".($clean!==''?"Question : ".$clean."\n":'')."\n";
+        @file_put_contents($accessLog,$accessLine,FILE_APPEND|LOCK_EX);
     }
 
     if (function_exists('date_default_timezone_set')) {
@@ -448,7 +472,7 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
         $result = curl_exec($ch);
         $error  = curl_error($ch);
         close_curl_handle($ch);
@@ -473,7 +497,7 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
         $result = curl_exec($ch);
         $error  = curl_error($ch);
         close_curl_handle($ch);
@@ -496,7 +520,7 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
         $result = curl_exec($ch);
         $curlError  = curl_error($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -580,7 +604,8 @@
      * Finalise une reponse memoire. $purpose = query (saisie) ou query-chat (Rebecca).
      */
     function finalize_query_response_via_node(string $question, string $localEvidence, string $instructionsContext = '', string $purpose = 'query'): string {
-        $purpose = ($purpose === 'query-chat') ? 'query-chat' : 'query';
+        $purpose = ($purpose==='query-chat')? 'query-chat' : 'query';
+        // PLUS DE LOG ICI - le log se fait dans rebecca/index.php et saisie.php uniquement
         $payload = ['text' => $question, 'purpose' => $purpose];
 
         if ($instructionsContext !== '') {
@@ -863,16 +888,28 @@
             $ctx .= "\n--- Section : $title ---\n" . $block . "\n";
         }
 
-        $debug = count($relevantSections) . ' section(s)'
-            . ($intentExpanded !== '' ? ' + intention elargie' : '')
-            . ' (fichier : ' . number_format($fullDocumentLength, 0, ',', ' ') . ' car.)';
+        // ---- Métriques enrichies ----
+        $metrics = [
+            'sections_count' => count($relevantSections),
+            'evidence_lines' => count($rankedLines ?? []),
+            'top_section'    => $orderedTitles[0] ?? '',
+            'top_evidence'   => array_slice($rankedLines ?? [], 0, 3),
+        ];
+        $debug_text = count($relevantSections).' section(s)'
+            .($intentExpanded !== '' ? ' + intention elargie' : '')
+            .' (fichier : '.number_format($fullDocumentLength, 0, ',', ' ').' car.)';
         if (!empty($rankedLines)) {
-            $debug .= "\nPreuves retenues (" . count($rankedLines) . ") :\n";
-            foreach (array_slice($rankedLines, 0, 8) as $item) {
-                $debug .= '  [' . $item['title'] . '] ' . mb_substr($item['line'], 0, 100, 'UTF-8') . "\n";
-            }
+            $debug_text .= "\nPreuves retenues : ".count($rankedLines).' ligne(s)';
         }
-        return ['context' => $ctx, 'debug' => $debug];
+        // On retourne maintenant un tableau associatif pour pouvoir extraire les métriques côté appelant
+        return [
+            'context' => $ctx,
+            'debug'   => [
+                'text'      => $debug_text,
+                'metrics'   => $metrics,
+                'raw_debug' => $debug // garde l'ancienne chaîne pour compatibilité
+            ]
+        ];
     }
 
     /**
@@ -2361,7 +2398,7 @@
         $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 90); // un peu plus large : base64 + JSON est ~35% plus volumineux que le fichier brut
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30); // un peu plus large : base64 + JSON est ~35% plus volumineux que le fichier brut
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Accept: application/json',
@@ -2502,7 +2539,7 @@
                 $instructions_loaded = true;
                 $instructions_line_count = count_instructions_lines();
             }
-            log_reformulator_request($input_text, 'REFORMULER');
+            log_reformulator_request($input_text, 'REFORMULER', $selected_engine);
             $cleaned = reformuler_via_node($input_text, $instructions_context);
             if ($cleaned !== '') {
                 $reformule_interpretation = $cleaned;
@@ -2515,7 +2552,7 @@
         // Bouton "Proposer emplacement"
         if (isset($_POST['proposer_emplacement']) && $input_text !== '') {
             $reformule_original = $input_text;
-            log_reformulator_request($input_text, 'EMPLACEMENT');
+            log_reformulator_request($input_text, 'EMPLACEMENT', $selected_engine);
             if ($instructions_context === '') {
                 $instructions_context = build_instructions_context_for_text($input_text);
                 $instructions_loaded = true;
@@ -2535,7 +2572,7 @@
         // finalize_query_response_via_node uniquement (source unique).
         if (isset($_POST['query_instructions']) && $input_text !== '') {
             $reformule_original = $input_text;
-            log_reformulator_request($input_text, 'INTERROGER');
+            log_reformulator_request($input_text, 'INTERROGER', $selected_engine);
 
             // Moteur : meme helper que Rebecca (llm.php) si disponible
             if (function_exists('llm_apply_selected_engine')) {
@@ -2598,7 +2635,7 @@
         // emplacement. Texte du champ = infos NOUVELLES (Geneanet, notes...).
         if (isset($_POST['merge_smart']) && $input_text !== '') {
             $reformule_original = $input_text;
-            log_reformulator_request($input_text, 'MERGE');
+            log_reformulator_request($input_text, 'MERGE', $selected_engine);
             $built = build_memory_context_for_topic($input_text);
             $memoryCtx = $built['context'] ?? '';
             $query_debug = "Mode : Comparer / Fusionner\n";
