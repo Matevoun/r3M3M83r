@@ -485,12 +485,28 @@
             }
             header h1{margin:0;font-size:1.2rem;line-height:1.3}
             header p{margin:.4rem 0 0;color:#6b7280;font-size:.88rem;line-height:1.45}
+            header p.header-desc .desktop-space {
+                display: inline;
+            }
             .topbar{
                 display:flex;
                 gap:.6rem;
                 flex-wrap:wrap;
                 align-items:center;
                 margin-top:.75rem;
+            }
+            .engine-main-row {
+                display: flex;
+                align-items: center;
+                gap: .6rem;
+                min-width: 0;
+            }
+            .engine-main-row select {
+                min-width: 170px;
+            }
+            .engine-actions-row {
+                display: flex;
+                gap: .5rem;
             }
             select,button{
                 border-radius:8px;
@@ -572,8 +588,8 @@
                 border-bottom-right-radius:5px;
             }
             .bubble-body{line-height:1.45;word-wrap:break-word}
-        .bubble-body strong{font-weight:600}
-        .msg.assistant{
+            .bubble-body strong{font-weight:600}
+            .msg.assistant{
                 align-self:flex-start;
                 background:#fff;
                 border:1px solid #e5e7eb;
@@ -685,12 +701,28 @@
                 header{padding:.9rem .9rem}
                 header h1{font-size:1.05rem}
                 header p{font-size:.82rem}
+                header p.header-desc .desktop-space {
+                    display: block; /* Force le passage à la ligne en mobile/responsive */
+                }
                 .topbar{flex-direction:column;align-items:stretch}
-                /* Ici seulement (mobile) : le groupe s'etire sur 100% de la
-                 * largeur, select plus large que les boutons (ratio 2:1). */
-                .engine-row{width:100%}
-                .engine-row select{flex:2 1 0;min-width:0;font-size:.82rem;padding:.55rem .4rem}
-                .engine-row button{flex:1 1 0;min-width:0;font-size:.82rem;padding:.55rem .4rem}
+                /* Le select prend toute la place peinard sur sa ligne */
+                .engine-main-row {
+                    width: 100%;
+                }
+                .engine-main-row select {
+                    width: 100%;
+                }
+
+                /* Les boutons RAZ et Vider passent en dessous, sur une ligne dédiée en flex */
+                .engine-actions-row {
+                    width: 100%;
+                    display: flex;
+                }
+                .engine-actions-row button {
+                    flex: 1;
+                    font-size: .82rem;
+                    padding: .55rem .4rem;
+                }
                 #messages{padding:.8rem;gap:.8rem}
                 .msg{max-width:94%;font-size:.92rem;padding:.8rem .9rem;border-radius:14px}
                 #composer{padding:.6rem;gap:.5rem}
@@ -706,12 +738,12 @@
     <body>
         <header>
             <h1>Tchat IA — Projet r3M3M83r</h1>
-            <p>
-                Interface <strong>Rebecca</strong>. Le moteur mémoriel est celui de <a href="https://mathieu.charreyre.net/r3M3M83r" title="Projet r3M3M83r" target="_blank"><strong>r3M3M83r</strong></a>.
+            <p class="header-desc">
+                Interface <strong>Rebecca</strong>.<span class="desktop-space"> </span>Le moteur mémoriel est celui de <a href="https://mathieu.charreyre.net/r3M3M83r" title="Projet r3M3M83r" target="_blank"><strong>r3M3M83r</strong></a>.
             </p>
-            <div class="topbar" style="flex-direction: column; align-items: stretch; gap: 8px;">
-                <!-- Ligne 1 : Moteur, Sélecteur, RAZ, Vider -->
-                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <div class="topbar">
+                <!-- Ligne du haut : Label + Select en mode flexible -->
+                <div class="engine-main-row">
                     <label for="engineSelect" class="engine-label">Moteur :</label>
                     <select id="engineSelect" aria-label="Choix moteur IA">
                         <?php
@@ -719,12 +751,16 @@
                             echo llm_render_engine_options($enginePref, $llmInfo);
                         ?>
                     </select>
+                </div>
+
+                <!-- Ligne des boutons RAZ et Vider (qui passeront en dessous en responsive) -->
+                <div class="engine-actions-row">
                     <button class="secondary" id="resetEngineBtn" title="Vide cache Node + recharge">RAZ</button>
                     <button class="secondary" id="clearChatBtn" title="Vide historique de discussion">Vider</button>
                 </div>
 
-                <!-- Ligne 2 : Pastilles de santé à gauche, messages de statut (RAZ/Vider) à droite -->
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12px;">
+                <!-- Ligne des statuts / pastilles -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12px; width: 100%;">
                     <div id="llm-status-bar"></div>
                     <span id="status" class="status" aria-live="polite"></span>
                 </div>
