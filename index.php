@@ -1,11 +1,14 @@
 <?php
     /**
+     * ============================================================================
      * r3M3M83r/index.php — Accueil memoire virtuelle Mathieu CHARREYRE
+     * ============================================================================
      *
      * Point d'entree public : 3 interfaces.
-     *   - Parcours (sections)  -> /r3M3M83r/sections  (data.php via rewrite)
-     *   - Rebecca (tchat)       -> rebecca/
-     *   - Reformulator (saisie) -> saisie.php
+     *   - Parcours (sections)  -> /r3M3M83r/sections
+     *      (/r3M3M83r/consultation/data.php via rewrite)
+     *   - Rebecca (tchat)       -> /r3M3M83r/rebecca/
+     *   - Reformulator (saisie) -> /r3M3M83r/reformulator/saisie.php
      *
      * Ambiance : equivalent "Halliday Journals" / memoire du createur
      * (Ready Player One) — trois portes d'acces a instructions.md.

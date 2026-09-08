@@ -1,7 +1,9 @@
 <?php
 /**
- * r3M3M83r/reformulator/test_curl.php — outil de vérification du service LLM
+ * ============================================================================
+ * r3M3M83r/reformulator/test_curl.php — Outil de vérification du service LLM
  * Affiche la séquence réellement tentée (attempts) renvoyée par Node.js.
+ * ============================================================================
  *
  * Modification du 19/06/2026 : Prompt de test pré-renseigné riche et délirant.
  */
@@ -25,8 +27,8 @@ if ($testEngine !== '' && in_array($testEngine, ['groq','cerebras','mistral','op
     $testEngineLabel = null;
 }
 
-function get_requests_log_path(): string { return __DIR__ . '/reformulator/log/requests.log'; }
-function get_error_log_path(): string    { return __DIR__ . '/reformulator/log/error.log'; }
+function get_requests_log_path(): string { return __DIR__ . '/moteurs/log/requests.log'; }
+function get_error_log_path(): string    { return __DIR__ . '/moteurs/log/error.log'; }
 function ensure_reformulator_log_file(string $p): void {
     $d = dirname($p);
     if (!is_dir($d)) @mkdir($d, 0755, true);

@@ -1,6 +1,12 @@
 <?php
     /**
-     * r3M3M83r/moteurs/functions.php - Interface de saisie/interrogation locale pour instructions.md
+     * ===========================================================================
+     * r3M3M83r/moteurs/functions.php - Interface de saisie/interrogation locale
+     * pour instructions.md
+     * Rôle : fonctions partagées par l'ensemble du projet r3M3M83r pour
+     * l'interrogation locale du fichier instructions.md et la reformulation via
+     * le service Node.js.
+     * ===========================================================================
      *
      * Ce fichier fournit une page HTML simple pour saisir un texte libre
      * et le faire analyser localement. Il ne modifie pas automatiquement
@@ -78,7 +84,7 @@
      * Voir le handler query_instructions plus bas pour le detail du correctif.
      */
 
-    // CORRECTIF 23/07/2026 (v4) : functions.php vit desormais dans /reformulator/
+    // CORRECTIFS : functions.php vit desormais dans /moteurs/
     // (deplace lors du refactor saisie.php/functions.php). Tous les chemins
     // bases sur __DIR__ qui supposaient etre a la racine du projet doivent
     // etre corriges en consequence -- SOURCE_FILE en particulier, qui
@@ -147,9 +153,8 @@
 
     function parse_llm_info_from_server_file(): array {
         // CORRECTIF 23/07/2026 (v4) : server.js est desormais un fichier
-        // FRERE de functions.php (tous deux dans /reformulator/), plus un
-        // sous-dossier imbrique -- l'ancien chemin pointait vers
-        // .../reformulator/moteurs/server.js (inexistant).
+        // FRERE de functions.php (tous deux dans /moteurs/), plus un
+        // sous-dossier imbrique.
         $filePath = __DIR__ . '/server.js';
         if (!is_file($filePath) || !is_readable($filePath)) {
             return [];

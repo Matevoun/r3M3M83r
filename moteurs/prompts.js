@@ -1,5 +1,8 @@
 /**
+ * ===========================================================================
  * r3M3M83r/moteurs/prompts.js
+ * ==========================================================================
+ *
  * ---------------------------------------------------------------------------
  * Source UNIQUE des prompts LLM partages : Reformulator (saisie.php) ET Rebecca
  * (chat, purpose=query-chat). La couche persona Rebecca est en plus dans

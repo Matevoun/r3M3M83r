@@ -1,9 +1,18 @@
 <?php
-    // Fichier r3M3M83r/saisie.php — Interface de saisie memoire pour reformulator
-    // Toute la logique metier (interrogation, extraction, appels Node) vit dans
-    // moteurs/functions.php. Ici : HTML, styles, JS d'interface uniquement.
-    include_once __DIR__ . '/../moteurs/functions.php';
-    include_once __DIR__ . '/../moteurs/llm.php';
+  /**
+   * ============================================================================
+   * r3M3M83r/reformulator/saisie.php
+   * ============================================================================
+   *
+   * Interface de saisie memoire pour reformulator
+   * Mise a jour 03/08/2026 - Mathieu CHARREYRE
+   *
+   */
+  // Fichier r3M3M83r/saisie.php — Interface de saisie memoire pour reformulator
+  // Toute la logique metier (interrogation, extraction, appels Node) vit dans
+  // moteurs/functions.php. Ici : HTML, styles, JS d'interface uniquement.
+  include_once __DIR__ . '/../moteurs/functions.php';
+  include_once __DIR__ . '/../moteurs/llm.php';
 ?>
 
 <!DOCTYPE html>

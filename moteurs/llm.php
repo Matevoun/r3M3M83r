@@ -1,8 +1,10 @@
 <?php
 /**
+ * ===========================================================================
  * r3M3M83r/moteurs/llm.php — Selection moteur LLM partagee
  * (Rebecca + saisie.php + tout le moteur r3M3M83r).
  * Emplacement : avec functions.php / server.js / prompts.js (pas a la racine).
+ * ============================================================================
  *
  * ROLE : unique point pour choisir / appliquer le moteur (mistral, groq, ...).
  * Inclus par chat.php et saisie.php (via functions.php ou directement).

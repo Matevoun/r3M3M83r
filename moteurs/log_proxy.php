@@ -1,6 +1,8 @@
 <?php
 /**
+ * ============================================================================
  * r3M3M83r/moteurs/log_proxy.php
+ * ============================================================================
  *
  * Affiche les fichiers de log du moteur (moteurs/) avec les entrees les plus
  * recentes en premier (ordre inverse chronologique).

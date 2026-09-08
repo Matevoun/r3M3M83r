@@ -1,6 +1,7 @@
 /**
  * ============================================================================
- * r3M3M83r/rebecca/Chat-Prompts.js — Couche tchat (persona + historique) pour Rebecca
+ * r3M3M83r/rebecca/Chat-Prompts.js
+ * Couche tchat (persona + historique) pour Rebecca
  * ============================================================================
  *
  * ROLE :

@@ -296,8 +296,7 @@
             // CORRECTIF : on ne lance ce pipeline (donc les appels LLM
             // d'expansion/selection + la recherche dans instructions.md) QUE
             // si le message n'est pas un simple echange de politesse/hors
-            // sujet -- voir chat_is_small_talk() plus haut. Ca evite d'aller
-            // chercher dans le fichier pour "Salut, comment vas-tu ?".
+            // sujet. Ca evite d'aller chercher dans le fichier pour "Salut, comment vas-tu ?".
             // Routage LLM (MEMORY vs CHAT) — pas de liste de mots en dur
             // Selection moteur via moteurs/llm.php (partage avec saisie.php)
             llm_apply_selected_engine($engineReq);

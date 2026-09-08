@@ -1,6 +1,9 @@
 <?php
 /**
- * tracker.php — Traceur des consultations "lecture memoire" (instructions.md + data.php)
+ * ========================================================================
+ * r3M3M83r/tracker.php — Traceur des consultations "lecture memoire"
+ * (instructions.md + data.php)
+ * =======================================================================
  *
  * ---------------------------------------------------------------------------
  * ROLE

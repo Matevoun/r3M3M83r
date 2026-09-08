@@ -1,7 +1,9 @@
 <?php
 /**
+ * ===========================================================================
  * r3M3M83r/moteurs/node_health.php
- * ---------------------------------------------------------------------------
+ * ===========================================================================
+ *
  * Ping + tentative de reveil du service Node (Passenger / o2switch).
  * Appele en AJAX au chargement de Rebecca et Reformulator (saisie.php).
  *
@@ -9,7 +11,6 @@
  * stages : ok | waking | down
  *
  * CREATED : 29/08/2026 — Mathieu CHARREYRE
- * ---------------------------------------------------------------------------
  */
 
 header('Content-Type: application/json; charset=UTF-8');

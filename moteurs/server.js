@@ -1,5 +1,8 @@
 /**
+ * ============================================================================
  * r3M3M83r/moteurs/server.js
+ * ============================================================================
+ *
  * Version avec support upload de fichiers + Mistral par defaut + logique dynamique modeles
  * Mise a jour 03/08/2026 - Mathieu CHARREYRE
  *
@@ -937,19 +940,17 @@ app.post('/reformuler', handleFileUpload, async function(req, res) {
 // handleFileUpload. L'appliquer deux fois aurait tenté de reparser un corps
 // multipart déjà consommé par le premier passage.
 // Compat chemins Passenger (URL complete avec prefixe application)
-// Liste des préfixes à supporter
-const passengerPrefixes = [
-  '/r3M3M83r/moteurs',
-  '/moteurs',
-  '/r3M3M83r/reformulator'
-];
-
-// Crée une route unique pour tous les préfixes
-passengerPrefixes.forEach(prefix => {
-  app.post(`${prefix}/reformuler`, function(req, res) {
-    req.url = '/reformuler';
-    app.handle(req, res);
-  });
+app.post('/r3M3M83r/moteurs/reformuler', function(req, res) {
+  req.url = '/reformuler';
+  app.handle(req, res);
+});
+app.post('/moteurs/reformuler', function(req, res) {
+  req.url = '/reformuler';
+  app.handle(req, res);
+});
+app.post('/r3M3M83r/reformulator/reformuler', function(req, res) {
+  req.url = '/reformuler';
+  app.handle(req, res);
 });
 
 // CORRECTIF 04/07/2026 : middleware d'erreur Express global (4 arguments).
