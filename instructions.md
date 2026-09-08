@@ -129,22 +129,50 @@ Cette chronologie révèle alternance création/résistance. Voir sections spéc
 - **1878 (30 juillet)** : Naissance à Lignières-la-Doucelle de Marthe Louise BARBÉ. Future arrière-grand-mère paternelle de Mathieu CHARREYRE.
 - **1878 (12 décembre)** : Premier bail agricole documenté sur le Domaine Saint-Antonin, signé avec Joseph DECANIS (marinier) et son épouse (notaire Me THUS Jean-Baptiste). Exploitation agricole à Saint-Julien.
 - **1881 (11 juin)** : Naissance à Paris de Marie Victorine ROBIN. Future arrière-grand-mère paternelle de Mathieu CHARREYRE.
+- **1882 (5 avril)** : Naissance à Saint-Remy de Provence de Marie, Louise, Alphonsine SICARD. Future arrière-grande-tante maternelle de Mathieu, future Soeur de Claire SICARD et future demie-soeur d'Emile SICARD.
+- **1883 (3 juin)** : Naissance à Saint-Remy de Provence de Claire, Joséphine, Honorine SICARD. Future arrière-grande-tante maternelle de Mathieu, Soeur de Claire SICARD et future demie-soeur d'Emile SICARD.
 - **1885** : Marius Amédée Louis BAUDOIN-THUS hérite officiellement du Domaine après sa majorité (futur 10e propriétaire du Domaine Saint-Antonin). Il fera officialiser le double patronyme BAUDOIN-THUS par décret (validé 1894) et construire le Château du "Paradou" (aujourd'hui "Val Réal") sur les rives du Réal (~1890-1910).
-- **1885 (4 mai)** Naissance à Nimes d'Emile Eugéne Joseph MONTJOL. Future arrière-grand-père maternel de Mathieu CHARREYRE.
+- **1885 (4 mai)** Naissance à Nimes d'Emile Eugéne Joseph MONTJOL.
+Future arrière-grand-père maternel de Mathieu CHARREYRE.
 - **1888 (24 août)** : Second bail agricole documenté sur le Domaine Saint-Antonin avec Joseph DECANIS pour l'exploitation des vignes et cultures sur le Grand Vallon.
-- **1898 (11 avril)** : Naissance à Oran de Zoé Julie Anne Georges HERY. Future arrière-grand-mère maternelle de Mathieu CHARREYRE.
-- **1899 (5 septembre)** : Naissance à Aix-en-Provence de Marie-Thérèse Charlotte Louise BAUDOIN-THUS, dite **"TOUN"** (pseudonyme artistique), surnommée **"Moumou"** par le petit Mathieu et **Mamoune** par ses petites-filles — santonnière à Aix, future 11e propriétaire du Domaine Saint-Antonin. Son pseudonyme donnera son nom à l'Association TOUN fondée par Mathieu en 2017. Future arrière-grand-mère maternelle de Mathieu CHARREYRE.
-- **1890 (20 décembre)** : Naissance d'Emile Augustin Alexandre SICARD à Marseille. Futur arrière-grand-père maternel de Mathieu CHARREYRE.
-- **1900 (15 juillet)** : Naissance à Yerres de Suzanne Renée CHRISTOPHE. Future grande-tante paternelle de Mathieu CHARREYRE. Future peintre aquareliste. Future soeur de Geneviève CHRISTOPHE.
-- **1907 (8 juillet)** : Naissance aux Mureaux de Jean Louis CHARREYRE. Futur grand-père paternel de Mathieu CHARREYRE.
-- **1907 (26 septembre)** : Naissance à Paris de Geneviève Marthe Eugénie CHRISTOPHE. Future grand-mère paternelle de Mathieu CHARREYRE. Soeur de Suzanne CHRISTOPHE.
-- **1919 (1 juillet)** : Naissance à Aix-les-Bains de Christian Johnson Paul MONTJOL-HERY. Futur grand-père maternel de Mathieu CHARREYRE.
-- **1921 (28 décembre)** : Naissance à Aix-en-Provence de Fanette Mathilde Honorine BOIZARD née SICARD — professeur de Français, future 12e propriétaire du Domaine Saint-Antonin. Son prénom est celui de la chanson de BREL ("La Fanette") car son père Émile SICARD jouait au tennis dans le même club que Jacques BREL. Future grand-mère maternelle de Mathieu CHARREYRE.
-- **1936 (13 décembre)** : Naissance à Neuilly-sur-Seine de Dominique Michel Marie PAULY. Futur oncle et Parrain de Mathieu CHARREYRE. Futur mari d'Elisabeth CHARREYRE.
-- **1937 (25 avril)** : Naissance à Paris d'Elisabeth Marthe Marie CHARREYRE. Future tante paternelle de Mathieu CHARREYRE. Future soeur de Jean CHARREYRE et d'Henri CHARREYRE.
-- **1942 (4 avril)** : Naissance à Paris de Jean Eugène CHARREYRE. Futur oncle mort à 14 mois de Mathieu CHARREYRE. Frère d'Elisabeth CHARREYRE et par la suite d'Henri CHARREYRE.
-- **1942 (4 juillet)** : Décès à Carrouges de Jean Benoît CHARREYRE à l'age de 69 ans. Futur arrière-grand-père paternel de Mathieu CHARREYRE.
-- **1943 (20 juin)** : Décès à Paris de Jean Eugène CHARREYRE. Futur oncle mort à 14 mois de Mathieu CHARREYRE. Frère d'Elisabeth CHARREYRE et par la suite d'Henri CHARREYRE.
+- **1898 (11 avril)** : Naissance à Oran de Zoé Julie Anne Georges HERY.
+Future mère de Christian MONTJOL.
+Future arrière-grand-mère maternelle de Mathieu CHARREYRE.
+- **1899 (5 septembre)** : Naissance à Aix-en-Provence de Marie-Thérèse Charlotte Louise BAUDOIN-THUS, dite **"TOUN"** (pseudonyme Artistique), surnommée **"Moumou"** par le petit Mathieu et **Mamoune** par ses petites-filles, santonnière à Aix en Provence.
+Son pseudonyme donnera son nom à l'Association TOUN fondée par Mathieu et Anne-Sophie en 2017.
+Future mère de Fanette SICARD mariée MONTJOL puis BOIZARD.
+Future arrière-grand-mère maternelle de Mathieu CHARREYRE.
+Future 11e propriétaire du Domaine Saint-Antonin.
+- **1890 (20 décembre)** : Naissance d'Emile, Augustin, Alexandre SICARD (pseudonyme familial : Papoune) à Marseille.
+Futur arrière-grand-père maternel de Mathieu CHARREYRE.
+- **1900 (15 juillet)** : Naissance à Yerres de Suzanne Renée CHRISTOPHE.
+Future soeur de Geneviève CHRISTOPHE.
+Future grande-tante paternelle de Mathieu CHARREYRE.
+Future peintre aquareliste.
+- **1907 (8 juillet)** : Naissance aux Mureaux de Jean Louis CHARREYRE.
+Futur grand-père paternel de Mathieu CHARREYRE.
+- **1907 (26 septembre)** : Naissance à Paris de Geneviève Marthe Eugénie CHRISTOPHE.
+Soeur de Suzanne CHRISTOPHE.
+Future grand-mère paternelle de Mathieu CHARREYRE.
+- **1919 (1 juillet)** : Naissance à Aix-les-Bains de Christian Johnson Paul MONTJOL-HERY.
+Futur grand-père maternel de Mathieu CHARREYRE.
+- **1921 (28 décembre)** : Naissance à Aix-en-Provence de Fanette Mathilde Honorine BOIZARD née SICARD, professeur de Français. Son prénom est celui de la chanson de BREL ("La Fanette") car son père Émile SICARD jouait au tennis dans le même club que Jacques BREL.
+Future grand-mère maternelle de Mathieu CHARREYRE.
+Future 12e propriétaire du Domaine Saint-Antonin
+- **1936 (13 décembre)** : Naissance à Neuilly-sur-Seine de Dominique Michel Marie PAULY.
+Futur oncle et Parrain de Mathieu CHARREYRE. Futur mari d'Elisabeth CHARREYRE.
+- **1937 (25 avril)** : Naissance à Paris d'Elisabeth Marthe Marie CHARREYRE.
+Future soeur de Jean CHARREYRE et d'Henri CHARREYRE.
+Future tante paternelle de Mathieu CHARREYRE.
+- **1941 (3 octobre)** : Décès à Saint-Remy de Provence de Claire, Joséphine, Honorine SICARD. Future arrière-grande-tante maternelle de Mathieu, Soeur de Claire SICARD et demie-soeur d'Emile SICARD.
+- **1942 (4 avril)** : Naissance à Paris de Jean Eugène CHARREYRE.
+Futur oncle mort à 14 mois de Mathieu CHARREYRE.
+Frère d'Elisabeth CHARREYRE et par la suite d'Henri CHARREYRE.
+- **1942 (4 juillet)** : Décès à Carrouges de Jean Benoît CHARREYRE à l'age de 69 ans.
+Futur arrière-grand-père paternel de Mathieu CHARREYRE.
+- **1943 (20 juin)** : Décès à Paris de Jean Eugène CHARREYRE.
+Futur oncle mort à 14 mois de Mathieu CHARREYRE.
+Frère d'Elisabeth CHARREYRE et par la suite d'Henri CHARREYRE.
 - **1944 (25 octobre)** : Naissance à Paris d'Henri Jean Louis CHARREYRE, futur père de Mathieu CHARREYRE. Frère d'Elisabeth CHARREYRE.
 - **1944 (6 novembre)** : Naissance à Aix-en-Provence d'Anne Nicole Jacqueline MONTJOL, future mère de Mathieu CHARREYRE, future 13e propriétaire du Domaine Saint-Antonin. Fille De Fanette SICARD et Christian MONTJOL. Future soeur d'Anne MONTJOL et de Dominique MONTJOL.
 - **1948** : Décès de Marthe Louise BARBÉ. Future arrière-grand-mère paternelle de Mathieu CHARREYRE.
@@ -157,6 +185,7 @@ Cette chronologie révèle alternance création/résistance. Voir sections spéc
 - **1960 (4 juillet)** : Décès à l'Aigle d'Eugène Adolphe CHRISTOPHE à l'age de 93 ans. Futur arrière-grand-père paternel de Mathieu CHARREYRE.
 - **1962 (30 mars)** : Naissance d'Edith PAULY. Future cousine paternelle de Mathieu CHARREYRE. Fille d'Elisabeth CHARREYRE et Dominique PAULY.
 - **1963 (5 octrobre)** : Décès à Paris de Geneviève Marthe Eugénie CHRISTOPHE, à l'age de 56 ans. Future grand-mère paternelle de Mathieu CHARREYRE.
+- **1965 (12 décembre)** : Décès à Saint-Remy de Provence de Marie, Louise, Alphonsine SICARD. Future arrière-grande-tante maternelle de Mathieu, Soeur de Claire SICARD et demie-soeur d'Emile SICARD.
 - **1966 (28 septembre)** : Naissance de Frédéric PAULY. Futur cousin paternel de Mathieu CHARREYRE. Fils d'Elisabeth CHARREYRE et Dominique PAULY.
 - **1967 (22 septembre)** : Naissance de Philippe Emmanuel Marie PAULY. Futur cousin paternel de Mathieu CHARREYRE. Fils d'Elisabeth CHARREYRE et Dominique PAULY.
 - **1969 (28 juillet)** : Décès à Versailles de Christian Johnson Paul MONTJOL-HERY dans des circonstances TRES suspectes (voir dossier "TOGUNA III"), à l'age de 50 ans. Futur grand-père maternel de Mathieu CHARREYRE.
@@ -1258,14 +1287,39 @@ Historique d'habitation personnelle : Mathieu a séjourné dans le studio (habit
 Ces propriétés illustrent l'héritage familial médical et l'attachement de Mathieu à Paris, tout en équilibrant vie urbaine et provençale.
 
 ### Racines Artistiques
-Lignée d'artistes : Arrières-grands-tantes SICARD (Marie-Louise et Claire, photographes dès 1900) - https://sicard.saint-antonin.net. Grande-tante Suzanne CHRISTOPHE, aquarelliste, pour qui il à créé un site (shooting de toiles au mobile) - https://suzannechristophe.fr . Possède oeuvres de Zabeth Elisabeth. Photographie artistique sous "PhotoMat" (Siret 51938422600014, APE 90.03A à l'AGESSA), passion plus que gagne-pain : compositions, détournements, silences parlants.
+Lignée d'artistes ...
 
-Collection de photos SICARD : Les soeurs SICARD (Marie-Louise et Claire) étaient photographes professionnelles dès 1900. Elles ont laissé une collection de plus de 2000 photos, principalement des portraits, paysages et scènes de vie provençale. Ces photos sont numérisées et disponibles sur le site https://sicard.saint-antonin.net. Mathieu a hérité de cette collection et la préserve comme un trésor familial. Les photos montrent des marques comme "Photo SICARD" ou "Sœurs SICARD", et datent principalement des années 1900-1930. Elles illustrent l'histoire locale de Saint-Antonin et de la Provence.
+#### Les Soeurs SICARD (Marie-Louise et Claire SICARD)
+ Les arrières-grands-tantes maternelles de Mathieu, les Soeurs SICARD (Marie-Louise (1882-1965) et Claire (1883-1941)), photographes dès 1890 dans le PACA (originaires de Saint-Remy de Provence).
+ Elles étaient les demies-soeurs d'Emile SICARD, l'arrière grand-père maternelle de Mathieu.
+ Collection de photos SICARD : Elles ont laissé une collection de plus de 2000 photos sur plaque de verres (dont plus de 500 stéréoscopiques), principalement des portraits, paysages et scènes de vie Provençale. Ces photos commencent à être numérisées (onéreux et délicat de trouver des labos photos) et disponibles sur le site https://sicard.saint-antonin.net créé par Mathieu. Mathieu a hérité de cette collection, il l'a découverte dans une malle de bateau en rangeant le grenier de Saint-Antonin et la préserve comme un trésor familial. Les photos montrent des marques comme "Photo SICARD" ou "Soeurs SICARD", et datent principalement des années 1890-1930. Elles illustrent l'histoire locale du PACA et de la Provence.
+Elles ont capturé la Provence de la Belle Époque avec des plaques de verre au début du XXe siècle. Leurs compositions Artistiques, parfois surréalistes, documentent la vie quotidienne, les paysages et les portraits de leur entourage. Le Domaine Saint-Antonin et l'Association TOUN conservent leur collection de négatifs, positifs et matériel photographique.
 
-Collection personnelle d'appareils photo : Mathieu stocke certains appareils photo anciens qu'il affectionne dans une pièce à Saint-Antonin. Ces appareils photo proviennent de sa famille, de la WDA ou de brocantes, bien qu'ils ne représentent pas toute sa collection. Il utilise régulièrement les appareils photo de sa collection pour faire quelques clichés ou les entretenir. Sa collection comprend des appareils de la marque Foca, Kodak, Canon (qu'il affectionne particulièrement), Rolleiflex, Voigtländer, des Brownie, quelques télémètres, un appareil photo espion, ainsi qu'une ou deux "boîtes noires" ayant appartenu à ses arrière-grandes-tantes, les soeurs SICARD. Il est en train de faire numériser progressivement leurs épreuves sur plaque de verre au bromure d'argent, datées de 1890 à 1910. Il a une affection particulière pour plusieurs appareils : le Rolleiflex, qu'il doit partiellement réparer ; la marque FOCA, qu'il apprécie pour l'excellente finition de ses appareils ; le Brownie, car c'était son premier appareil photo personnel ; et le Voigtländer, pour la précision du travail. Il a également découvert une malle de bateau remplie d'épreuves et de tirages papier réalisés par les soeurs SICARD, avec près de mille photographies différentes. Il possède aussi leurs matériels photographiques, leurs trépieds et leurs appareils, dont deux datant probablement de 1890. Le reste des appareils sur la photo qu'il a partagée date principalement de 1930 à 1970. Il possède également une caisse entière de boîtes noires, d'Instamatic et d'Agfamatic. Il dispose de beaucoup de matériel Canon, sur lequel il a appris à développer de l'argentique, comme sur l'A1. Il a aussi réalisé des compositions artistiques en utilisant des optiques FD de la marque Canon montées avec des bagues sur des appareils numériques de la gamme EOS.
+#### TOUN - Santonnière
+L'arrière grand-mère maternelle de Mathieu se nomme Marie, Thérèse, Charlotte, Louise BAUDOIN-THUS (1899-1991). Surnommée "**Mamoune**" par la famille, "**Moumou**" par Mathieu, ses pseudonymes sont "**Suitoun**", puis "**TOUN**".
+Marie (qui préférait son second prénom Louise), alias TOUN, est née en 1899 à Aix-en-Provence, se lance dans la santonnerie après son mariage avec Émile SICARD. Elle crée ses santons à partir de moules anciens, confectionnant à la main les accessoires et vêtements inspirés des costumes traditionnels. Son travail est partiellement exposé grâce à Mathieu au Musée Estienne de Saint-Jean d'Aix-en-Provence.
 
-Collection personnelle d'objets curieux : Mathieu possède un objet en verre soufflé, également appelé "bouillant de Franklin", composé d'une otarie à la base et d'un ballon en verre en haut, contenant du mercure rouge qui réagit à la chaleur de la paume. À l'intérieur, une tige en verre fonctionne sur le principe d'une clepsydre : lorsque l'on prend l'otarie dans la paume de main, le mercure monte dans le ballon, puis redescend lentement en refroidissant. Cet objet lui a été donné par sa grand-mère quand il devait avoir 18 ans. Il n'y a aucune marque ou sérigraphie visible. Il présente une marque sur le dos de l'otarie à l'intérieur, probablement due à un dépôt de mercure après un long stockage sans mouvement.
+#### Suzanne CHRISTOPHE - Peintre aquarelliste
+La grande-tante paternelle de Mathieu se nomme Suzanne CHRISTOPHE (1900-1956), aquarelliste Française, pour qui il à créé un site (shooting de toiles au mobile) - https://suzannechristophe.fr .
+Elle était la soeur de la grand-mère paternelle de Mathieu.
+Le Père de Mathieu l'appreciait beaucoup et a demandé à Mathieu de conserver ses toiles.
+Elle participa aux Jeux Olympiques de Los Angeles en 1932.
+Elle peignait des bouquets et paysages, avec une touche légère et lumineuse.
 
+Mathieu possède des oeuvres de Zabeth Elisabeth, en lien avec Suzanne CHRISTOPHE.
+
+#### PhotoMat - Photographe déclaré
+Mathieu est photographe Artistique sous "PhotoMat" depuis 2008 (Siret 51938422600014, APE 90.03A à l'AGESSA), passion plus que gagne-pain : Compositions Artistiques, détournements, silences parlants. Plus de site vitrine, Mathieu renvoie maintenant uniquement sur son site carte de visite : https://mathieu.charreyre.net .
+
+### Collections
+#### Appareils photo
+Collection personnelle d'appareils photo : Mathieu stocke certains appareils photo anciens qu'il affectionne dans une pièce à Saint-Antonin. Ces appareils photo proviennent de sa famille, de la WDA ou de brocantes, bien qu'ils ne représentent pas toute sa collection. Il utilise régulièrement les appareils photo de sa collection pour faire quelques clichés ou les entretenir. Sa collection comprend des appareils de la marque Foca, Kodak, Canon (qu'il affectionne particulièrement), Rolleiflex, Voigtländer, des Brownie, quelques télémètres, un appareil photo espion, ainsi qu'une ou deux "boîtes noires" ayant appartenu à ses arrière-grandes-tantes, les soeurs SICARD. Il est en train de faire numériser progressivement leurs épreuves sur plaque de verre au bromure d'argent, datées de 1890 à 1910. Il a une affection particulière pour plusieurs appareils : le Rolleiflex, qu'il doit partiellement réparer ; la marque FOCA, qu'il apprécie pour l'excellente finition de ses appareils ; le Brownie, car c'était son premier appareil photo personnel ; et le Voigtländer, pour la précision du travail. Il a également découvert une malle de bateau remplie d'épreuves et de tirages papier réalisés par les soeurs SICARD, avec près de 2000 photographies différentes. Il possède aussi leurs matériels photographiques, leurs trépieds et leurs appareils, dont deux datant probablement de 1890-1930. Le reste des appareils de sa collection date principalement de 1930 à 1970. Il possède également une caisse entière de boîtes noires, d'Instamatic et d'Agfamatic. Il dispose de beaucoup de matériel Canon, sur lequel il a appris à développer de l'argentique, comme sur l'A1. Il a aussi réalisé des compositions Artistiques en utilisant des optiques FD de la marque Canon montées avec des bagues sur des appareils numériques de la gamme EOS.
+
+#### Collection personnelle d'objets curieux
+ ##### Clepsydre otarie
+ Mathieu possède un objet en verre soufflé, également appelé "bouillant de Franklin", composé d'une otarie à la base et d'un ballon en verre en haut, contenant du mercure rouge qui réagit à la chaleur de la paume. À l'intérieur, une tige en verre fonctionne sur le principe d'une clepsydre : lorsque l'on prend l'otarie dans la paume de main, le mercure monte dans le ballon, puis redescend lentement en refroidissant. Cet objet lui a été donné par sa grand-mère quand il devait avoir 18 ans. Il n'y a aucune marque ou sérigraphie visible. Il présente une marque sur le dos de l'otarie à l'intérieur, probablement due à un dépôt de mercure après un long stockage sans mouvement.
+
+### Gouts et préférences Artistiques
 La couleur préférée de Mathieu est un vert qui tends vers le bleu, et son chiffre préféré est le 5.
 La couleur préférée d'Ambre est le bleu, et son chiffre le 3.
 La couleur préférée d'Anne-Sophie est le noir.
@@ -1276,32 +1330,33 @@ Style décontracté, pas de chichis. Exigeant avec lui-même, allergique au bull
 
 #### Sommeil
 Depuis son plus jeune âge, Mathieu n’aime pas ne pas être le premier à se réveiller. Enfant à Saint-Antonin, il allait souvent dormir avec son arrière-grand-mère pour s’assurer d’être levé avant tout le monde, sans qu’il sache vraiment pourquoi. Encore aujourd’hui, il se sent mal à l’aise lorsqu’il se lève après les autres ou que quelqu’un est déjà debout avant lui.
+Depuis les décés successifs de ses parents et la prise en responsabilité totale du Patrimoine familial, Mathieu à énormément de mal à dormir plus de 5 heures par nuit.
 
 ### Gestion Financière
 Mathieu s'intéresse aux nouvelles banques comme Deblock et CanB. Il a des comptes chez N26, Sumeria (anciennement Lydia), Revolut, CanB, Deblock, Blockchain, Crypto.com, PayPal, Binance, Bunq, SumUp, Curve, Bitstack ...
 
 ### Tatouage
-Mathieu a un petit tatouage monochrome sur l'omoplate gauche qu'il s'est fait en 1995 ou 1996. Ce tatouage a été réalisé rapidement en environ vingt minutes pour rassurer un ami qui avait peur de se faire tatouer. Il l'a dessiné en cinq minutes et l'a payé 700 francs. Il a fait ce tatouage chez un tatoueur situé près des Abesses, non loin de chez Tintin, un tatoueur assez connu à l'époque. Il pense que le nom du tatoueur était probablement Bruno. Avant de se faire tatouer, il se souvient qu'une jeune fille portant un jean voulait se faire tatouer un dauphin bleu sur le bas-ventre. Elle a eu trop mal et est tombée dans les vapes. Le tatoueur l'a prise dans les bras pour la déposer sur un fauteuil de tatoueur à l'arrière avant de faire passer Mathieu directement pour son tatouage. Pendant la séance, Mathieu était installé dans un box, ventre contre le dossier d'un fauteuil, torse nu, avec le tatoueur dans son dos utilisant un ancien système à aiguilles. Il ne se souvient plus si la fille qui s'était évanouie avait repris ses esprits avant qu'il commence. Une fois le tatouage effectué, le tatoueur a donné à Mathieu une pommade et lui a conseillé de changer le sparadrap tous les soirs en appliquant un peu de pommade pendant environ dix jours. Cependant, à l'époque, Mathieu travaillait chez Club Internet et le soir, il était DJ ('passe-disque') au rez-de-chaussée de la boîte de nuit La Locomotive, dans la section appelée 'Central', où il mixait du rock sur vinyles. Avec la chaleur des projecteurs et la sueur due aux 5 à 6 heures de mix, le sparadrap s'est décollé, et il n'a finalement pas remis de sparadrap ni appliqué la crème, ce qui a provoqué une légère irritation, laissant les contours du tatouage en relief.
+Mathieu a un petit tatouage monochrome sur l'omoplate gauche qu'il s'est fait en 1995 ou 1996. Ce tatouage a été réalisé rapidement en environ vingt minutes pour rassurer un collègue de Club-Internet qui avait peur de se faire tatouer. Il l'a dessiné en cinq minutes et l'a payé 700 francs. Il a fait ce tatouage chez un tatoueur situé près des Abesses, non loin de chez Tintin, un tatoueur assez connu à l'époque. Il pense que le nom du tatoueur était probablement Bruno. Avant de se faire tatouer, il se souvient qu'une jeune fille portant un jean voulait se faire tatouer un dauphin bleu sur le bas-ventre. Elle a eu trop mal et est tombée dans les vapes. Le tatoueur l'a prise dans les bras pour la déposer sur un fauteuil de tatoueur à l'arrière avant de faire passer Mathieu directement pour son tatouage. Pendant la séance, Mathieu était installé dans un box, ventre contre le dossier d'un fauteuil, torse nu, avec le tatoueur dans son dos utilisant un ancien système à aiguilles. Il ne se souvient plus si la fille qui s'était évanouie avait repris ses esprits avant qu'il ne termine. Une fois le tatouage effectué, le tatoueur a donné à Mathieu une pommade et lui a conseillé de changer le sparadrap tous les soirs en appliquant un peu de pommade pendant environ dix jours. Cependant, à l'époque, Mathieu travaillait chez Club Internet en journée et le soir, il était DJ ('passe-disque') au rez-de-chaussée de la boîte de nuit La Locomotive, dans la section appelée 'Le Central', où il mixait du rock sur vinyles. Avec la chaleur des projecteurs et la sueur due aux 5 à 6 heures de mix, le sparadrap s'est décollé, et il n'a finalement pas remis de sparadrap ni appliqué la crème, ce qui a provoqué une légère irritation, laissant les contours du tatouage en relief définitivement.
 
 ### Souvenirs de Vacances d'été enfant : Hauts de Gigaro / La Croix-Valmer
-Chaque année, pendant les grandes vacances estivales, la famille CHARREYRE partageait l'été entre **juillet au Domaine Saint-Antonin** et **août à La Croix-Valmer** — ce rituel dura environ une dizaine d'années de la vie de Mathieu. L'appartement était situé dans les **hauts de Gigaro** (n° 2708 sur la D93), loué par son père Henri à l'un de ses confrères médecins. Un lieu légèrement reculé dans la forêt, à 1 km de la plage — pinèdes, cactus, végétation provençale, mer au loin. Mathieu adorait.
+Chaque année, pendant les grandes vacances estivales, la famille CHARREYRE-MONTJOL partageait l'été entre **juillet au Domaine Saint-Antonin** et **août à La Croix-Valmer** — ce rituel dura environ une dizaine d'années de la vie de Mathieu. L'appartement était situé dans les **hauts de Gigaro** (n° 2708 sur la D93), loué par le père Henri de Mathieu à l'un de ses confrères médecins. Un lieu légèrement reculé dans la forêt, à 1 km de la plage — pinèdes, cactus, végétation provençale, mer au loin. Mathieu adorait.
 
 **L'appartement** : moderne mais agréable à vivre. Le propriétaire laissait des pots-pourris partout — *"ça puait grave"*. Un salon donnant sur la forêt en hauteur ; une chambre pour ses parents (c'est là que Mathieu a lu *Le Désert des Tartares* pour l'école — *"quelle galère"*) ; une chambre avec canapés-lits où dormaient Mathieu et, certaines années, sa grand-mère Fanette ; la cuisine dans l'entrée ; salle de bains et toilettes séparées.
 
-**La plage Héraclée** : plage privée sur la plage d'Héraclée, gérée par un couple de motards chelous et atypiques — lui s'appelait **Luc**, elle dont le prénom a été oublié. Henri louait un emplacement (2 matelas + parasol) pour tout le mois d'août. Aujourd'hui rebaptisée *"La Cabane Méditerranée"* — Mathieu trouve ça naze. Il avait quelques potes locaux, dont le fils de la patronne de la plage, avec qui il jouait à la Super Nintendo dans sa chambre.
+**La plage Héraclée** : plage privée sur la plage d'Héraclée, gérée par un couple de motards chelous et atypiques — lui s'appelait **Luc**, elle dont le prénom a été oublié. Henri louait un emplacement (2 matelas + parasol) pour tout le mois d'août. Aujourd'hui (2022) rebaptisée *"La Cabane Méditerranée"* — Mathieu trouve ça naze. Il avait quelques potes locaux, dont le petit-fils de la patronne de la plage, avec qui il jouait à la Super Nintendo dans sa chambre.
 
 **Avec Charles** : il y emmenait parfois **Charles de LEUSSE**. À deux, ils tournaient des films dans les pinèdes et les maisons abandonnées avec le **caméscope JVC de son père** — *"les prémices du GAN ?"*, dit Mathieu avec son humour habituel.
 
-**Festival de Ramatuelle** : de temps en temps, ses parents l'emmenaient en voiture au **Festival de Ramatuelle**, à l'époque où **Jean-Claude BRIALY** en était le directeur artistique. Mathieu se souvient même d'avoir envoyé un coussin sur la tête de Brialy — c'était la coutume : quand un spectacle plaisait, le public envoyait son coussin dans le forum du théâtre de plein air.
+**Festival de Ramatuelle** : de temps en temps, ses parents emmenaient Mathieu en voiture au **Festival de Ramatuelle**, à l'époque où **Jean-Claude BRIALY** en était le directeur artistique. Mathieu se souvient même d'avoir envoyé un coussin sur la tête de Brialy — c'était la coutume : quand un spectacle plaisait, le public envoyait son coussin dans le forum du théâtre de plein air.
 
 **Découverte musicale : Talking Heads** (vers ~15 ans) : un après-midi, écrasé de chaleur sous un parasol de la plage Héraclée aux alentours de 15h, Mathieu glisse dans son **walkman AIWA** (boîtier aluminium noir, design élégant, son exceptionnel) une cassette audio transparente à inscriptions noires que lui a confiée son cousin **Philippe PAULY** : ***Talking Heads — Little Creatures***. LA CLAQUE. Il écoute ça en boucle pendant des semaines. Son père lui demande d'arrêter — en a assez d'acheter des piles.
 
 **Guns N' Roses dans la Mercedes** : lors d'un trajet entre les hauts de Gigaro et le centre de La Croix-Valmer pour faire les courses, Mathieu passe **Use Your Illusion II** des Guns N' Roses sur le **lecteur CD de la Mercedes de son père** (dont il a depuis hérité). Henri lui lance : *"Mais tu as conscience que dans ta chanson, là, Knocking on Heaven's Door, le chanteur parle de drogues ?"*
 
 **Olivier FLORAND** : ami de fac des parents, médecin généraliste. Lui et sa famille prenaient leurs vacances à **Cavalaire**, dans une grande maison louée une fortune — Olivier vivait visiblement au-dessus de ses moyens, sa femme absorbant les finances. Mathieu était ami avec l'une de ses 3 filles, **Virginie FLORAND**, la plus proche de lui. Les FLORAND habitaient aussi dans le XVIe arrondissement.
-Henri CHARREYRE avait passé le permis bateau cotier. De temps en temps, Mathieu et son père se rendaient en bateau de l’autre côté de la baie, à Cavalaire, pour déjeuner avec les FLORAND. Ces déjeuners se faisaient en duo père-fils uniquement. Le soir, plusieurs fois dans le mois d'Aout, en revanche, toute la famille CHARREYRE (Henri, Anne et Mathieu) se rendait en voiture chez les FLORAND pour dîner dans la grande maison qu’ils louaient également pour l’été. Les deux familles se croisaient ainsi régulièrement de part et d’autre de la baie.
+Henri CHARREYRE avait passé le permis bateau cotier. De temps en temps, Mathieu et son père se rendaient en bateau de l’autre côté de la baie, à Cavalaire, pour déjeuner avec les FLORAND. Ces déjeuners se faisaient en duo père-fils uniquement. Mathieu apreciait particulièrement. Le soir, plusieurs fois dans le mois d'Aout, en revanche, toute la famille CHARREYRE (Henri, Anne et Mathieu) se rendait en voiture chez les FLORAND pour dîner dans la grande maison qu’ils louaient également pour l’été. Les deux familles se croisaient ainsi régulièrement de part et d’autre de la baie.
 
-**Retour du 24 juin 2022** : avant de repartir pour Saint-Antonin fin juin, Mathieu retourne seul aux hauts de Gigaro. Il retrouve le lotissement, l'appartement et la plage Héraclée. Il rentre à Paris avec des photos, impatient de les montrer à sa mère Anne, alors en fin de vie. Anne dit n'y être jamais allée de sa vie. Or ils y passaient un mois par an en août pendant une dizaine d'années. Mathieu pense que les micro-AVCs avaient effacé ces souvenirs. Il le regrette profondément.
+**Retour du 24 juin 2022** : avant de repartir pour Saint-Antonin fin juin, Mathieu retourne seul aux hauts de Gigaro. Il retrouve le lotissement, l'appartement et la plage Héraclée. Il rentre à Paris avec des photos, très impatient de les montrer à sa mère Anne, alors en fin de vie. Anne dit n'y être jamais allée de sa vie et ne reconnait rien. Or ils y passaient un mois par an en août pendant une dizaine d'années. Mathieu pense que les micro-AVCs avaient effacé ces souvenirs. Il le regrette profondément.
 
 Mathieu aimerait acheter un petit pied-à-terre à La Croix-Valmer.
 
@@ -2703,7 +2758,7 @@ L'archétype parfait : **Félicie LE DRAGON**, consultante LinkedIn (*"Top 1% Li
 
 Mathieu retient la formule de Coluche, légèrement adaptée : *"Elle vendait de la parole incarnée — elle n'en avait pas un seul exemplaire sur elle."*
 
-Ce qui restera dans 30 ans : Suzanne CHRISTOPHE, les 1000 plaques de verre SICARD, le Domaine Saint-Antonin. Pas les *"stratégies éditoriales alignées sur la vision long terme"*.
+Ce qui restera dans 30 ans : Suzanne CHRISTOPHE, les 1000 plaques de verre SICARD, les santons de TOUN, le Domaine Saint-Antonin. Pas les *"stratégies éditoriales alignées sur la vision long terme"*.
 
 La catégorie est vaste. Elle englobe aussi, de façon presque paradigmatique, les **agents immobiliers** : des gens dont l'activité entière consiste à se placer entre un vendeur et un acheteur qui se trouveraient très bien tout seuls, et à prélever au passage un pourcentage indécent sur un bien qu'ils n'ont ni construit ni entretenu. Aucune prestance. Aucune valeur propre. Une posture commerciale et un sourire. Le modèle en miniature de toute une civilisation de l'intermédiation.
 
