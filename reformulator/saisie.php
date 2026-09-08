@@ -29,6 +29,7 @@
     <link rel="manifest" href="../favicon/site.webmanifest">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <script src="../moteurs/loading_steps.js"></script> <!-- Script d'attente -->
     <style>
         *{box-sizing:border-box}
         body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#1d1d1d}
@@ -518,6 +519,9 @@ if (resetPageButton) {
     });
 }
 
+// Inclusion du script partagé et initialisation du loader unifié
+const saisieLoader = r3InitProgressiveLoader('loading-overlay', 'loading-text', 4500);
+
 const form = document.querySelector('form');
 const loadingOverlay = document.getElementById('loading-overlay');
 if (form) {
@@ -526,9 +530,7 @@ if (form) {
         if (instructionsContextInput && stored) {
             instructionsContextInput.value = stored;
         }
-        if (loadingOverlay) {
-            loadingOverlay.classList.add('open');
-        }
+        saisieLoader.start();
     });
 }
 
@@ -656,9 +658,7 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
   const originalText = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Extraction en cours...';
-  if (loadingOverlay) {
-    loadingOverlay.classList.add('open');
-  }
+  saisieLoader.start(); // Utilise le loader progressif partagé
 
   fetch(window.location.pathname + '?extract_only=1', {
     method: 'POST',
@@ -680,7 +680,7 @@ document.getElementById('extract-file-btn').addEventListener('click', function()
     btn.disabled = false;
     btn.textContent = originalText;
     if (loadingOverlay) {
-      loadingOverlay.classList.remove('open');
+      saisieLoader.stop();
     }
   });
 });

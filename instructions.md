@@ -1,9 +1,29 @@
 
 # Mathieu CHARREYRE : Portrait Complet et Mémoire Vivante
 
-**Fichier de Référence pour IAs**
+**r3M3M83r est une architecture de mémoire personnelle numérique, indépendante des modèles d'IA.**
 
-*Ce document est une synthèse exhaustive de la vie, des expériences et des connaissances de Mathieu CHARREYRE. Il est conçu pour servir de référence absolue pour toutes interactions avec des IAs, permettant une compréhension profonde et contextualisée. Structure en chapitres clairs pour une navigation facile. Mis à jour constamment, sans concaténation ni synthèse partielle - chaque version est une réécriture complète intégrant toutes les données disponibles. Règle absolue : Détailler et ne jamais synthétiser. Chaque information doit être présentée de manière exhaustive, sans raccourcis. Pas de doublons, mais pas de pertes. Comme disait son professeur d'informatique en 1988 : "En informatique, il n'y a que 3 règles : Sauvegarder, Sauvegarder, Sauvegarder". La WDA est née de ce concept.*
+Le projet est né d'une question simple : Comment permettre à une intelligence artificielle de comprendre réellement une personne, son histoire, ses expériences, ses relations, ses connaissances et les liens entre toutes ces informations, afin que ses réponses soient plus justes ?
+
+Mais en travaillant sur cette question, le projet a progressivement changé de nature. La mémoire ne devait plus seulement servir aux IA : Elle devait appartenir à la personne elle-même.
+
+*instructions.md* constitue ainsi le coeur mémoriel de r3M3M83r. Ce fichier, volontairement humainement lisible et indépendant de tout modèle ou fournisseur, rassemble progressivement les événements importants comme les détails insignifiants, les connaissances, les expériences, les relations, les projets, les convictions, les habitudes, les anecdotes et les connexions entre ces informations.
+
+Des modèles d'IA peuvent intervenir pour alimenter, structurer, enrichir, maintenir ou interroger cette mémoire.
+Les interfaces permettant ces échanges sont développées par Mathieu.
+
+L'architecture est donc volontairement indépendante des IA qui l'utilisent.
+Un modèle peut disparaître, un fournisseur peut changer, une technologie peut être remplacée : La mémoire, elle, reste.
+
+r3M3M83r est devenu bien davantage qu'un contexte pour les IA. C'est une tentative de construire une **pierre de Rosette** personnelle, suffisamment riche pour permettre de comprendre non seulement ce que Mathieu a vécu ou réalisé, mais aussi les connexions, les raisonnements et les détails qui permettent de comprendre comment fonctionne Mathieu.
+
+**Détailler sans perdre. Préserver sans figer. Structurer sans appauvrir**.
+
+Comme disait le professeur d'informatique de Mathieu en 1988 :
+
+« En informatique, il n'y a que 3 règles : Sauvegarder, Sauvegarder, Sauvegarder. »
+
+La WDA est née de ce principe. r3M3M83r en est, d'une certaine manière, le prolongement personnel.
 
 ---
 

@@ -516,6 +516,16 @@
     function call_reformulator_service(array $payload): string {
         global $last_reformulator_error, $selected_engine;
         $last_reformulator_error = '';
+        $last_reformulator_meta    = ['engine' => '', 'model' => '', 'attempts' => []];
+        global $last_reformulator_meta;
+        $last_reformulator_meta = ['engine' => '', 'model' => '', 'attempts' => []];
+        if (!empty($payload['instructionsContext']) && is_string($payload['instructionsContext'])) {
+            $payload['instructionsContext'] = cap_memory_context_for_llm($payload['instructionsContext']);
+        }
+        $purpose = strtolower(trim((string)($payload['purpose'] ?? '')));
+        if ($purpose === 'chat-talk' || $purpose === 'chat-route') {
+            unset($payload['instructionsContext']);
+        }
         // Injecte le moteur sélectionné par l'utilisateur si non déjà présent.
         if (!empty($selected_engine) && !isset($payload['engine'])) {
             $payload['engine'] = $selected_engine;
@@ -542,6 +552,12 @@
             return '';
         }
 
+        $last_reformulator_meta = [
+                    'engine'   => (string)($data['engine'] ?? ''),
+                    'model'    => (string)($data['model'] ?? ''),
+                    'attempts' => is_array($data['attempts'] ?? null) ? $data['attempts'] : [],
+                ];
+
         if (!empty($data['cleaned'])) {
             return $data['cleaned'];
         }
@@ -553,6 +569,31 @@
             $last_reformulator_error = sprintf('Réponse LLM vide ou invalide (HTTP %s)', $statusCode);
         }
         return '';
+    }
+
+    function cap_memory_context_for_llm(?string $ctx, int $maxChars = 18000): string {
+        $ctx = trim((string) $ctx);
+        if ($ctx === '') {
+            return '';
+        }
+        if (mb_strlen($ctx, 'UTF-8') <= $maxChars) {
+            return $ctx;
+        }
+        return rtrim(mb_substr($ctx, 0, $maxChars, 'UTF-8'))
+            . "\n\n...[contexte tronque pour rester sous les quotas TPM des moteurs]...";
+    }
+
+    function memory_debug_text($debug): string {
+        if (is_array($debug)) {
+            if (isset($debug['text']) && is_string($debug['text'])) {
+                return $debug['text'];
+            }
+            if (isset($debug['raw_debug']) && is_string($debug['raw_debug'])) {
+                return $debug['raw_debug'];
+            }
+            return '';
+        }
+        return is_string($debug) ? $debug : '';
     }
 
     function is_negative_query_answer(string $response): bool {
@@ -750,19 +791,6 @@
 
         $intentExpanded = expand_query_intent_via_node($topicText);
         $sections = extract_instructions_sections();
-        $fullDocument = load_instructions_content();
-        $fullDocumentLength = mb_strlen($fullDocument, 'UTF-8');
-        $fullDocumentSizeLimit = 60000;
-
-        if ($fullDocumentLength > 0 && $fullDocumentLength <= $fullDocumentSizeLimit) {
-            $ctx = '';
-            if ($intentExpanded !== '') {
-                $ctx .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
-            }
-            $ctx .= "Voici le contenu INTEGRAL du fichier d'instructions.md :\n\n" . $fullDocument;
-            $debug = 'fichier integral (' . number_format($fullDocumentLength, 0, ',', ' ') . ' caracteres)';
-            return ['context' => $ctx, 'debug' => $debug];
-        }
 
         // Meme strategie qu'Interroger (CORRECTIF 16/08/2026) : local d'abord.
         $outline = extract_instructions_outline();
@@ -834,27 +862,26 @@
             }
         }
         if (empty($relevantSections)) {
-            $relevantSections = array_slice($sections, 0, 3, true);
+            $relevantSections = [];
         }
 
-        $maxSections = 8;
-        $perSectionLimit = 14000;
+        $maxSections = 2;
+        $perSectionLimit = 1200;
         $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
         $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
 
-        $ctx = "Le fichier d'instructions contient les sections suivantes : " . implode(' ; ', $outline) . ".\n\n";
+        $ctx = '';
         if ($intentExpanded !== '') {
             $ctx .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
         }
 
-        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 80, $primaryTerms);
+        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 24, $primaryTerms);
         if (!empty($rankedLines)) {
-            $ctx .= "PREUVES DIRECTES du fichier (citations prioritaires — lire en priorite) :\n";
+            $ctx .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
             foreach ($rankedLines as $item) {
                 $ctx .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
             }
             $ctx .= "\n";
-            // Rappel explicite des termes de la question presents dans les preuves
             $hitsInProofs = [];
             $blob = normalize_for_matching(implode(' ', array_column($rankedLines, 'line')));
             foreach ($primaryTerms as $pt) {
@@ -883,37 +910,42 @@
             }
             return 0;
         });
-        $ctx .= "Contenu des sections (contexte elargi) :\n";
-        foreach ($orderedTitles as $title) {
-            $content = $relevantSections[$title];
-            $block = trim($content);
-            if (mb_strlen($block, 'UTF-8') > $perSectionLimit) {
-                $block = build_section_excerpt_for_query($content, $queryTerms, $perSectionLimit);
+        $orderedTitles = array_slice($orderedTitles, 0, $maxSections);
+
+        if (!empty($orderedTitles) && !empty($rankedLines)) {
+            $ctx .= "Extraits courts des sections ou les preuves ont ete trouvees :\n";
+            foreach ($orderedTitles as $title) {
+                if (!isset($relevantSections[$title])) {
+                    continue;
+                }
+                $block = build_section_excerpt_for_query($relevantSections[$title], $queryTerms, $perSectionLimit);
+                $ctx .= "\n--- Section : $title ---\n" . $block . "\n";
             }
-            $ctx .= "\n--- Section : $title ---\n" . $block . "\n";
         }
 
-        // ---- Métriques enrichies ----
+        if (trim($ctx) === '') {
+            $ctx = "Aucune preuve locale trouvee dans instructions.md pour cette question.\n";
+        }
+
+        $sentChars = mb_strlen($ctx, 'UTF-8');
         $metrics = [
-            'sections_count' => count($relevantSections),
+            'sections_count' => count($orderedTitles),
             'evidence_lines' => count($rankedLines ?? []),
             'top_section'    => $orderedTitles[0] ?? '',
             'top_evidence'   => array_slice($rankedLines ?? [], 0, 3),
+            'sent_chars'     => $sentChars,
         ];
-        $debug_text = count($relevantSections).' section(s)'
-            .($intentExpanded !== '' ? ' + intention elargie' : '')
-            .' (fichier : '.number_format($fullDocumentLength, 0, ',', ' ').' car.)';
-        if (!empty($rankedLines)) {
-            $debug_text .= "\nPreuves retenues : ".count($rankedLines).' ligne(s)';
-        }
-        // On retourne maintenant un tableau associatif pour pouvoir extraire les métriques côté appelant
+        $debug_text = count($rankedLines) . ' preuve(s), ' . count($orderedTitles) . ' extrait(s)'
+            . ($intentExpanded !== '' ? ' + intention' : '')
+            . ' — envoye ' . $sentChars . ' car. (fichier local NON transmis)';
+
         return [
-            'context' => $ctx,
+            'context' => cap_memory_context_for_llm($ctx, 12000),
             'debug'   => [
                 'text'      => $debug_text,
                 'metrics'   => $metrics,
-                'raw_debug' => $debug // garde l'ancienne chaîne pour compatibilité
-            ]
+                'raw_debug' => $debug,
+            ],
         ];
     }
 
@@ -2591,7 +2623,7 @@
             if (function_exists('build_memory_context_for_topic')) {
                 $built = build_memory_context_for_topic($input_text);
                 $memoryContext = $built['context'] ?? '';
-                $query_debug_mode = $built['debug'] ?? '';
+                $query_debug_mode = memory_debug_text($built['debug'] ?? '');
             }
 
             // Fallback minimal si le build echoue
@@ -2644,7 +2676,7 @@
             $built = build_memory_context_for_topic($input_text);
             $memoryCtx = $built['context'] ?? '';
             $query_debug = "Mode : Comparer / Fusionner\n";
-            $query_debug .= "Contexte memoire : " . ($built['debug'] ?? '') . "\n";
+            $query_debug .= "Contexte memoire : " . memory_debug_text($built['debug'] ?? '') . "\n";
 
             $merged = merge_smart_via_node($input_text, $memoryCtx);
             if ($merged !== '') {
@@ -2673,7 +2705,12 @@
         }
     }
 
-    $llmInfo = get_llm_info();
+    $llmInfo = [];
+    $bootContentType = (string)($_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '');
+    $skipLlmInfoBoot = (stripos($bootContentType, 'application/json') !== false);
+    if (!$skipLlmInfoBoot && function_exists('get_llm_info')) {
+        $llmInfo = get_llm_info();
+    }
     // TEST : Provoque une erreur PHP pour vérifier l’écriture dans error.log
     if (isset($_GET['test_error_log'])) {
         trigger_error('Erreur de test volontaire pour vérifier error.log', E_USER_WARNING);

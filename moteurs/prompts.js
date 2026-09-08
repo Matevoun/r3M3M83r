@@ -45,6 +45,7 @@
  * 16/08/2026  Externalisation dans ce fichier ; portee question + attribution
  * 17/08/2026  Documentation ; FACTUALITY_RULES partagees ; QUERY_SELECT generique
  * 19/08/2026  CHAT_ROUTE + CHAT_TALK : routage LLM sans listes de mots-clefs
+ * 08/09/2026  CHAT_ROUTE : salutations courtes = CHAT (evite dump memoire 18k tokens)
  */
 
 // ---------------------------------------------------------------------------
@@ -292,6 +293,8 @@ Methode :
 2. Ne retiens que ce qui est ecrit noir sur blanc.
 3. Si le sujet est sous un autre mot (surnom, marque...), c'est valide.
 
+Si le message est une salutation, une politesse ou une prise de nouvelles (comment vas-tu, ca va, tu vas bien) : reponds naturellement en une ou deux phrases. INTERDIT de repondre "non mentionne dans le fichier" pour ca. N'invente aucun fait biographique.
+
 Sortie : UNIQUEMENT le message tchat.
 ` + STYLE_RULES.replace('- Pas d\'emoji ni de smiley.\n', '- Emojis autorises avec parcimonie dans le tchat uniquement.\n');
 
@@ -302,9 +305,13 @@ MEMORY
 CHAT
 
 MEMORY = la question porte sur Mathieu, sa vie, sa famille, ses amis, ses animaux, son Domaine, son passe, des faits dans le fichier memoire, ou un suivi de ce type (pronoms renvoyant a un sujet memoire deja evoque).
-CHAT = politesse, salutation, meta (qui es-tu, comment vas-tu), heure/date actuelle, blague, discussion generale sans besoin du fichier memoire.
+CHAT = politesse, salutation (salut, bonjour, hello, coucou, merci), meta (qui es-tu, comment vas-tu), heure/date actuelle, blague, discussion generale sans besoin du fichier memoire.
 
-En cas de doute leger : MEMORY (mieux chercher une fois de trop).`;
+Un message d'un ou deux mots de politesse, sans question factuelle, est TOUJOURS CHAT.
+N'ouvre PAS le fichier memoire pour dire bonjour.
+
+En cas de doute leger sur une question factuelle : MEMORY (mieux chercher une fois de trop).
+En cas de doute sur une salutation : CHAT.`;
 
 /**
  * Reponse conversationnelle courte quand CHAT_ROUTE a renvoye CHAT.

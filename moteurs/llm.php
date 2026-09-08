@@ -47,9 +47,9 @@ function llm_known_engine_slugs(): array {
 /** Labels affichage UI. */
 function llm_engine_labels(): array {
     return [
-        'mistral'    => 'Mistral',
-        'groq'       => 'Groq',
         'cerebras'   => 'Cerebras',
+        'groq'       => 'Groq',
+        'mistral'    => 'Mistral',
         'openrouter' => 'OpenRouter',
     ];
 }

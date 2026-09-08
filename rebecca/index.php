@@ -158,14 +158,49 @@
     // ==================== ROUTAGE LLM (pas de listes de mots-clefs) ====================
     /**
      * CORRECTIF 19/08/2026 : le LLM decide s'il faut chercher dans instructions.md.
-     * Plus de listes de synonymes / greetings a maintenir dans le PHP.
      * purpose=chat-route (prompts.js) -> reponse MEMORY ou CHAT.
-     * En cas d'echec reseau / reponse ambiguë : MEMORY (mieux chercher une fois de trop).
+     *
+     * CORRECTIF 08/09/2026 : si le routeur LLM est HS (reponse vide), un message
+     * court de politesse bascule en CHAT. Le defaut MEMORY sur echec moteur
+     * envoyait tout instructions.md (~18k tokens) pour un "Salut" -> Groq 413.
      */
+    function chat_looks_like_smalltalk(string $message): bool {
+        $m = trim($message);
+        if ($m === '') {
+            return false;
+        }
+        if (mb_strlen($m, 'UTF-8') > 120) {
+            return false;
+        }
+        // Factuel mele a une politesse ("salut, c'est qui Luna ?") -> pas smalltalk
+        if (preg_match('/\b(qui\s+(est|sont)|c[\'’ ]?est\s+qui|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousin|chien|chat|luna|domaine|saint-?antonin|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire)\b/iu', $m)) {
+            return false;
+        }
+        if (preg_match('/\b(salut|bonjour|bonsoir|hello|hi|hey|yo|wesh|coucou|merci|ok|okay|ciao|bonne\s+journ|bon\s+app|[cç]a\s+va|[cç]a\s+farte|[cç]a\s+gaze|farte|kiff|la\s+forme|quoi\s+de\s+neuf|et\s+toi|tu\s+vas|vous\s+allez|comment\s+([cç]a|tu|vous)|vas[\s-]*tu|allez[\s-]*vous)\b/iu', $m)) {
+            return true;
+        }
+        if (mb_strlen($m, 'UTF-8') <= 40) {
+            return true;
+        }
+        return false;
+    }
+
+    function chat_looks_like_memory_question(string $message): bool {
+        $m = trim($message);
+        if ($m === '') {
+            return false;
+        }
+        return (bool) preg_match('/\b(qui\s+(est|sont)|c[\'’ ]?est\s+qui|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousin|chien|chat|luna|domaine|saint-?antonin|mathieu|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire)\b/iu', $m);
+    }
+
     function chat_route_needs_memory(string $message, string $historySnippet = ''): array {
         $message = trim($message);
         if ($message === '') {
-            return ['needs_memory' => true, 'raw' => '', 'debug' => 'message vide -> MEMORY'];
+            return ['needs_memory' => false, 'raw' => '', 'debug' => 'message vide -> CHAT'];
+        }
+        // Filet AVANT l'appel LLM : un bonjour ne brule pas de quota
+        if (chat_looks_like_smalltalk($message)) {
+            return ['needs_memory' => false, 'raw' => '', 'debug' => 'route=CHAT (filet salut, sans LLM)'];
         }
         global $selected_engine;
         $text = "Message utilisateur :\n" . $message;
@@ -184,15 +219,19 @@
             $raw = (string) call_reformulator_service($payload);
         }
         $norm = mb_strtoupper(trim(preg_replace('/\s+/', ' ', $raw)), 'UTF-8');
-        // Accepte "CHAT", "MEMORY", ou premiere ligne / mot dominant
         if (preg_match('/\bCHAT\b/', $norm) && !preg_match('/\bMEMORY\b/', $norm)) {
             return ['needs_memory' => false, 'raw' => $raw, 'debug' => 'route=CHAT'];
         }
         if (preg_match('/\bMEMORY\b/', $norm)) {
             return ['needs_memory' => true, 'raw' => $raw, 'debug' => 'route=MEMORY'];
         }
-        // Defaut prudent
-        return ['needs_memory' => true, 'raw' => $raw, 'debug' => 'route=MEMORY (defaut, reponse route ambiguë: ' . mb_substr($norm, 0, 40, 'UTF-8') . ')'];
+        if (chat_looks_like_memory_question($message)) {
+            return ['needs_memory' => true, 'raw' => $raw, 'debug' => 'route=MEMORY (filet factuel, routeur muet)'];
+        }
+        if (mb_strlen($message, 'UTF-8') <= 80) {
+            return ['needs_memory' => false, 'raw' => $raw, 'debug' => 'route=CHAT (defaut court, routeur muet)'];
+        }
+        return ['needs_memory' => true, 'raw' => $raw, 'debug' => 'route=MEMORY (defaut long, reponse route ambiguë: ' . mb_substr($norm, 0, 40, 'UTF-8') . ')'];
     }
 
     /**
@@ -213,12 +252,7 @@
         return '';
     }
 
-
     // ==================== ENDPOINT AJAX (POST JSON) ====================
-    /**
-     * Si POST JSON avec {message}, on traite comme API et on sort en JSON
-     * Sinon on affiche le HTML du tchat
-     */
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $raw = file_get_contents('php://input');
         $data = json_decode($raw, true);
@@ -228,210 +262,174 @@
             header('X-Robots-Tag: noindex, nofollow');
 
             $message = trim((string)($data['message'] ?? ''));
-            $history = $data['history'] ?? []; // Historique complet envoye par JS
+            $step = trim((string)($data['step'] ?? 'final'));
+            $history = $data['history'] ?? [];
             $engineReq = strtolower(trim((string)($data['engine'] ?? '')));
 
             if ($message === '') {
+                chat_log_error('Requete AJAX rejetee : message vide');
                 http_response_code(400);
                 echo json_encode(['error' => 'Message vide']);
                 exit;
             }
-            $startTime = microtime(true);
 
-            // --- 1) Charge addon tchat depuis fichier JS externe (modulable) ---
-            // Contient la consigne pour gerer les pronoms via {{CHAT_HISTORY}}
-            $chatAddon = '';
-            $chatAddonSourceInfo = 'aucun fichier de prompt trouve (voir find_chat_prompt_js())';
-            if (CHAT_PROMPT_JS !== '' && is_file(CHAT_PROMPT_JS)) {
-                $js = file_get_contents(CHAT_PROMPT_JS);
-                if (preg_match('/CHAT_ADDON\s*=\s*`(.+?)`/s', $js, $m)) {
-                    $chatAddon = trim($m[1]);
-                    $chatAddonSourceInfo = basename(CHAT_PROMPT_JS) . ' (CHAT_ADDON charge, ' . mb_strlen($chatAddon, 'UTF-8') . ' caracteres)';
-                } else {
-                    $chatAddonSourceInfo = basename(CHAT_PROMPT_JS) . ' trouve mais regex CHAT_ADDON=`...` n\'a rien matche (verifier la syntaxe du fichier)';
-                }
+            if (function_exists('llm_apply_selected_engine')) {
+                llm_apply_selected_engine($engineReq);
             }
 
-            // --- 2) Formate l'historique pour le LLM (8 derniers tours max) ---
-            // But : permettre au LLM de comprendre "et lui ?" "et sa soeur ?"
-            // On garde role + content, pas les meta engine/debug
-            $historyText = "";
-            $lastUserForRetrieval = "";
-            if (is_array($history)) {
-                $slice = array_slice($history, -8); // Limite pour ne pas exploser le contexte
-                foreach ($slice as $h) {
-                    $role = ($h['role'] ?? 'user') === 'assistant' ? 'Assistant' : 'Utilisateur';
-                    $cnt = trim($h['content'] ?? '');
-                    if ($cnt !== '') $historyText .= $role . ": " . $cnt . "\n";
-                    // Garde dernier message user pour ameliorer la recherche memoire
-                    if (($h['role'] ?? '') === 'user' && $cnt !== '') $lastUserForRetrieval = $cnt;
-                }
-            }
-
-            // --- 3) Construit la requete de recherche memoire (retrieval) ---
-            // Si l'utilisateur dit "et son age ?" apres "Qui est Tonin ?", on veut chercher "Tonin age"
-            // Donc on combine dernier user + question actuelle pour build_memory_context_for_topic
-            $retrievalQuery = $message;
-            if ($lastUserForRetrieval !== '' && mb_strlen($message, 'UTF-8') < 40) {
-                // Question courte type pronom -> on enrichit avec contexte precedent
-                $retrievalQuery = $lastUserForRetrieval . " " . $message;
-            }
-
-            // --- 4) Construit la question finale envoyee au LLM (avec historique) ---
-            $questionForLLM = $message;
-            if ($historyText !== '' && $chatAddon !== '') {
-                $addonFilled = str_replace('{{CHAT_HISTORY}}', $historyText, $chatAddon);
-                $questionForLLM = $addonFilled . "\n\nQuestion actuelle : " . $message;
-            } elseif ($historyText !== '') {
-                $questionForLLM = "Historique tchat (pour pronoms) :\n" . $historyText . "\n\nQuestion actuelle : " . $message;
-            }
-
-            // --- 5) PIPELINE MEMOIRE IDENTIQUE A saisie.php bouton Interroger ---
-            // build_memory_context_for_topic() fait :
-            // - expand_query_intent_via_node() (comprend intention)
-            // - extract_instructions_sections() + outline
-            // - select des sections pertinentes + ranked evidence lines
-            // - retourne context = PREUVES DIRECTES + sections classees
-            //
-            // CORRECTIF : on ne lance ce pipeline (donc les appels LLM
-            // d'expansion/selection + la recherche dans instructions.md) QUE
-            // si le message n'est pas un simple echange de politesse/hors
-            // sujet. Ca evite d'aller chercher dans le fichier pour "Salut, comment vas-tu ?".
-            // Routage LLM (MEMORY vs CHAT) — pas de liste de mots en dur
-            // Selection moteur via moteurs/llm.php (partage avec saisie.php)
-            llm_apply_selected_engine($engineReq);
-            $route = chat_route_needs_memory($message, $historyText);
-            $needsMemory = !empty($route['needs_memory']);
-            $memoryContext = '';
-            $debugInfo = $route['debug'] ?? '';
-            $isChatOnly = !$needsMemory;
-
-            if ($isChatOnly) {
-                $debugInfo .= ' | recherche instructions.md ignoree';
-            } elseif (function_exists('build_memory_context_for_topic')) {
-                $built = build_memory_context_for_topic($retrievalQuery);
-                $memoryContext = $built['context'] ?? '';
-                $debugData = $built['debug'] ?? [];
-                // Initialiser $debugInfo avec le texte lisible
-                $debugInfo = '';
-                $metrics = [];
-                if (is_array($debugData)) {
-                    $debugInfo = $debugData['text'] ?? '';
-                    $metrics  = $debugData['metrics'] ?? [];
-                } else {
-                    // Fallback (ancien format chaîne)
-                    $debugInfo = (string)$debugData;
-                }
-            }
-
-            // Fallback si le build echoue (timeout, erreur). Ne PAS ecraser le debug route.
-            if ($memoryContext === '' && !$isChatOnly && function_exists('build_memory_context_for_topic')) {
-                // 2e tentative legere : meme appel (souvent cold-start Node)
-                $built2 = build_memory_context_for_topic($retrievalQuery);
-                $memoryContext = $built2['context'] ?? '';
-                $debugInfo .= ' | retry build: ' . ($built2['debug'] ?? 'vide');
-            }
-            if ($memoryContext === '' && !$isChatOnly && function_exists('load_instructions_excerpt')) {
-                $memoryContext = load_instructions_excerpt();
-                $debugInfo .= ' | fallback excerpt (contexte faible — reponse a prendre avec prudence)';
-            }
-
-            // LOG UNIQUE : requests.log (avec moteur) + access.log
-            $engineForLog = $engineReq!== ''? $engineReq : 'auto';
-            log_reformulator_request($message, 'query-chat', $engineForLog);
-            chat_log_request(
-                $engineForLog,
-                mb_strlen($message, 'UTF-8'),
-                $message,
-                $isChatOnly ? 'mode=chat' : 'mode=memoire'
-            );
-
-            // --- 6) APPEL LLM STRICT via reformulator ---
-            // finalize_query_response_via_node / call_reformulator_service lisent
-            // la variable GLOBALE $selected_engine (pas seulement $_POST).
-            // CORRECTIF 19/08/2026 : sans global, le select "Groq" etait ignore
-            // et le serveur restait sur le defaut Mistral.
-            $finalReply = '';
-            $usedEngine = $engineReq !== '' ? $engineReq : 'auto';
-            $usedModel = '';
-
-            if (function_exists('finalize_query_response_via_node') || function_exists('call_reformulator_service')) {
-                try {
-                    llm_apply_selected_engine($engineReq);
-
-                    if ($isChatOnly) {
-                        // Reponse rapide sans pipeline memoire
-                        $finalReply = chat_talk_via_node($questionForLLM);
-                    } else {
-                        $finalReply = finalize_query_response_via_node($questionForLLM, '', $memoryContext, 'query-chat');
+            // --- BLOC 1 : ANALYSE / ROUTE ---
+            if ($step === 'route') {
+                $historyText = "";
+                if (is_array($history)) {
+                    foreach (array_slice($history, -8) as $h) {
+                        $role = ($h['role'] ?? 'user') === 'assistant' ? 'Assistant' : 'Utilisateur';
+                        $cnt = trim($h['content'] ?? '');
+                        if ($cnt !== '') $historyText .= $role . ": " . $cnt . "\n";
                     }
-
-                    if ($engineReq !== '') {
-                        $usedEngine = $engineReq;
-                    } elseif (function_exists('get_llm_info')) {
-                        $info = get_llm_info();
-                        $usedEngine = strtolower((string) ($info['engineName'] ?? 'auto'));
-                        $usedModel = (string) ($info['selectedModel'] ?? '');
-                    }
-                } catch (Throwable $e) {
-                    $finalReply = '';
-                    $debugInfo .= ' | exception finalize: ' . $e->getMessage();
-                    chat_log_error($e->getMessage());
                 }
-            }
-
-            // Fallback direct si finalize echoue (Node down ?)
-            if ($finalReply === '') {
-                $baseUrl = function_exists('get_reformulator_base_url') ? get_reformulator_base_url() : 'https://charreyre.net/r3M3M83r/reformulator';
-                $url = rtrim($baseUrl, '/') . '/reformuler';
-                $payload = [
-                    'text' => $questionForLLM,
-                    'instructionsContext' => $memoryContext,
-                    'purpose' => 'query-chat',
-                    'engine' => $engineReq
-                ];
-                $ch = curl_init($url);
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST => true,
-                    CURLOPT_POSTFIELDS => json_encode($payload),
-                    CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-                    CURLOPT_TIMEOUT => 25
-                ]);
-                $resp = curl_exec($ch);
-                $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-                if ($resp && $code < 300) {
-                    $j = json_decode($resp, true);
-                    if (!empty($j['cleaned'])) {
-                        $finalReply = $j['cleaned'];
-                        $usedEngine = $j['engine'] ?? $engineReq;
-                        $usedModel = $j['model'] ?? '';
-                    }
-                } else {
-                    $debugInfo .= ' | fallback http code '.$code;
+                $route = chat_route_needs_memory($message, $historyText);
+                if (empty($route)) {
+                    chat_log_error('Echec chat_route_needs_memory() : reponse vide pour le message : ' . $message);
                 }
-            }
-
-            if ($finalReply === '') {
-                chat_log_error('reponse vide | ' . $debugInfo);
-                http_response_code(500);
-                echo json_encode([
-                    'error' => "Le moteur n'a pas répondu. Vérifie que Node tourne (moteurs/server.js).",
-                    '_debug' => $debugInfo
-                ], JSON_UNESCAPED_UNICODE);
+                echo json_encode(['needs_memory' => !empty($route['needs_memory']), 'debug' => $route['debug'] ?? ''], JSON_UNESCAPED_UNICODE);
                 exit;
             }
 
-            // Reponse OK
-            echo json_encode([
-                'reply' => $finalReply,
-                'engine' => $usedEngine,
-                'model' => $usedModel,
-                'debug' => $debugInfo,   // $chatAddonSourceInfo déjà inclus plus haut
-                'via' => 'query-strict-memoire-conversation'
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
+            // --- BLOC 2 & 3 : PARCOURS MÉMORIEL ET APPEL IA FINAL ---
+            if ($step === 'final') {
+                $needsMemory = !empty($data['needs_memory']);
+                $memoryContext = '';
+                $debugInfo = '';
+
+                $historyText = "";
+                $lastUserForRetrieval = "";
+                if (is_array($history)) {
+                    foreach (array_slice($history, -8) as $h) {
+                        $role = ($h['role'] ?? 'user') === 'assistant' ? 'Assistant' : 'Utilisateur';
+                        $cnt = trim($h['content'] ?? '');
+                        if ($cnt !== '') $historyText .= $role . ": " . $cnt . "\n";
+                        if (($h['role'] ?? '') === 'user' && $cnt !== '') $lastUserForRetrieval = $cnt;
+                    }
+                }
+
+                $retrievalQuery = $message;
+                if ($lastUserForRetrieval !== '' && mb_strlen($message, 'UTF-8') < 40) {
+                    $retrievalQuery = $lastUserForRetrieval . " " . $message;
+                }
+
+                if ($needsMemory && function_exists('build_memory_context_for_topic')) {
+                    $built = build_memory_context_for_topic($retrievalQuery);
+                    $memoryContext = $built['context'] ?? '';
+                    $debugData = $built['debug'] ?? [];
+                    if (is_array($debugData)) {
+                        $debugInfo = $debugData['text'] ?? '';
+                    } else {
+                        $debugInfo = (string)$debugData;
+                    }
+                    if ($memoryContext === '') {
+                        chat_log_error('Alerte : build_memory_context_for_topic() a renvoye un contexte vide pour la requete : ' . $retrievalQuery);
+                    }
+                }
+
+                $chatAddon = '';
+                if (defined('CHAT_PROMPT_JS') && CHAT_PROMPT_JS !== '' && is_file(CHAT_PROMPT_JS)) {
+                    $js = file_get_contents(CHAT_PROMPT_JS);
+                    if (preg_match('/CHAT_ADDON\s*=\s*`(.+?)`/s', $js, $m)) {
+                        $chatAddon = trim($m[1]);
+                    } else {
+                        chat_log_error('Impossible de parser CHAT_ADDON depuis le fichier.');
+                    }
+                }
+
+                $questionForLLM = $message;
+                if ($historyText !== '' && $chatAddon !== '') {
+                    $questionForLLM = str_replace('{{CHAT_HISTORY}}', $historyText, $chatAddon) . "\n\nQuestion actuelle : " . $message;
+                }
+
+                // Log d'origine
+                $engineForLog = $engineReq !== '' ? $engineReq : 'auto';
+                log_reformulator_request($message, 'query-chat', $engineForLog);
+                chat_log_request($engineForLog, mb_strlen($message, 'UTF-8'), $message, !$needsMemory ? 'mode=chat' : 'mode=memoire');
+
+                $finalReply = '';
+                $usedEngine = $engineReq !== '' ? $engineReq : 'auto';
+                $usedModel = '';
+
+                if (function_exists('finalize_query_response_via_node') || function_exists('call_reformulator_service')) {
+                    try {
+                        if (!$needsMemory) {
+                            $finalReply = chat_talk_via_node($questionForLLM);
+                        } else {
+                            $finalReply = finalize_query_response_via_node($questionForLLM, '', $memoryContext, 'query-chat');
+                        }
+                    } catch (Throwable $e) {
+                        chat_log_error('Exception lors de l\'appel LLM final : ' . $e->getMessage());
+                    }
+                }
+
+                global $last_reformulator_meta;
+                if (is_array($last_reformulator_meta ?? null)) {
+                    if (!empty($last_reformulator_meta['engine'])) {
+                        $usedEngine = $last_reformulator_meta['engine'];
+                    }
+                    if (!empty($last_reformulator_meta['model'])) {
+                        $usedModel = $last_reformulator_meta['model'];
+                    }
+                }
+
+                if ($finalReply === '') {
+                    $baseUrl = function_exists('get_reformulator_base_url') ? get_reformulator_base_url() : 'https://charreyre.net/r3M3M83r/reformulator';
+                    $url = rtrim($baseUrl, '/') . '/reformuler';
+                    $payload = [
+                        'text' => $questionForLLM,
+                        'purpose' => $needsMemory ? 'query-chat' : 'chat-talk',
+                    ];
+                    if ($needsMemory && $memoryContext !== '') {
+                        $payload['instructionsContext'] = function_exists('cap_memory_context_for_llm')
+                            ? cap_memory_context_for_llm($memoryContext)
+                            : $memoryContext;
+                    }
+                    if ($engineReq !== '') {
+                        $payload['engine'] = $engineReq;
+                    }
+                    $ch = curl_init($url);
+                    curl_setopt_array($ch, [
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_POST => true,
+                        CURLOPT_POSTFIELDS => json_encode($payload),
+                        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                        CURLOPT_TIMEOUT => 25
+                    ]);
+                    $resp = curl_exec($ch);
+                    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+                    if ($resp && $code < 300) {
+                        $j = json_decode($resp, true);
+                        if (!empty($j['cleaned'])) {
+                            $finalReply = $j['cleaned'];
+                            $usedEngine = $j['engine'] ?? $engineReq;
+                            $usedModel = $j['model'] ?? '';
+                        }
+                    } else {
+                        chat_log_error("Fallback CURL a echoue. HTTP $code - Reponse : " . mb_substr((string)$resp, 0, 150));
+                    }
+                }
+
+                if ($finalReply === '') {
+                    chat_log_error('Erreur critique : reponse LLM finale vide pour le message : ' . $message);
+                    http_response_code(500);
+                    echo json_encode(['error' => "Le moteur n'a pas répondu. Vérifie que Node tourne.", '_debug' => $debugInfo], JSON_UNESCAPED_UNICODE);
+                    exit;
+                }
+
+                echo json_encode([
+                    'reply' => $finalReply,
+                    'engine' => $usedEngine,
+                    'model' => $usedModel,
+                    'debug' => $debugInfo
+                ], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
         }
     }
 
@@ -444,7 +442,9 @@
     }
 
     // ==================== INFOS MOTEUR POUR SELECT ====================
-    $llmInfo = function_exists('get_llm_info') ? get_llm_info() : ['engineName'=>'MISTRAL','defaultEngine'=>'mistral','fallbackOrder'=>['mistral','groq','cerebras','openrouter']];
+    if (!isset($llmInfo) || !is_array($llmInfo) || empty($llmInfo['engineName'])) {
+        $llmInfo = function_exists('get_llm_info') ? get_llm_info() : ['engineName'=>'MISTRAL','defaultEngine'=>'mistral','fallbackOrder'=>['mistral','groq','cerebras','openrouter']];
+    }
     $enginesList = $llmInfo['fallbackOrder'] ?? ['mistral','groq','cerebras','openrouter'];
     $currentEngine = strtolower($llmInfo['engineName'] ?? 'mistral');
 ?>
@@ -457,6 +457,8 @@
         <meta name="robots" content="noindex,nofollow">
         <title>Rebecca — Tchat memoire r3M3M83r</title>
         <link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
+        <script src="../moteurs/health_check.js"></script> <!-- Script de tests models -->
+        <script src="../moteurs/loading_steps.js"></script> <!-- Script d'attente -->
         <style>
             /* ===== RESET + BASE ===== */
             *{box-sizing:border-box}
@@ -705,22 +707,27 @@
         <header>
             <h1>Tchat IA — Projet r3M3M83r</h1>
             <p>
-                Interface <strong>Rebecca</strong> uniquement. Le moteur memoire est celui de <strong>r3M3M83r</strong>
-                (meme pipeline que Reformulator / saisie.php) — cette page ne fait que l'UI tchat.
+                Interface <strong>Rebecca</strong>. Le moteur mémoriel est celui de <a href="https://mathieu.charreyre.net/r3M3M83r" title="Projet r3M3M83r" target="_blank"><strong>r3M3M83r</strong></a>.
             </p>
-            <div class="topbar">
-                <label for="engineSelect" class="engine-label">Moteur :</label>
-                <div class="engine-row">
+            <div class="topbar" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                <!-- Ligne 1 : Moteur, Sélecteur, RAZ, Vider -->
+                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                    <label for="engineSelect" class="engine-label">Moteur :</label>
                     <select id="engineSelect" aria-label="Choix moteur IA">
                         <?php
-                            $enginePref = ''; // le JS restaure localStorage apres
+                            $enginePref = '';
                             echo llm_render_engine_options($enginePref, $llmInfo);
                         ?>
                     </select>
                     <button class="secondary" id="resetEngineBtn" title="Vide cache Node + recharge">RAZ</button>
-                    <button class="secondary" id="clearChatBtn" title="Vide historique localStorage">Vider</button>
+                    <button class="secondary" id="clearChatBtn" title="Vide historique de discussion">Vider</button>
                 </div>
-                <span id="status" class="status" aria-live="polite"></span>
+
+                <!-- Ligne 2 : Pastilles de santé à gauche, messages de statut (RAZ/Vider) à droite -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12px;">
+                    <div id="llm-status-bar"></div>
+                    <span id="status" class="status" aria-live="polite"></span>
+                </div>
             </div>
         </header>
 
@@ -938,74 +945,80 @@
              *   3. Appeler finalize_query_response_via_node() avec question + historique pronoms + contexte memoire
              * - L'historique est conserve cote client jusqu'a Clean
              */
+
+            // Initialisation du loader unifié Rebecca
+            const rebeccaLoader = r3InitProgressiveLoader('loading', 'loading-text', 4500);
+
             async function sendMessage(){
-            const text = inputEl.value.trim();
-            if(!text) return;
-            engine = engineSelect.value; saveEngine();
+                const text = inputEl.value.trim();
+                if(!text) return;
+                engine = engineSelect.value; saveEngine();
 
-            // Push user dans historique local avant envoi
-            history.push({role:'user', content:text});
-            render(); saveHistory();
-            scrollToBottom(true); // focus immediat sur ta question
-            inputEl.value='';
-            statusEl.textContent='Interrogation ...';
-            loadingEl.classList.add('open');
+                history.push({role:'user', content:text});
+                render(); saveHistory();
+                scrollToBottom(true);
+                inputEl.value='';
+                statusEl.textContent='Interrogation ...';
 
-            // --- MESSAGE PROGRESSIF CLIENT ---
-            const loadingTextEl = document.querySelector('.loading-text');
-            const loadingSteps = [
-                'Interrogation de instructions.md ...<br>Expansion intention + preuves + appel LLM',
-                'Le service IA est contacté',
-                '...',
-                'Patienter encore un peu',
-                'On y croit ...',
-                'Les moteurs doivent être lents aujourd\'hui !',
-                '...',
-                'Les moteurs semblent bien occupés ...',
-                '...',
-            ];
-            if (loadingTextEl) loadingTextEl.innerHTML = loadingSteps[0];
-            let loadingStep = 0;
-            const loadingTimer = setInterval(() => {
-                loadingStep = Math.min(loadingStep + 1, loadingSteps.length - 1);
-                if (loadingTextEl) loadingTextEl.innerHTML = loadingSteps[loadingStep];
-            }, 5000);
-            // ---------------------------------
+                sendBtn.disabled=true;
+                inputEl.disabled=true;
 
-            sendBtn.disabled=true;
-            inputEl.disabled=true;
+                try{
+                    // --- 1. ETAPE : Routeur LLM ---
+                    rebeccaLoader.start(0); // "Interrogation de instructions.md ..."
 
-            try{
-                const res = await fetch('', {
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({
-                    message:text,
-                    history: history.slice(0,-1),
-                    engine: engine
-                })
-                });
-                const data = await res.json();
-                if(data.error) throw new Error(data.error);
-                history.push({role:'assistant', content:data.reply, engine:data.engine, model:data.model, debug:data.debug});
-                saveHistory(); render();
-                // Debut de la reponse visible (pas seulement le bas / debug)
-                if (typeof scrollToMessageStart === 'function') scrollToMessageStart();
-                else scrollToBottom(false);
-                statusEl.textContent = 'Moteur: '+(data.engine||engine||'auto').toUpperCase()+(data.debug&&/route=CHAT|mode=chat/i.test(String(data.debug))?' · conversation':' · memoire');
-            }catch(e){
-                history.push({role:'assistant', content:'Erreur: '+e.message+' (Node tourne ?)', engine:'error'});
-                render(); scrollToBottom(false); statusEl.textContent='Erreur';
-            }finally{
-                clearInterval(loadingTimer);   // ← arrête le minuteur ici
-                loadingEl.classList.remove('open');
-                sendBtn.disabled=false;
-                inputEl.disabled=false;
-                inputEl.focus();
-                // Dernier scroll de securite apres fermeture overlay (mobile)
-                setTimeout(()=>scrollToBottom(true),150);
-                setTimeout(()=>statusEl.textContent='',5000);
-            }
+                    const resRoute = await fetch('', {
+                        method:'POST',
+                        headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ step: 'route', message: text, history: history.slice(0,-1), engine: engine })
+                    });
+
+                    // Si erreur HTTP (ex 500), JSON.parse plantera, on le gère proprement
+                    if (!resRoute.ok) throw new Error("Erreur Serveur HTTP " + resRoute.status);
+
+                    const dataRoute = await resRoute.json();
+                    if(dataRoute.error) throw new Error(dataRoute.error);
+
+                    // --- 2. ETAPE : On change l'UI selon le choix du routeur ---
+                    if (dataRoute.needs_memory) {
+                        rebeccaLoader.setStep(1); // "Le fichier mémoriel est en cours de parcours ..."
+                        await new Promise(r => setTimeout(r, 600)); // Laisse un instant pour que l'oeil lise
+                    }
+
+                    // --- 3. ETAPE : Appel final IA ---
+                    rebeccaLoader.setStep(2); // "Le service IA est contacté"
+
+                    const resFinal = await fetch('', {
+                        method:'POST',
+                        headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ step: 'final', message: text, history: history.slice(0,-1), engine: engine, needs_memory: dataRoute.needs_memory })
+                    });
+
+                    if (!resFinal.ok) throw new Error("Erreur Serveur HTTP " + resFinal.status);
+
+                    const dataFinal = await resFinal.json();
+                    if(dataFinal.error) throw new Error(dataFinal.error);
+
+                    // On intègre la réponse à l'historique
+                    history.push({role:'assistant', content:dataFinal.reply, engine:dataFinal.engine, model:dataFinal.model, debug:dataFinal.debug});
+                    saveHistory(); render();
+
+                    if (typeof scrollToMessageStart === 'function') scrollToMessageStart();
+                    else scrollToBottom(false);
+
+                    statusEl.textContent = 'Moteur : '+(dataFinal.engine||engine||'auto').toUpperCase()+(dataFinal.debug&&/route=CHAT|mode=chat/i.test(String(dataFinal.debug))?' · conversation':' · memoire');
+
+                }catch(e){
+                    history.push({role:'assistant', content:'Erreur : '+e.message+' (Vérifiez les logs !)', engine:'error'});
+                    render(); scrollToBottom(false); statusEl.textContent='Erreur';
+                }finally{
+                    rebeccaLoader.stop(); // On ferme la modale quoi qu'il arrive
+                    sendBtn.disabled=false;
+                    inputEl.disabled=false;
+                    inputEl.focus();
+                    setTimeout(()=>scrollToBottom(true),150);
+                    setTimeout(()=>statusEl.textContent='',5000);
+                }
             }
 
             // ===== BLOC 4 : Evenements UI =====
@@ -1025,14 +1038,21 @@
                 setTimeout(()=>statusEl.textContent='',2000);
             }
             };
-            document.getElementById('resetEngineBtn').onclick=()=>{
-            if(confirm('Reset moteur LLM (vide cache Node) ? L\'historique du tchat sera conserve.')){
-                statusEl.textContent='Reset moteur en cours ...';
+            document.getElementById('resetEngineBtn').onclick = () => {
+                statusEl.textContent = 'Reset moteur en cours ...';
                 fetch('?action=reset_llm')
-                .then(()=>{ statusEl.textContent='Moteur réinitialisé (historique conservé)'; setTimeout(()=>statusEl.textContent='',3000); })
-                .catch(()=>{ statusEl.textContent='Reset envoyé'; setTimeout(()=>statusEl.textContent='',3000); });
-                // Ne recharge PAS la page, sinon on risque de relancer une migration ou perdre le focus
-            }
+                    .then(() => {
+                        statusEl.textContent = 'Moteur réinitialisé (historique conservé)';
+                        // On relance aussi un check des moteurs pour actualiser les pastilles direct
+                        if (typeof r3CheckProvidersHealth === 'function') {
+                            r3CheckProvidersHealth();
+                        }
+                        setTimeout(() => statusEl.textContent = '', 3000);
+                    })
+                    .catch(() => {
+                        statusEl.textContent = 'Reset envoyé';
+                        setTimeout(() => statusEl.textContent = '', 3000);
+                    });
             };
         </script>
 

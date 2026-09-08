@@ -199,9 +199,12 @@ const upload = multer({
 // ==================== CONFIG LLM ====================
 const PORT = process.env.PORT || 3000;
 
-const DEFAULT_LLM_ENGINE = 'mistral';
+const DEFAULT_LLM_ENGINE = 'groq';
 const LLM_ENGINE = (process.env.LLM_ENGINE || DEFAULT_LLM_ENGINE).toLowerCase();
-const DEFAULT_FALLBACK_ORDER = 'openrouter,groq,mistral,cerebras';
+// Liste des moteurs LLM fallback, dans l'ordre de preference.
+// Peut etre surchargee par la variable d'environnement LLM_FALLBACK_ORDER.
+// 'cerebras,groq,mistral,openrouter'
+const DEFAULT_FALLBACK_ORDER = 'groq,mistral,openrouter';
 const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_ORDER)
   .split(',')
   .map(function(item) { return item.trim().toLowerCase(); })
@@ -237,7 +240,9 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   else if (purpose === 'chat-route') messages.push({ role: 'system', content: CHAT_ROUTE_PROMPT });
   else if (purpose === 'chat-talk') messages.push({ role: 'system', content: CHAT_TALK_PROMPT });
   else messages.push({ role: 'system', content: SAISIE_PROMPT });
-  if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
+    if (context && purpose !== 'chat-route' && purpose !== 'chat-talk') {
+      messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
+    }
   const userContent = (purpose === 'query' || purpose === 'query-chat')
     ? 'Recherche dans instructions.md : ' + text
     : (purpose === 'query-select' || purpose === 'query-expand' || purpose === 'chat-route' || purpose === 'chat-talk')
@@ -252,23 +257,43 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
     : purpose === 'query-keywords' ? 0.0 : 0.4;
   // merge-smart : reponses longues (deja + nouveau + texte fusionne + emplacement)
   const maxTokens = (purpose === 'merge-smart') ? 4000
-    : (purpose === 'chat-route') ? 16
+    : (purpose === 'chat-route') ? 400
     : (purpose === 'chat-talk') ? 400
-    : (purpose === 'query' || purpose === 'query-chat') ? 2200
+    : (purpose === 'query' || purpose === 'query-chat') ? 1200
     : 1500;
   return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
 };
 
+// DOCUMENTATION DES MODELES PAR PROVIDER (2026/09) :
+// - Cerebras   : 'llama-3.1-8b' (ultra rapide, idéal pour le routage chat-route)
+// - Groq       : 'AUTODETECT' ou modèle explicite (ex: 'llama-3.3-70b-versatile')
+// - Mistral    : 'mistral-small-latest'
+// - OpenRouter : 'openrouter/free'
+
+// Stockage en mémoire du dernier statut réel de chaque moteur
+const engineRuntimeStatus = {
+  cerebras: { status: 'unknown', code: null, cooldownUntil: 0 },
+  groq: { status: 'unknown', code: null, cooldownUntil: 0 },
+  mistral: { status: 'unknown', code: null, cooldownUntil: 0 },
+  openrouter: { status: 'unknown', code: null, cooldownUntil: 0 }
+};
+const ENGINE_COOLDOWN_MS = {
+  402: 30 * 60 * 1000,
+  404: 10 * 60 * 1000,
+  429: 90 * 1000,
+  401: 15 * 60 * 1000
+};
+
 const LLM_ENGINES = {
-  // Mistral
-  mistral: {
-    name: 'Mistral',
-    apiKeyEnv: 'MISTRAL_API_KEY',
-    modelEnv: 'MISTRAL_MODEL',
-    apiBase: process.env.MISTRAL_API_BASE || 'https://api.mistral.ai/v1',
-    engineUrl: 'https://console.mistral.ai',
-    defaultModel: 'mistral-small-latest',
-    models: ['mistral-small-latest','open-mistral-7b','mistral-medium-latest'],
+  // Cerebras
+  cerebras: {
+    name: 'Cerebras',
+    apiKeyEnv: 'CEREBRAS_API_KEY',
+    modelEnv: 'CEREBRAS_MODEL',
+    apiBase: process.env.CEREBRAS_API_BASE || 'https://api.cerebras.ai/v1',
+    engineUrl: 'https://cloud.cerebras.ai',
+    defaultModel: 'gpt-oss-120b',
+    models: ['gpt-oss-120b'],
     createPayload: createOpenAICompatiblePayload,
   },
   // Groq
@@ -278,66 +303,37 @@ const LLM_ENGINES = {
     modelEnv: 'GROQ_MODEL',
     apiBase: process.env.GROQ_API_BASE || 'https://api.groq.com/openai/v1',
     engineUrl: 'https://console.groq.com/home',
-    defaultModel: 'mixtral-8x7b-32768',
-    models: ['mixtral-8x7b-32768', 'llama-3.1-8b-instant'],
-    createPayload: function(text, model, context, purpose) {
-      context = context || '';
-      purpose = purpose || 'rewrite';
-      const messages = [];
-      if (purpose === 'location') messages.push({ role: 'system', content: LOCATION_PROMPT });
-      else if (purpose === 'query-keywords') messages.push({ role: 'system', content: QUERY_KEYWORD_PROMPT });
-      else if (purpose === 'query-expand') messages.push({ role: 'system', content: QUERY_EXPAND_PROMPT });
-      else if (purpose === 'query-select') messages.push({ role: 'system', content: QUERY_SELECT_PROMPT });
-      else if (purpose === 'query-chat') messages.push({ role: 'system', content: QUERY_CHAT_PROMPT });
-      else if (purpose === 'query') messages.push({ role: 'system', content: QUERY_PROMPT });
-      else if (purpose === 'merge-check') messages.push({ role: 'system', content: MERGE_CHECK_PROMPT });
-      else if (purpose === 'merge-smart') messages.push({ role: 'system', content: MERGE_SMART_PROMPT });
-      else if (purpose === 'chat-route') messages.push({ role: 'system', content: CHAT_ROUTE_PROMPT });
-      else if (purpose === 'chat-talk') messages.push({ role: 'system', content: CHAT_TALK_PROMPT });
-      else messages.push({ role: 'system', content: SAISIE_PROMPT });
-      if (context) messages.push({ role: 'system', content: 'Contexte instructions (memoire) : ' + context });
-      const userContent = (purpose === 'query' || purpose === 'query-chat')
-        ? 'Recherche dans instructions.md : ' + text
-        : (purpose === 'query-select' || purpose === 'query-expand' || purpose === 'chat-route' || purpose === 'chat-talk')
-          ? text
-          : (purpose === 'merge-check')
-            ? 'Texte importe a comparer avec la memoire :\n' + text
-            : (purpose === 'merge-smart')
-              ? 'TEXTE NOUVEAU a fusionner avec la memoire ci-dessus :\n' + text
-              : 'Texte a reformuler pour le memoire : ' + text;
-      messages.push({ role: 'user', content: userContent });
-      const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart' || purpose === 'chat-route' || purpose === 'chat-talk') ? 0.2
-        : purpose === 'query-keywords' ? 0.0 : 0.4;
-      const maxTokens = (purpose === 'merge-smart') ? 4000
-        : (purpose === 'chat-route') ? 16
-        : (purpose === 'chat-talk') ? 400
-        : (purpose === 'query' || purpose === 'query-chat') ? 2200
-        : 1500;
-      return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
-    }
+    defaultModel: 'openai/gpt-oss-120b',
+    models: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'],
+    createPayload: createOpenAICompatiblePayload
   },
-  // Cerebras
-  cerebras: {
-    name: 'Cerebras',
-    apiKeyEnv: 'CEREBRAS_API_KEY',
-    modelEnv: 'CEREBRAS_MODEL',
-    apiBase: process.env.CEREBRAS_API_BASE || 'https://api.cerebras.ai/v1',
-    engineUrl: 'https://cloud.cerebras.ai',
-    defaultModel: 'llama-3.1-8b',
-    models: ['llama-3.1-8b', 'mixtral-8x7b'],
+  // Mistral
+  mistral: {
+    name: 'Mistral',
+    apiKeyEnv: 'MISTRAL_API_KEY',
+    modelEnv: 'MISTRAL_MODEL',
+    apiBase: process.env.MISTRAL_API_BASE || 'https://api.mistral.ai/v1',
+    engineUrl: 'https://console.mistral.ai',
+    defaultModel: 'mistral-small-latest',
+    models: ['mistral-small-latest'],
     createPayload: createOpenAICompatiblePayload,
   },
   // OpenRouter
   openrouter: {
-    name: 'OpenRouter',
-    apiKeyEnv: 'OPENROUTER_API_KEY',
-    modelEnv: 'OPENROUTER_MODEL',
-    apiBase: process.env.OPENROUTER_API_BASE || 'https://openrouter.ai/api/v1',
-    engineUrl: 'https://openrouter.ai',
-    defaultModel: 'openrouter/free',
-    models: ['openrouter/free', 'meta-llama/llama-3.3-8b-instruct:free', 'google/gemma-3-27b-it:free', 'meta-llama/llama-4-scout:free'],
-    createPayload: createOpenAICompatiblePayload,
-  },
+      name: 'OpenRouter',
+      apiKeyEnv: 'OPENROUTER_API_KEY',
+      modelEnv: 'OPENROUTER_MODEL',
+      apiBase: process.env.OPENROUTER_API_BASE || 'https://openrouter.ai/api/v1',
+      engineUrl: 'https://openrouter.ai',
+      defaultModel: 'openrouter/free',
+      models: [
+        'openrouter/free',
+        'deepseek/deepseek-chat',
+        'google/gemini-2.0-flash-lite-preview:free',
+        'mistralai/mistral-small-3.2-2409:free'
+      ],
+      createPayload: createOpenAICompatiblePayload,
+    },
 };
 
 const getEngineConfig = function(engineName) { return LLM_ENGINES[engineName] || null; };
@@ -354,7 +350,7 @@ const getEngineModel = function(engineName) {
   return engine.defaultModel;
 };
 
-// Retourne la liste des moteurs LLM disponibles (avec clé API présente)
+// Retourne la liste des moteurs LLM disponibles (avec clef API présente)
 const getAvailableEngines = function() {
   return Object.keys(LLM_ENGINES).filter(function(name) {
     var eng = LLM_ENGINES[name];
@@ -380,6 +376,7 @@ const getCurrentEngineInfo = function() {
     availableEngines: getAvailableEngines(),
     modelCandidates: engine && engine.models ? engine.models : [],
     apiKeysStatus: apiKeys,
+    enginesRuntimeStatus: engineRuntimeStatus
   };
 };
 
@@ -420,6 +417,49 @@ const extractRetryAfterSeconds = function(error) {
 //   - Chaque tentative est enregistrée dans `attempts` et renvoyée au client
 //     pour affichage dans test_curl.php.
 // ─────────────────────────────────────────────────────────────────────────────
+const isEngineCooling = function(engineName) {
+  var st = engineRuntimeStatus[engineName];
+  if (!st || !st.cooldownUntil) return false;
+  return Date.now() < st.cooldownUntil;
+};
+const markEngineCooldown = function(engineName, status) {
+  var ms = ENGINE_COOLDOWN_MS[status] || 0;
+  if (!ms) return;
+  if (!engineRuntimeStatus[engineName]) {
+    engineRuntimeStatus[engineName] = { status: 'error', code: status, cooldownUntil: 0 };
+  }
+  engineRuntimeStatus[engineName].cooldownUntil = Date.now() + ms;
+  engineRuntimeStatus[engineName].status = 'error';
+  engineRuntimeStatus[engineName].code = status;
+};
+const isPayloadTooLargeError = function(status, errMsg) {
+  if (status === 413) return true;
+  var s = String(errMsg || '');
+  return /Request too large/i.test(s) || (/rate_limit_exceeded/i.test(s) && /TPM|tokens per minute|Requested [0-9]+/i.test(s));
+};
+const maxContextCharsForEngine = function(engineName, purpose) {
+  if (purpose === 'chat-route' || purpose === 'chat-talk' || purpose === 'query-keywords') return 0;
+  if (engineName === 'groq') return 12000;
+  if (engineName === 'cerebras') return 16000;
+  return 24000;
+};
+const truncateContext = function(context, maxChars) {
+  context = String(context || '');
+  if (maxChars <= 0) return '';
+  if (context.length <= maxChars) return context;
+  return context.slice(0, maxChars) + '\n...[contexte tronque pour rester sous les quotas TPM]...';
+};
+const modelsToTryForEngine = function(engineName) {
+  var engine = getEngineConfig(engineName);
+  if (!engine) return [];
+  var primary = getEngineModel(engineName);
+  var list = [];
+  if (primary) list.push(primary);
+  (engine.models || []).forEach(function(m) {
+    if (list.indexOf(m) === -1) list.push(m);
+  });
+  return list;
+};
 const reformulate = async function(text, context, purpose, preferredEngine) {
   context = context || '';
   purpose = purpose || 'rewrite';
@@ -428,19 +468,15 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
   var lastError = null;
   var attempts = [];
 
-  // Ordre naturel défini par LLM_FALLBACK_ORDER.
-  // Si un moteur est demandé, il passe devant ; les autres suivent dans l'ordre naturel.
   var naturalOrder = LLM_FALLBACK_ORDER.filter(Boolean);
   var engineOrder;
   if (preferredEngine && LLM_ENGINES[preferredEngine]) {
     engineOrder = [preferredEngine].concat(naturalOrder.filter(function(e) { return e !== preferredEngine; }));
-    console.log('[FORCE ENGINE] Client a demandé ' + preferredEngine + ' → ordre : ' + engineOrder.join(', '));
   } else {
     engineOrder = naturalOrder;
-    console.log('[AUTO ENGINE] Ordre fallback : ' + engineOrder.join(', '));
   }
 
-  var allErrors = []; // collecte les erreurs individuelles pour un log unique
+  var allErrors = [];
 
   for (var i = 0; i < engineOrder.length; i++) {
     var engineName = engineOrder[i];
@@ -449,25 +485,36 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 
     var apiKey = process.env[engine.apiKeyEnv];
     if (!apiKey) {
-      console.log('[SKIP] Pas de clé API pour ' + engineName + ' (' + engine.apiKeyEnv + ')');
-      attempts.push({ engine: engineName, model: null, status: 'skipped', error: 'clé API absente' });
+      attempts.push({ engine: engineName, model: null, status: 'skipped', error: 'clef API absente' });
       continue;
     }
 
-    // Tentative de requête au moteur LLM
+    if (isEngineCooling(engineName)) {
+      var remain = Math.ceil(((engineRuntimeStatus[engineName].cooldownUntil || 0) - Date.now()) / 1000);
+      attempts.push({ engine: engineName, model: null, status: 'skipped', error: 'cooldown ' + remain + 's' });
+      continue;
+    }
+
+    var workingContext = truncateContext(context, maxContextCharsForEngine(engineName, purpose));
+    var modelCandidates = modelsToTryForEngine(engineName);
+    var payloadTooLargeTries = 0;
+
+    for (var m = 0; m < modelCandidates.length; m++) {
+      var model = modelCandidates[m];
+
     var retryCount = 0;
-    var maxRetries = 1;   // une seule nouvelle tentative maximum
+    var maxRetries = 1;
 
     while (true) {
-      var model = getEngineModel(engineName);
-      var payload = engine.createPayload(text, model, context, purpose);
+      var payload = engine.createPayload(text, model, workingContext, purpose);
+        if (engineName === 'groq' && payload.max_tokens > 1200) {
+          payload.max_tokens = 1200;
+        }
       var requestUrl = buildRequestUrl(engine.apiBase);
-
-      console.log('[TRY] ' + engineName + ' (' + model + ') → ' + requestUrl);
 
       try {
         var response = await axios.post(requestUrl, payload, {
-          timeout: 15000,   // 15 secondes max par requête
+          timeout: 15000,
           headers: {
             'Authorization': 'Bearer ' + apiKey,
             'Content-Type': 'application/json',
@@ -476,11 +523,12 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
           }
         });
 
-        console.log('[SUCCESS] ' + engineName + ' a répondu');
         attempts.push({ engine: engineName, model: model, status: 'success', error: null });
+        engineRuntimeStatus[engineName] = { status: 'success', code: 200 };
         if (response.data && response.data.choices && response.data.choices[0] && response.data.choices[0].message) {
           var cleaned = response.data.choices[0].message.content;
           if (cleaned) {
+            // SUCCES : on sort immédiatement de la fonction, le fallback a fait son job !
             return {
               cleaned: cleaned.trim(),
               engine: engineName,
@@ -489,50 +537,51 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
             };
           }
         }
-        // Si la structure est invalide, on continue vers le moteur suivant
-        console.log('[WARN] ' + engineName + ' a répondu mais structure inattendue');
-        continue;
+        break;
 
       } catch (error) {
         lastError = error;
         var status = (error.response && error.response.status) ? error.response.status : 'unknown';
-
         var errMsg = '';
         if (error.response && error.response.data) {
-          var d = error.response.data;
-          if (d.error && d.error.message) errMsg = d.error.message;
-          else if (typeof d.error === 'string') errMsg = d.error;
-          else if (d.message) errMsg = d.message;
-          else errMsg = JSON.stringify(d).substring(0, 200);
+          errMsg = JSON.stringify(error.response.data);
         } else {
           errMsg = error.message || String(error);
         }
 
-        console.log('[FAIL] ' + engineName + ' HTTP ' + status + ' : ' + errMsg);
+        if (isPayloadTooLargeError(status, errMsg) && payloadTooLargeTries < 2 && workingContext.length > 800) {
+          payloadTooLargeTries++;
+          workingContext = truncateContext(workingContext, Math.max(800, Math.floor(workingContext.length * 0.45)));
+          attempts.push({ engine: engineName, model: model, status: 'HTTP ' + status + ' retry-tronque', error: 'contexte ramene a ' + workingContext.length + ' car.' });
+          continue;
+        }
 
         if (status === 429 && retryCount < maxRetries) {
           retryCount++;
-          var waitMs = 1500;
-          var retryAfter = extractRetryAfterSeconds(error);
-          if (retryAfter > 0) waitMs = Math.min(retryAfter * 1000, 10000);
-          console.log('[RETRY] ' + engineName + ' dans ' + (waitMs / 1000) + 's (tentative ' + retryCount + '/' + maxRetries + ')');
+          var waitSec = extractRetryAfterSeconds(error);
+          var waitMs = Math.min(8000, Math.max(1000, (waitSec > 0 ? waitSec * 1000 : 1500)));
           await sleep(waitMs);
           continue;
         }
 
         attempts.push({ engine: engineName, model: model, status: 'HTTP ' + status, error: errMsg });
-        // Ne plus loguer ici : on loguera une seule fois après la boucle
+        engineRuntimeStatus[engineName] = { status: 'error', code: status };
         allErrors.push(engineName + ':' + status + ' ' + errMsg);
-        break;
+          if (status === 404 && m < modelCandidates.length - 1) {
+            break;
+          }
+          markEngineCooldown(engineName, status);
+          break;
+        }
       }
     }
   }
 
-  // Tous les moteurs ont échoué
+  // Si on arrive ici, c'est que TOUTE la chaîne a échoué. On logue l'échec global une seule fois proprement.
   if (allErrors.length > 0) {
-    logError('Tous les moteurs ont échoué. Séquence : ' + allErrors.join(', '));
+    logError('Fallback global echoue. Sequence testee : ' + allErrors.join(' | '));
   }
-  var finalErr = lastError || new Error('Aucun moteur LLM disponible');
+  var finalErr = lastError || new Error('Tous les moteurs du fallback ont echoue');
   finalErr.attempts = attempts;
   throw finalErr;
 };
@@ -564,12 +613,50 @@ app.get('/r3M3M83r/moteurs', function(req, res) {
 app.get('/r3M3M83r/moteurs/', function(req, res) {
   res.json(Object.assign({ status: 'ok', base: 'moteurs', routes: ['/status','/llm-info','/reformuler'] }, getCurrentEngineInfo()));
 });
-app.get('/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
-// CORRECTIF 21/08/2026 : sous Passenger, req.path peut etre
-// /r3M3M83r/moteurs/llm-info (URL complete) et non /llm-info.
-app.get('/r3M3M83r/moteurs/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
-app.get('/r3M3M83r/reformulator/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
-app.get('/moteurs/llm-info', function(req, res) { res.json(getCurrentEngineInfo()); });
+
+var lastLlmInfoProbeAt = 0;
+var LLM_INFO_PROBE_TTL_MS = 5 * 60 * 1000;
+
+const handleLlmInfo = async function(req, res) {
+  var force = String((req.query && (req.query.probe || req.query.reset)) || '') === '1';
+  var now = Date.now();
+  var unknownCount = 0;
+  Object.keys(engineRuntimeStatus).forEach(function(name) {
+    if (!engineRuntimeStatus[name] || engineRuntimeStatus[name].status === 'unknown') unknownCount++;
+  });
+  var shouldProbe = force || unknownCount > 0 || (now - lastLlmInfoProbeAt > LLM_INFO_PROBE_TTL_MS);
+
+  if (shouldProbe) {
+    lastLlmInfoProbeAt = now;
+    const engines = getAvailableEngines();
+    for (let i = 0; i < engines.length; i++) {
+      const engName = engines[i];
+      const eng = LLM_ENGINES[engName];
+      if (!eng) continue;
+      const apiKey = process.env[eng.apiKeyEnv];
+      if (!apiKey) continue;
+      if (isEngineCooling(engName) && !force) continue;
+      try {
+        const payload = eng.createPayload('ping', getEngineModel(engName), '', 'chat-route');
+        await axios.post(buildRequestUrl(eng.apiBase), payload, {
+          timeout: 3000,
+          headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' }
+        });
+        engineRuntimeStatus[engName] = { status: 'success', code: 200, cooldownUntil: 0 };
+      } catch (err) {
+        const status = err.response && err.response.status ? err.response.status : 500;
+        engineRuntimeStatus[engName] = { status: 'error', code: status, cooldownUntil: 0 };
+        markEngineCooldown(engName, status);
+      }
+    }
+  }
+  res.json(getCurrentEngineInfo());
+};
+
+app.get('/llm-info', handleLlmInfo);
+app.get('/r3M3M83r/moteurs/llm-info', handleLlmInfo);
+app.get('/r3M3M83r/reformulator/llm-info', handleLlmInfo);
+app.get('/moteurs/llm-info', handleLlmInfo);
 
 const registerReformulationRoute = function(routePath) {
   app.post(routePath, async function(req, res) {

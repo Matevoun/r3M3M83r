@@ -1,14 +1,14 @@
 <?php
 /**
  * ============================================================================
- * r3M3M83r/reformulator/test_curl.php — Outil de vérification du service LLM
+ * r3M3M83r/moteurs/test_curl.php — Outil de vérification du service LLM
  * Affiche la séquence réellement tentée (attempts) renvoyée par Node.js.
  * ============================================================================
  *
  * Modification du 19/06/2026 : Prompt de test pré-renseigné riche et délirant.
  */
 
-$endpointBase  = 'https://charreyre.net/r3M3M83r/reformulator';
+$endpointBase  = 'https://charreyre.net/r3M3M83r';
 $endpoint      = $endpointBase . '/reformuler';
 
 // === PROMPT TEST PRÉ-RENSIGNÉ (optimisé) ===
@@ -20,7 +20,7 @@ if (empty($testText)) {
 }
 
 $testEngine = trim($_GET['engine'] ?? '');
-if ($testEngine !== '' && in_array($testEngine, ['groq','cerebras','mistral','openrouter'], true)) {
+if ($testEngine !== '' && in_array($testEngine, ['cerebras','groq','mistral','openrouter'], true)) {
     $testEngineLabel = strtoupper($testEngine) . ' (manuel)';
 } else {
     $testEngine = '';
