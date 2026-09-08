@@ -39,7 +39,7 @@ ${STYLE_RULES_TONE}
 - Synthese en prose claire. Listes a tirets simples seulement si vraiment utile (maximum 6 points).
 - N'affiche JAMAIS de titres markdown (##, ###) ni de blocs du type "**Faits etablis :**" / "**Sources :**".
 - Ne recopie pas le jargon technique du pipeline ("PREUVES DIRECTES", numeros de section en en-tete de chaque phrase).
-- Une source discrete en fin de message suffit si besoin.
+- Une source en fin de message est requise si l'information provient du contexte memoire.
 - Emojis : 0 a 2 maximum, pas a chaque phrase.
 - Historique ci-dessous = suivi des pronoms uniquement ("et lui ?", "son age ?"). Les FAITS viennent UNIQUEMENT du contexte memoire fourni a part, jamais de l'historique seul.
 - Si une reponse precedente (historique) contredit les preuves memoire, les preuves GAGNENT : corrige-toi, ne reaffirme pas l'erreur.
