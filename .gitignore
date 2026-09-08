@@ -1,5 +1,8 @@
 # gitgnore CHARREYRE.NET / r3M3M83r
 
+# Ne jamais versionner le .htaccess qui contenait les clés d’API
+moteurs/.htaccess
+
 # Dependances Node.js (regenerees par npm install)
 reformulator/node_modules/
 
