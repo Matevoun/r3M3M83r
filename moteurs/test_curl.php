@@ -8,11 +8,11 @@
  * Modification du 19/06/2026 : Prompt de test pré-renseigné riche et délirant.
  */
 
-$endpointBase  = 'https://charreyre.net/r3M3M83r';
+$endpointBase  = 'https://mathieu.charreyre.net/r3M3M83r/moteurs';
 $endpoint      = $endpointBase . '/reformuler';
 
 // === PROMPT TEST PRÉ-RENSIGNÉ (optimisé) ===
-$defaultTestText = "TEST : Raconte de manière créative et drôle un souvenir fictif où Mathieu CHARREYRE fait une erreur monumentale en public. Commence directement par l'histoire sans introduction.";
+$defaultTestText = "TEST : Raconte de manière créative et drôle un souvenir fictif et aléatoire où Mathieu CHARREYRE fait une chose délirante. Commence directement par l'histoire sans introduction.";
 
 $testText = trim($_REQUEST['text'] ?? $defaultTestText);
 if (empty($testText)) {
@@ -27,8 +27,8 @@ if ($testEngine !== '' && in_array($testEngine, ['cerebras','groq','mistral','op
     $testEngineLabel = null;
 }
 
-function get_requests_log_path(): string { return __DIR__ . '/moteurs/log/requests.log'; }
-function get_error_log_path(): string    { return __DIR__ . '/moteurs/log/error.log'; }
+function get_requests_log_path(): string { return __DIR__ . '/log/requests.log'; }
+function get_error_log_path(): string    { return __DIR__ . '/log/error.log'; }
 function ensure_reformulator_log_file(string $p): void {
     $d = dirname($p);
     if (!is_dir($d)) @mkdir($d, 0755, true);
@@ -70,7 +70,7 @@ function parse_llm_info_from_server_file(): array {
     return $info;
 }
 function get_llm_info(): array {
-    $ch = curl_init('https://charreyre.net/r3M3M83r/reformulator/llm-info');
+    $ch = curl_init('https://mathieu.charreyre.net/r3M3M83r/moteurs/llm-info');
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_HTTPHEADER => ['Accept: application/json']]);
     $r = curl_exec($ch); curl_close($ch);
     if ($r !== false) {
@@ -92,11 +92,13 @@ $llmEngine = $llmInfo['engineName'] ?? 'INCONNU';
 // ── Appel reformulateur ──────────────────────────────────────────────────────
 $payload = ['text' => $testText];
 if ($testEngine !== '') $payload['engine'] = $testEngine;
+$payloadJson = json_encode($payload);
+if ($payloadJson === false) die('Erreur JSON payload');
 
 $ch = curl_init($endpoint);
 curl_setopt_array($ch, [
     CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => json_encode($payload),
+    CURLOPT_POSTFIELDS     => $payloadJson,
     CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT        => 30,
@@ -120,6 +122,11 @@ elseif (is_array($decoded) && !empty($decoded['error']))
 $curlInfo        = curl_version();
 $packageJsonPath = __DIR__ . '/reformulator/package.json';
 
+function esc(string $s): string {
+    global $wantPlain;
+    return ($wantPlain ?? false) ? $s : htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
 // ── Rendu ────────────────────────────────────────────────────────────────────
 if (!$wantPlain) {
     header('Content-Type: text/html; charset=UTF-8');
@@ -140,7 +147,7 @@ echo "Moteurs dispo   : " . implode(', ', $llmInfo['availableEngines'] ?? []) . 
 echo "$sep\n\n";
 
 echo "=== PROMPT ENVOYÉ ===\n";
-echo $testText . "\n\n";
+echo esc($testText) . "\n\n";
 echo "$sep\n\n";
 
 echo "HTTP code       : $httpCode\n";
@@ -158,7 +165,7 @@ if (!empty($attempts)) {
         $err    = $a['error'] ?? '';
         $icon   = ($status === 'success') ? '✓' : (($status === 'skipped') ? '○' : '✗');
         echo "  $icon $n. $eng ($mod) → $status";
-        if ($err !== '' && $err !== null) echo " — $err";
+        if ($err !== '' && $err !== null) echo " — " . esc($err);
         echo "\n";
     }
     echo "\n";
@@ -170,7 +177,7 @@ echo "$sub\nRÉSULTAT\n$sub\n";
 if ($cleaned !== null && $cleaned !== '') {
     $finalEngine = strtoupper($usedEngine ?? '?');
     $finalModel  = $usedModel ?? '?';
-    echo "✓ Reformulation OK via $finalEngine ($finalModel) :\n\n$cleaned\n";
+    echo "✓ Reformulation OK via " . esc($finalEngine) . " (" . esc($finalModel) . ") :\n\n" . esc($cleaned) . "\n";
 } elseif ($httpCode === 0 || $curlErr !== '') {
     echo "✗ Impossible de joindre le service Node.js.\n";
     echo "  → cPanel › Node.js Apps › reformulator › Restart\n";
@@ -179,23 +186,23 @@ if ($cleaned !== null && $cleaned !== '') {
     echo "✗ HTTP 404 — route introuvable.\n";
     echo "  → Vérifier Application URL = /r3M3M83r/reformulator et Startup file = server.js\n";
     if ($result !== false && trim($result) !== '')
-        echo "\n  Réponse brute :\n  " . substr(trim($result), 0, 600) . "\n";
+        echo "\n  Réponse brute :\n  " . esc(substr(trim($result), 0, 600)) . "\n";
 } elseif ($httpCode === 429) {
     echo "✗ HTTP 429 — rate limit (voir séquence ci-dessus pour le moteur concerné).\n";
-    if ($llmErrorDetails) echo "  Détail API : $llmErrorDetails\n";
+    if ($llmErrorDetails) echo "  Détail API : " . esc($llmErrorDetails) . "\n";
     echo "  → Attendre et réessayer, ou choisir un autre moteur\n";
 } elseif ($httpCode >= 500) {
     echo "✗ HTTP $httpCode — erreur Node.js (voir séquence ci-dessus).\n";
-    if ($llmErrorDetails) echo "\n  Détail : $llmErrorDetails\n";
+    if ($llmErrorDetails) echo "  Détail API : " . esc($llmErrorDetails) . "\n";
     if (is_array($decoded))
-        echo "\n  JSON complet :\n" . json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
+        echo "\n  JSON complet :\n" . esc(json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)) . "\n";
     elseif ($result !== false && trim($result) !== '')
-        echo "\n  Réponse brute :\n  " . substr(trim($result), 0, 800) . "\n";
+        echo "\n  Réponse brute :\n  " . esc(substr(trim($result), 0, 800)) . "\n";
     echo "\n  Causes fréquentes : Modèle inexistant, clef API invalide, quota dépassé\n";
 } else {
     echo "✗ Réponse inattendue (HTTP $httpCode).\n";
     if ($result !== false && trim($result) !== '')
-        echo "\n  Réponse brute :\n  " . substr(trim($result), 0, 600) . "\n";
+        echo "\n  Réponse brute :\n  " . esc(substr(trim($result), 0, 600)) . "\n";
 }
 
 echo "\n$sep\nENVIRONNEMENT\n$sub\n";

@@ -126,7 +126,7 @@
             }
             return $scheme . '://' . $_SERVER['HTTP_HOST'] . $dir . '/moteurs';
         }
-        return 'https://charreyre.net/r3M3M83r/moteurs';
+        return 'https://mathieu.charreyre.net/r3M3M83r/moteurs';
     }
 
     define('REFORMULATOR_BASE_URL', get_reformulator_base_url());
@@ -583,7 +583,7 @@
             . "\n\n...[contexte tronque pour rester sous les quotas TPM des moteurs]...";
     }
 
-    function memory_debug_text($debug): string {
+    function memory_debug_text(mixed $debug): string {
         if (is_array($debug)) {
             if (isset($debug['text']) && is_string($debug['text'])) {
                 return $debug['text'];
@@ -865,8 +865,8 @@
             $relevantSections = [];
         }
 
-        $maxSections = 2;
-        $perSectionLimit = 1200;
+        $maxSections = 4;
+        $perSectionLimit = 4000;
         $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
         $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
 
@@ -875,7 +875,7 @@
             $ctx .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
         }
 
-        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 24, $primaryTerms);
+        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 64, $primaryTerms);
         if (!empty($rankedLines)) {
             $ctx .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
             foreach ($rankedLines as $item) {
@@ -940,7 +940,7 @@
             . ' — envoye ' . $sentChars . ' car. (fichier local NON transmis)';
 
         return [
-            'context' => cap_memory_context_for_llm($ctx, 12000),
+            'context' => cap_memory_context_for_llm($ctx, 24000),
             'debug'   => [
                 'text'      => $debug_text,
                 'metrics'   => $metrics,

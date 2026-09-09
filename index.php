@@ -92,7 +92,7 @@
             a.card p{margin:0;font-size:.92rem;color:#94a3b8;line-height:1.45;flex:1}
             a.card .go{font-size:.88rem;color:#7dd3fc;font-weight:600}
             footer{text-align:center;padding:1rem 1.25rem 1.4rem;font-size:.8rem;color:#64748b;line-height:1.55}
-            footer .disclaimer{display:block;margin-bottom:.35rem;color:#64748b;text}
+            footer .disclaimer{display:block;margin-bottom:.35rem;color:#64748b}
             footer a{color:#38bdf8;text-decoration:none}
             footer a:hover{text-decoration:underline}
 
@@ -148,7 +148,7 @@
         </div>
         <footer>
             <span class="disclaimer">Verifier les faits importants dans le <a href="https://mathieu.charreyre.net/r3M3M83r/instructions.md" target="_blank" rel="noopener noreferrer" title="Fichier mémoriel de Mathieu CHARREYRE">fichier source</a>.</span>
-            Projet <a href="https://mathieu.charreyre.net/r3M3M83r" title="r3M3M83r" title="r3M3M83r">r3M3M83r</a>
+            Projet <a href="https://mathieu.charreyre.net/r3M3M83r" title="r3M3M83r">r3M3M83r</a>
         </footer>
     </body>
 </html>

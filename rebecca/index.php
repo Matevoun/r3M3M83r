@@ -378,7 +378,7 @@
                 }
 
                 if ($finalReply === '') {
-                    $baseUrl = function_exists('get_reformulator_base_url') ? get_reformulator_base_url() : 'https://charreyre.net/r3M3M83r/reformulator';
+                    $baseUrl = function_exists('get_reformulator_base_url') ? get_reformulator_base_url() : 'https://mathieu.charreyre.net/r3M3M83r/moteurs';
                     $url = rtrim($baseUrl, '/') . '/reformuler';
                     $payload = [
                         'text' => $questionForLLM,
@@ -647,7 +647,7 @@
                 border-top:1px solid #e5e7eb;
                 display:flex;
                 gap:.6rem;
-                align-items:flex-end;
+                align-items: stretch; /* bouton = même hauteur que le textarea */
                 position:sticky;
                 bottom:0;
             }
@@ -665,6 +665,9 @@
             }
             #composer textarea:focus{border-color:#16275b;box-shadow:0 0 0 3px rgba(22,39,91,.08)}
             #send{
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 min-width:104px;
                 padding:.75rem 1rem;
                 border-radius:12px;
@@ -745,7 +748,7 @@
                 <!-- Ligne du haut : Label + Select en mode flexible -->
                 <div class="engine-main-row">
                     <label for="engineSelect" class="engine-label">Moteur :</label>
-                    <select id="engineSelect" aria-label="Choix moteur IA">
+                    <select id="engineSelect" aria-label="Choix moteur IA" title="Choisissez le moteur LLM">
                         <?php
                             $enginePref = '';
                             echo llm_render_engine_options($enginePref, $llmInfo);
@@ -755,6 +758,7 @@
 
                 <!-- Ligne des boutons RAZ et Vider (qui passeront en dessous en responsive) -->
                 <div class="engine-actions-row">
+                    <button class="secondary" id="testCurlBtn" onclick="openTestCurlModal()" title="Lancer le diagnostic cURL du LLM">Test</button>
                     <button class="secondary" id="resetEngineBtn" title="Vide cache Node + recharge">RAZ</button>
                     <button class="secondary" id="clearChatBtn" title="Vide historique de discussion">Vider</button>
                 </div>
@@ -771,11 +775,25 @@
             <div id="messages" aria-live="polite" aria-label="Historique tchat"></div>
             <div id="composer">
                 <textarea id="input" placeholder="Questionner la mémoire de Mathieu ..." aria-label="Message"></textarea>
-                <button id="send" aria-label="Envoyer message">Envoyer</button>
+                <button id="send" aria-label="Envoyer message" title="Demander à Rebecca ...">Envoyer</button>
             </div>
             <div id="loading" class="loading-overlay" aria-hidden="true">
                 <div class="spinner" aria-hidden="true"></div>
-                <div class="loading-text">Interrogation de instructions.md ...<br>Expansion intention + preuves + appel LLM</div>
+                <div class="loading-text">Chargement du pipeline ...</div>
+            </div>
+        </div>
+
+        <div id="testCurlModal" class="loading-overlay" style="display:none; align-items:center; justify-content:center;">
+            <div style="background:#fff; width:92%; max-width:850px; max-height:85vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 10px 25px rgba(0,0,0,0.25); overflow:hidden; text-align:left;">
+                <div style="background:#16275b; color:#fff; padding:.8rem 1.2rem; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="font-family:Arial,sans-serif; font-size:.95rem;">Diagnostic cURL &mdash; Séquence LLM</strong>
+                    <button onclick="closeTestCurlModal()" style="background:#e53e3e; color:#fff; border:none; border-radius:4px; padding:.2rem .6rem; font-size:.85rem; cursor:pointer;">&times; Fermer</button>
+                </div>
+                <div id="testCurlContent" style="padding:1rem; overflow-y:auto; flex:1; font-family:Menlo,Consolas,monospace; font-size:.82rem; background:#0f1117; color:#c9d1d9; white-space:pre-wrap; word-break:break-word; line-height:1.45;">Chargement du diagnostic ...</div>
+                <div style="padding:.8rem 1rem; background:#f5f5f5; text-align:right; font-size:.93rem; color:#333; display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap;">
+                    <span style="font-size:.9rem;">Si le chargement n&rsquo;aboutit pas : <a href="../moteurs/test_curl.php" target="_blank" rel="noopener noreferrer" style="color:#0f1f4a;text-decoration:underline;">Ouvrir dans un nouvel onglet</a></span>
+                    <button id="copyTestCurlOutput" type="button" style="background:#374e8c;color:#fff;border:none;padding:.4rem .85rem;border-radius:5px;cursor:pointer;font-size:.9rem;flex-shrink:0;">Copier le rapport</button>
+                </div>
             </div>
         </div>
 
@@ -1090,6 +1108,44 @@
                         setTimeout(() => statusEl.textContent = '', 3000);
                     });
             };
+
+            // ===== Modale diagnostic cURL =====
+            function openTestCurlModal() {
+                const modal = document.getElementById('testCurlModal');
+                const content = document.getElementById('testCurlContent');
+                modal.style.display = 'flex';
+                content.textContent = 'Exécution du test cURL et interrogation du service Node.js ...';
+
+                fetch('../moteurs/test_curl.php?plain=1')
+                    .then(res => res.text())
+                    .then(text => {
+                        content.textContent = text;
+                    })
+                    .catch(err => {
+                        content.textContent = 'Erreur lors de la récupération du test cURL : ' + err.message;
+                    });
+            }
+
+            const copyTestCurlBtn = document.getElementById('copyTestCurlOutput');
+            if (copyTestCurlBtn) {
+                copyTestCurlBtn.addEventListener('click', function () {
+                    const content = document.getElementById('testCurlContent');
+                    const text = content ? content.textContent : '';
+                    navigator.clipboard.writeText(text).then(function () {
+                        const orig = copyTestCurlBtn.textContent;
+                        copyTestCurlBtn.textContent = 'Copie effectuee !';
+                        setTimeout(function () { copyTestCurlBtn.textContent = orig; }, 1800);
+                    }).catch(function () {
+                        const orig = copyTestCurlBtn.textContent;
+                        copyTestCurlBtn.textContent = 'Erreur de copie';
+                        setTimeout(function () { copyTestCurlBtn.textContent = orig; }, 1800);
+                    });
+                });
+            }
+
+            function closeTestCurlModal() {
+                document.getElementById('testCurlModal').style.display = 'none';
+            }
         </script>
 
         <footer style="max-width:1100px;width:100%;margin:0 auto;padding:.65rem 1.2rem 1rem;text-align:right;font-size:.82rem;color:#6b7280;border-top:1px solid #e5e7eb;background:#f9fafb;">
@@ -1108,6 +1164,5 @@
                 echo r3m3m83r_node_health_ui('../moteurs/node_health.php');
             }
         ?>
-
     </body>
 </html>
