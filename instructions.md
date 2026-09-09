@@ -114,14 +114,17 @@ Pionnier du web Français — présent sur Internet bien avant son ouverture au 
 **Héritier et gardien** du Domaine Saint-Antonin (route de Vauvenargues, Jouques, 13490) — 89 ha 28 a 24 ca, acquis le 26 septembre 1636 par Annibal THUS et transmis de génération en génération jusqu'à lui (14e propriétaire) — il gère ce patrimoine bénévolement via l'Association TOUN (loi 1901, JO 24/06/2017). Sanctuaire animalier (refuge ASPAS/LPO depuis 2019), zone Natura 2000 et ZSC, hospitalité aux ruches d'apiculteurs depuis 2017, commodats d'exploitation : Vision résolument non prédatrice et écologique. L'autre moitié du Domaine est en indivision conflictuelle depuis 2009 avec ses cousins VILLIERS (héritiers de sa tante maternelle Dominique MONTJOL, ex-épouse VILLIERS, décédée le 25 mars 2009).
 
 Sa compagne est **Anne-Sophie LESAGE-MÜNCH** (née le 10/02/1982 à Liège, journaliste pour Connaissance des Arts, surnommée AnSo).
-Sa fille **Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 07/06/2015, dans le même hôpital que son père, Pitié-Salpêtrière) s'est vue léguer le studio de la Villa Jacquemont (3 villa Jacquemont, 75017 Paris), entièrement rénové entre mars et juillet 2025 (> 25 000 €) et loué en AirBnB sous l'enseigne "La Villa Le Reliquaire" depuis septembre 2025, Mathieu en conservant l'usufruit. Leur foyer parisien accueille 4 chats (Ankou, Spotty, Elvira) et un chien Luna (née 01/08/2018, adoptée en 2024 après la tragédie de Jonathan RABINO, ancien chevrier du Domaine). Sabbath est décédée le 27 mars 2026 à la clinique Les Vétos Parisiens (145 rue de la Pompe, 75116 Paris), d'une insuffisance rénale, et Morticia le 23 Juillet 2026 dés suite de son cancer, au Domaine Saint-Antonin.
+Sa fille **Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 07/06/2015, dans le même hôpital que son père, Pitié-Salpêtrière) s'est vue léguer le studio de la Villa Jacquemont (3 villa Jacquemont, 75017 Paris), entièrement rénové entre mars et juillet 2025 (> 25 000 €) et loué en AirBnB sous l'enseigne "La Villa Le Reliquaire" ( https://villa.lereliquaire.fr ) depuis septembre 2025, Mathieu en conservant l'usufruit. Leur foyer Parisien accueille des chats (Ankou, Spotty, Elvira) et un chien Luna (née 01/08/2018, adoptée en 2024 après la tragédie de Jonathan RABINO, ancien chevrier du Domaine Saint-Antonin). Sabbath est décédée le 27 mars 2026 à la clinique Les Vétos Parisiens (145 rue de la Pompe, 75116 Paris), d'une insuffisance rénale, et Morticia le 23 Juillet 2026 dés suite de son cancer, au Domaine Saint-Antonin.
 
-Photographe Artistique professionnel (PhotoMat, AGESSA, SIRET 519 384 226 00014, APE 90.03A), il saisit le monde avec un regard singulier, plus par conviction que pour la gloire ou l'argent. Passionné de jeux vidéo (WoW Alliance depuis 2005, guilde propre ; No Man's Sky backer originel ; Hogwarts Legacy), de musique rock et garage (The Hives en tête, AC/DC, Guns N' Roses, Kavinsky, Nirvana, Fever Ray), de cinéma (Subway vu 600+ fois, WarGames, Retour vers le Futur volet 2, Wayne's World) et d'observation de la faune sauvage sur le Domaine.
+Photographe Artistique professionnel (PhotoMat, AGESSA, SIRET 519 384 226 00014, APE 90.03A), il saisit le monde avec un regard singulier, plus par conviction que pour la gloire ou l'argent. Passionné de jeux vidéo (WoW Alliance depuis 2005, guilde propre ; No Man's Sky backer originel ; Hogwarts Legacy), de musique rock et garage (The Hives en tête, AC/DC, Guns N' Roses, Kavinsky, Nirvana, Fever Ray), mais aussi de musique classique et d’opéra italien (ROSSINI en particulier, avec une prédilection absolue pour le Barbier de Séville dans la version Abbado/Ponnelle de 1972), de cinéma (Subway vu 600+ fois, WarGames, Retour vers le Futur volet 2, Wayne's World) et d'observation de la faune sauvage sur le Domaine Saint-Antonin.
 
-Ses épreuves majeures : le conflit d'indivision sur le Domaine Saint-Antonin depuis 2009, la perte de son père Henri (2017) puis de sa mère Anne (2023), et la pose d'un pacemaker en 2025 (arythmie congénitale aggravée par le stress prolongé du conflit ; bicuspidie aortique découverte lors de l'opération). Il gère ces défis seul, avec rigueur et humour autodérisoire.
+Ses épreuves majeures : Le conflit d'indivision sur le Domaine Saint-Antonin depuis 2009, la perte de son père Henri (2017) puis de sa mère Anne (2023), et la pose d'un pacemaker en 2025 (arythmie congénitale aggravée par le stress prolongé du conflit ; bicuspidie aortique découverte lors de l'opération). Il gère ces défis seul, avec rigueur et humour autodérisoire.
 
 Son pseudonyme principal est **Matevoun** (Mathieu en provençal, lié à ses racines maternelles provençales) ou **Casio** (lié à sa passion digitale et rétro-numérique).
-Il est Domicilié au 44 rue de la Faisanderie, 75116 Paris depuis 2021.
+Mathieu est Domicilié au 44 rue de la Faisanderie, 75116 Paris depuis 2021.
+Mathieu habitait avant au 3 villa Jacquemont, 75017 Paris de 1995 à 2001, puis il l'a légué à Ambre en Juin 2024.
+Mathieu habitait auparavant au 44 rue de la Faisanderie, 75116 Paris de 1983 à 1995.
+Mathieu habitait au 6 rampe de l'Eglise, 27950 Saint-Marcel (Vernon), de sa naissance jusqu'a fin 1983.
 Son téléphone mobile est inchangé depuis 1995 : **06.11.53.30.69**.
 
 ---
@@ -2663,8 +2666,33 @@ Mathieu a plusieurs films préférés, avec des détails spécifiques :
 - **Top titres 2025 (annuel Last.fm)** : #2 Time to Dance (60 écoutes), #3 Jouer Dehors (59), #4 MY DRUGS ARE DIGITAL (52), #5 Chaise Longue (48). (#1 non renseigné.)
 - **Top album années 2020 (Last.fm)** : Ugly is Beautiful (Oliver Tree).
 
+##### Musique classique et opéra
+
+Mathieu aime également beaucoup la musique classique, et tout particulièrement l’opéra Italien.
+Rossini occupe une place de choix dans ses goûts. Il n’a rien contre les grands classiques Allemands (Mozart, Beethoven, ...), les « classiques des classiques ».
+
+Son opéra préféré (et son morceau classique de référence absolue) est **Le Barbier de Séville** (*Il barbiere di Siviglia*) de Gioachino ROSSINI. La version qu’il considère comme la plus légendaire et emblématique reste la production de 1972 dirigée par Claudio ABBADO, mise en scène par Jean-Pierre PONNELLE, avec Hermann PREY dans le rôle-titre de Figaro et Luigi ALVA en Comte Almaviva.
+Les deux interprètes y sont merveilleux pour Mathieu, aussi bien au chant qu’à l’écran.
+Cette captation, parfaitement réalisée, a été entièrement restaurée et upscalée en 4K en 2025.
+Mathieu la regarde régulièrement sur YouTube et la considère comme *l’* opéra de référence.
+
+Ce goût pour le classique et ROSSINI lui vient clairement de ses parents.
+Il se souvient parfaitement d’une soirée dans le salon de la rue de la Faisanderie : Ses parents écoutaient le Barbier à très fort volume sur leurs enceintes Cabasse Sloop 321-1.
+Les murs vibraient. Henri CHARREYRE était installé dans le fauteuil de l’entrée du salon, tête en arrière, yeux fermés, planant sur le vinyle. Anne MONTJOL était dans le fauteuil en face de lui. Quand Mathieu est rentré, ils l’ont regardé brièvement et Henri lui a lancé à peu près : « Écoute... écoute... C’est autre chose que la merde que tu écoutes a longueur de journée... Écoute ça... ». Ce souvenir est resté parfaitement net.
+
+##### Musique Rock
+Mathieu adore **Nirvana**, **AC/DC**, **Aerosmith**, **The Hives**, **Andrew WK**, **Iron Maiden**, **Foo Fighters**, **Def Leppard**, **Guns n' Roses**, **Tom PETTY**, **The Who**, **Wet Leg**, **Korn** ...
+
+##### Musique POP
+Mathieu apprecie **Michael JACKSON**, ADORE **Peter GABRIEL**, **Genesis** ...
+
+##### Musique Electro
+Mathieu apprecie particuliérement **Fever Ray**, **Oliver TREE**, **Daft Punk**, **Gorillaz**, **Laurent GARNIER**, **Vitalic**, ...
+
 ##### Anecdotes
-Mathieu adore **Nirvana**, Andrew WK, Foo Fighters, Def Leppard, AC/DC, Iron Maiden, Fever Ray, The Who, **Oliver TREE**, **Talking Heads** (découverts vers ses 15 ans à la Croix-Valmer via une cassette de son cousin Philippe PAULY — *Little Creatures*, claque immédiate, en boucle pendant des semaines, jusqu'à épuiser les piles du walkman AIWA sous le soleil de la plage Héraclée).
+À une époque, Mathieu n’arrivait pas à s’endormir sans écouter au casque le **Le Barbier de Séville**, la version dirigée par Claudio ABBADO avec Hermann PREY et Luigi ALVA, allongé dans son lit, dans le noir.
+
+Mathieu a découvert **Talking Heads** vers ses 15 ans à la Croix-Valmer via une cassette de son cousin Philippe PAULY (*Little Creatures*), claque immédiate, en boucle pendant des semaines, jusqu'à épuiser les piles du walkman AIWA sous le soleil de la plage Héraclée.
 
 The Hives est le groupe de rock garage préféré de Mathieu, brut et intelligent.
 
@@ -2673,7 +2701,7 @@ The Hives est le groupe de rock garage préféré de Mathieu, brut et intelligen
 **Oliver TREE et Little Big** : Mathieu a découvert Oliver TREE grâce à ses featuring avec **Little Big**, un groupe russe délirant qu'il adore. Rapidement tombé sur la chaîne YouTube d'Oliver TREE après les clips de Little Big, il a été scotché par un univers si soigné, précis, travaillé — et par l'âge du mec. Oliver incarnait un génie créatif multifacettes : musique, réalisation, humour absurde, vidéos virales. Le 14 juin 2026, Oliver TREE meurt dans un accident d'hélicoptère à Rio de Janeiro (deux hélicoptères entrent en collision en plein vol, six morts dont lui). Il avait 32 ans, en plein sommet de sa carrière. Mathieu est bizarrement très touché par cette disparition — contrairement à d'autres décès de célébrités qui le laissent indifférent (comme celui d'**Ozzy OSBOURNE**, dont il serait presque soulagé pour lui). Ce qui le marque, ce n'est pas tant l'homme en question (qu'il imagine comme un "affreux sale gosse connard"), mais ce qu'il pouvait encore apporter au monde. Cette mort brutale et absurde lui renvoie l'urgence de finir les choses, de ne pas remettre au lendemain. Oliver était tellement speed, faisait tellement de trucs — et meurt comme ça, bêtement. Un goût d'inachevé, comme **Kurt COBAIN** à 27 ans. Mathieu a écouté Oliver TREE en boucle les 14 et 15 juin 2026, comme un hommage ultime. Cette disparition a déclenché chez lui une réflexion philosophique profonde : l'avenir n'est jamais écrit, la vie est courte, et il faut créer maintenant. Peut-être que, comme pour Kurt, cette mort obligatoire fera émerger des choses qui n'auraient pas vu le jour sinon — mais ça fait chier quand même. L'indignation et la déception face à ces deux pertes restent vives : le monde a perdu deux artistes qui avaient encore des millions de choses à créer.
 
 **Anecdotes diverses** :
-**Builly ze Kick** et **Nathalie COUSIN** : Mathieu se rendait fréquemment au **Virgin Megastore** des Champs-Élysées, situé au 52-60 avenue des Champs-Élysées, dans les premières années de la décennie 1990. À cette époque, l’enseigne constituait l’un des rares revendeurs Parisiens à proposer l’écoute autonome et libre des disques.
+**Billy ze Kick** et **Nathalie COUSIN** : Mathieu se rendait fréquemment au **Virgin Megastore** des Champs-Élysées, situé au 52-60 avenue des Champs-Élysées, dans les premières années de la décennie 1990. À cette époque, l’enseigne constituait l’un des rares revendeurs Parisiens à proposer l’écoute autonome et libre des disques.
 Un jour, probablement à la fin de l’année 1993 ou au début de 1994, alors qu’il évoluait au premier étage de l’établissement, occupé à parcourir les rayonnages et à écouter des albums en CD, il fut attiré par une agitation inhabituelle dans le hall du bâtiment marbré qui se situait à la jonction de deux grands escaliers.
 
 Une scène musicale semblait se monter en hâte, dans un désordre apparent : Confettis éparpillés, tissus traînant çà et là, instruments rudimentaires. Mathieu s’accouda à la balustrade du premier étage qui offrait une vue dégagée sur l’ensemble du hall. À ses côtés, une jeune femme au style punk, aux cheveux courts et bruns, observait également la scène. Ils échangèrent quelques remarques sur l’organisation chaotique de l’installation, Mathieu plaisantant sur l’identité des artistes attendus : *« Des alternatifs ? »* La jeune femme, tout aussi sceptique, répondit : *« Je ne sais pas, mais leur truc a l’air bien bordélique ... »* Leur échange, ponctué de commentaires sur la musique, dura une bonne vingtaine de minutes, tandis qu’ils parcouraient les rayonnages musicaux proches ensemble.
