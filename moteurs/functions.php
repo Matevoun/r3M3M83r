@@ -940,7 +940,7 @@
             . ' — envoye ' . $sentChars . ' car.';
 
         return [
-            'context' => cap_memory_context_for_llm($ctx, 24000),
+            'context' => $ctx,
             'debug'   => [
                 'text'      => $debug_text,
                 'metrics'   => $metrics,

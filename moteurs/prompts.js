@@ -306,6 +306,7 @@ CHAT
 
 MEMORY = la question porte sur Mathieu, sa vie, sa famille, ses amis, ses animaux, son Domaine, son passe, des faits dans le fichier memoire, ou un suivi de ce type (pronoms renvoyant a un sujet memoire deja evoque).
 CHAT = politesse, salutation (salut, bonjour, hello, coucou, merci), meta (qui es-tu, comment vas-tu), heure/date actuelle, blague, discussion generale sans besoin du fichier memoire.
+Exemples MEMORY (toujours) : "qui est X", "c'est qui X", "qui c'est X", "quel age a X", "ou habite X".
 
 Un message d'un ou deux mots de politesse, sans question factuelle, est TOUJOURS CHAT.
 N'ouvre PAS le fichier memoire pour dire bonjour.

@@ -845,15 +845,15 @@ Mathieu a accepté purement et simplement la succession.
 - **Surface cadastrale totale enregistrée** : 103 ha 88 a 35 ca, incluant 52 parcelles à Jouques et 6 parcelles à Meyrargues.
   - Jouques : 89 ha 28 a 24 ca (parcelles Section D, lieux-dits : La Tour, Saint-Antonin, Chante-Merles, La Payanne).
   - Meyrargues : 14 ha 60 a 11 ca (parcelles Section E, lieux-dits : Saint Claude, Le Lauvas).
-- **Liste des parcelles cadastrales** :
-  - **Meyrargues**
+- **Liste des parcelles cadastrales du Domaine Saint-Antonin dans l'héritage MONTJOL-CHARREYRE (en 2024)** :
+  - **Village de Meyrargues**
     - Section E n°0239, Lieudit Saint Claude, 1 ha 32 a 40 ca, nature Taillis
     - Section E n°0443, Lieudit Le Lauvas, 0 ha 11 a 64 ca, nature Terre
     - Section E n°0454, Lieudit Le Lauvas, 0 ha 43 a 60 ca, nature Taillis
     - Section E n°0457, Lieudit Le Lauvas, 4 ha 80 a 00 ca, nature Taillis
     - Section E n°0461, Lieudit Le Lauvas, 0 ha 00 a 47 ca, nature Lande
     - Section E n°0464, Lieudit Le Lauvas, 7 ha 92 a 00 ca, nature Taillis
-  - **Jouques**
+  - **Village de Jouques**
     - Section D n°0077, Lieudit La Tour, 0 ha 30 a 80 ca, nature Bois
     - Section D n°0078, Lieudit La Tour, 0 ha 01 a 50 ca, nature Eaux
     - Section D n°0079, Lieudit La Tour, 0 ha 00 a 28 ca, nature Sol
@@ -3155,15 +3155,15 @@ Le Domaine Saint-Antonin appartient aujourd'hui encore aux descendants d'Annibal
 
 **Mise à jour cadastrale** : 19 juin 2024.
 
-**Parcelles cadastrales du Domaine Saint-Antonin (2024)** : 103 ha 88 a 35 ca au total, répartis entre Jouques et Meyrargues.
-  - **Meyrargues** — 6 parcelles, 14 ha 60 a 11 ca
+**Liste des parcelles cadastrales du Domaine Saint-Antonin (en 2024)** : 103 ha 88 a 35 ca au total, répartis entre les villages de Jouques (13490) et de Meyrargues (13650).
+  - **Village de Meyrargues** — 6 parcelles, 14 ha 60 a 11 ca
     - Section E n°0239, Lieudit Saint Claude, 1 ha 32 a 40 ca, nature Taillis
     - Section E n°0443, Lieudit Le Lauvas, 0 ha 11 a 64 ca, nature Terre
     - Section E n°0454, Lieudit Le Lauvas, 0 ha 43 a 60 ca, nature Taillis
     - Section E n°0457, Lieudit Le Lauvas, 4 ha 80 a 00 ca, nature Taillis
     - Section E n°0461, Lieudit Le Lauvas, 0 ha 00 a 47 ca, nature Lande
     - Section E n°0464, Lieudit Le Lauvas, 7 ha 92 a 00 ca, nature Taillis
-  - **Jouques** — 52 parcelles, 89 ha 28 a 24 ca
+  - **Village de Jouques** — 52 parcelles, 89 ha 28 a 24 ca
     - Section D n°0077, Lieudit La Tour, 0 ha 30 a 80 ca, nature Bois
     - Section D n°0078, Lieudit La Tour, 0 ha 01 a 50 ca, nature Eaux
     - Section D n°0079, Lieudit La Tour, 0 ha 00 a 28 ca, nature Sol

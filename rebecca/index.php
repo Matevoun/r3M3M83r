@@ -172,14 +172,15 @@
         if (mb_strlen($m, 'UTF-8') > 120) {
             return false;
         }
-        // Factuel mele a une politesse ("salut, c'est qui Luna ?") -> pas smalltalk
-        if (preg_match('/\b(qui\s+(est|sont)|c[\'’ ]?est\s+qui|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousin|chien|chat|luna|domaine|saint-?antonin|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire)\b/iu', $m)) {
+        // Factuel (même court) → PAS smalltalk
+        if (chat_looks_like_memory_question($m)) {
             return false;
         }
         if (preg_match('/\b(salut|bonjour|bonsoir|hello|hi|hey|yo|wesh|coucou|merci|ok|okay|ciao|bonne\s+journ|bon\s+app|[cç]a\s+va|[cç]a\s+farte|[cç]a\s+gaze|farte|kiff|la\s+forme|quoi\s+de\s+neuf|et\s+toi|tu\s+vas|vous\s+allez|comment\s+([cç]a|tu|vous)|vas[\s-]*tu|allez[\s-]*vous)\b/iu', $m)) {
             return true;
         }
-        if (mb_strlen($m, 'UTF-8') <= 40) {
+        // Court SANS « ? » → possible politesse ; avec « ? » on laisse le routeur / filet
+        if (mb_strlen($m, 'UTF-8') <= 40 && strpos($m, '?') === false) {
             return true;
         }
         return false;
@@ -190,7 +191,10 @@
         if ($m === '') {
             return false;
         }
-        return (bool) preg_match('/\b(qui\s+(est|sont)|c[\'’ ]?est\s+qui|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousin|chien|chat|luna|domaine|saint-?antonin|mathieu|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire)\b/iu', $m);
+        return (bool) preg_match(
+            '/\b(qui\s+(est|sont|était|etait|étaient|etaient)|c[\'’ ]?est\s+qui|qui\s+c[\'’ ]?est|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousin|chien|chat|luna|domaine|saint-?antonin|mathieu|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire|avait|nommé|nomme)\b/iu',
+            $m
+        );
     }
 
     function chat_route_needs_memory(string $message, string $historySnippet = ''): array {
@@ -219,12 +223,21 @@
             $raw = (string) call_reformulator_service($payload);
         }
         $norm = mb_strtoupper(trim(preg_replace('/\s+/', ' ', $raw)), 'UTF-8');
+
+        // Routeur a dit CHAT clairement
         if (preg_match('/\bCHAT\b/', $norm) && !preg_match('/\bMEMORY\b/', $norm)) {
+            // Filet : question factuelle type "qui est X" → on force MEMORY
+            if (chat_looks_like_memory_question($message)) {
+                return ['needs_memory' => true, 'raw' => $raw, 'debug' => 'route=MEMORY (filet factuel, routeur a dit CHAT)'];
+            }
             return ['needs_memory' => false, 'raw' => $raw, 'debug' => 'route=CHAT'];
         }
+
         if (preg_match('/\bMEMORY\b/', $norm)) {
             return ['needs_memory' => true, 'raw' => $raw, 'debug' => 'route=MEMORY'];
         }
+
+        // Routeur muet / ambigu
         if (chat_looks_like_memory_question($message)) {
             return ['needs_memory' => true, 'raw' => $raw, 'debug' => 'route=MEMORY (filet factuel, routeur muet)'];
         }
@@ -426,7 +439,8 @@
                     'reply' => $finalReply,
                     'engine' => $usedEngine,
                     'model' => $usedModel,
-                    'debug' => $debugInfo
+                    'debug' => $debugInfo,
+                    'memoryContext' => $memoryContext
                 ], JSON_UNESCAPED_UNICODE);
                 exit;
             }
@@ -640,6 +654,46 @@
             .debug-panel summary:hover{color:#374151;background:#eef2ff;border-radius:8px}
             .debug-panel pre{margin:0;padding:.55rem .75rem .7rem;font-size:.72rem;line-height:1.45;white-space:pre-wrap;word-break:break-word;color:#4b5563;border-top:1px solid #e5e7eb;background:#fafbff;border-radius:0 0 8px 8px}
 
+            /* Modale */
+            .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.72);display:none;align-items:center;justify-content:center;z-index:1000;padding:1rem}
+            .modal-overlay.open{display:flex}
+            .modal{background:#fff;border-radius:14px;max-width:min(900px,100%);width:auto;min-width:320px;max-height:calc(100vh-2rem);box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
+            .modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;background:#0f1f4a;color:#fff}
+            .modal-header h2{font-size:1rem;margin:0}
+            .modal-body{
+                flex:1;
+                min-height:0;
+                overflow:hidden;
+                display:flex;
+                flex-direction:column;
+                background:#fff;
+            }
+            .modal-body pre{
+                margin:0;
+                padding:1rem;
+                background:#f7f9ff;
+                white-space:pre-wrap;
+                word-break:break-word;
+                font-family:Menlo,Consolas,monospace;
+                font-size:.82rem;
+                line-height:1.45;
+                color:#111;
+                overflow-y:auto;
+                max-height:min(70vh, 520px);
+            }
+            .modal-footer{padding:.75rem 1rem;background:#f5f5f5;text-align:right;font-size:.9rem}
+            .modal-link{color:#0a3d62;text-decoration:underline;cursor:pointer;font-weight:500}
+            .modal-close{
+                border:none;
+                background:transparent;
+                color:#fff;                 /* visible sur fond bleu du header */
+                font-size:1.25rem;
+                cursor:pointer;
+                padding:.25rem .5rem;
+                line-height:1;
+            }
+            .modal-close:hover{ opacity:.85; }
+
             /* ===== COMPOSER (zone saisie) ===== */
             #composer{
                 padding:.75rem;
@@ -783,20 +837,6 @@
             </div>
         </div>
 
-        <div id="testCurlModal" class="loading-overlay" style="display:none; align-items:center; justify-content:center;">
-            <div style="background:#fff; width:92%; max-width:850px; max-height:85vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 10px 25px rgba(0,0,0,0.25); overflow:hidden; text-align:left;">
-                <div style="background:#16275b; color:#fff; padding:.8rem 1.2rem; display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="font-family:Arial,sans-serif; font-size:.95rem;">Diagnostic cURL &mdash; Séquence LLM</strong>
-                    <button onclick="closeTestCurlModal()" style="background:#e53e3e; color:#fff; border:none; border-radius:4px; padding:.2rem .6rem; font-size:.85rem; cursor:pointer;">&times; Fermer</button>
-                </div>
-                <div id="testCurlContent" style="padding:1rem; overflow-y:auto; flex:1; font-family:Menlo,Consolas,monospace; font-size:.82rem; background:#0f1117; color:#c9d1d9; white-space:pre-wrap; word-break:break-word; line-height:1.45;">Chargement du diagnostic ...</div>
-                <div style="padding:.8rem 1rem; background:#f5f5f5; text-align:right; font-size:.93rem; color:#333; display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap;">
-                    <span style="font-size:.9rem;">Si le chargement n&rsquo;aboutit pas : <a href="../moteurs/test_curl.php" target="_blank" rel="noopener noreferrer" style="color:#0f1f4a;text-decoration:underline;">Ouvrir dans un nouvel onglet</a></span>
-                    <button id="copyTestCurlOutput" type="button" style="background:#374e8c;color:#fff;border:none;padding:.4rem .85rem;border-radius:5px;cursor:pointer;font-size:.9rem;flex-shrink:0;">Copier le rapport</button>
-                </div>
-            </div>
-        </div>
-
         <!-- CHAT_ADDON charge cote serveur (find_chat_prompt_js) ; pas besoin cote client -->
         <script>
             /* ========================================================================
@@ -910,80 +950,213 @@
             });
             }
 
-
-        /** Escape HTML puis **gras**, *italique*, sauts de ligne ; retire ## titres. */
-        function formatChatHtml(raw) {
-            if (!raw) return '';
-            let s = String(raw);
-            s = s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            s = s.replace(/^#{1,6}\s*/gm, '');
-            s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            s = s.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
-            s = s.replace(/\n/g, '<br>');
-            return s;
-        }
-
-        function render(){
-            messagesEl.innerHTML='';
-            history.forEach(m=>{
-                const div = document.createElement('div');
-                div.className='msg '+(m.role==='assistant'?'assistant':'user');
-                // Texte de la bulle dans son propre element : necessaire pour
-                // pouvoir ajouter toolbar/meta/debug APRES sans les ecraser
-                // (textContent sur div remplacerait tout enfant existant).
-                const bubbleText = document.createElement('div');
-                bubbleText.className = 'bubble-body';
-                // Affichage tchat : prose + gras leger, sans titres markdown bruts
-                bubbleText.innerHTML = formatChatHtml(m.content);
-                div.appendChild(bubbleText);
-
-                // CORRECTIF : les messages utilisateur n'ont plus AUCUN bloc
-                // .meta (meme vide) -- c'est ce div vide qui affichait une
-                // ligne grise fantome sous les bulles de question, puisque
-                // .meta porte un border-top meme sans contenu.
-                if(m.role==='assistant'){
-                // --- Barre d'outils : bouton Copier seul, juste sous la
-                // reponse, avant meta/debug, aligne a droite. Ne copie QUE
-                // le texte de la reponse (pas le debug) -- comportement
-                // volontairement conserve, la position/alignement suffit a
-                // lever l'ambiguite visuelle.
-                const toolbar = document.createElement('div');
-                toolbar.className='msg-toolbar';
-                const cp = document.createElement('button');
-                cp.className='copy-btn'; cp.textContent='📋 Copier';
-                cp.onclick=()=>{navigator.clipboard.writeText(m.content).then(()=>{cp.textContent='Copié !'; setTimeout(()=>cp.textContent='📋 Copier',1500)});};
-                toolbar.appendChild(cp);
-                div.appendChild(toolbar);
-
-                // --- Ligne meta : moteur + modele uniquement (plus le debug,
-                // deplace dans son propre panneau collapsible ci-dessous).
-                const meta = document.createElement('div');
-                meta.className='meta';
-                const eng = m.engine ? '· '+m.engine.toUpperCase() : '';
-                const span = document.createElement('span');
-                span.textContent = (m.model||'') + ' ' + eng;
-                meta.appendChild(span);
-                div.appendChild(meta);
-
-                // --- Debug : collapse par defaut, meme esthetique que
-                // reformulator/saisie.php (element <details> natif).
-                if(m.debug){
-                    const details = document.createElement('details');
-                    details.className='debug-panel';
-                    const summary = document.createElement('summary');
-                    summary.textContent='(preuves / contexte memoire)';
-                    const pre = document.createElement('pre');
-                    pre.textContent = m.debug;
-                    details.appendChild(summary);
-                    details.appendChild(pre);
-                    div.appendChild(details);
-                }
-                }
-                messagesEl.appendChild(div);
-            });
-            scrollToBottom(true);
+            /** Escape HTML puis **gras**, *italique*, sauts de ligne ; retire ## titres. */
+            function formatChatHtml(raw) {
+                if (!raw) return '';
+                let s = String(raw);
+                s = s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                s = s.replace(/^#{1,6}\s*/gm, '');
+                s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                s = s.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+                s = s.replace(/\n/g, '<br>');
+                return s;
             }
-            render();
+
+            /** Échappe les caractères HTML afin d’éviter les injections dans les attributs data‑* */
+            function escapeHtml(str) {
+                if (typeof str !== 'string') return '';
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            function openModal(type, content) {
+                const modal = document.getElementById('rebecca-modal');
+                const contentEl = document.getElementById('rebecca-modal-content');
+                const titleEl = document.getElementById('rebecca-modal-title');
+
+                if (contentEl) contentEl.textContent = content || '';
+                if (titleEl) {
+                    if (type === 'proofs') titleEl.textContent = 'Preuves directes du fichier';
+                    else if (type === 'extraits') titleEl.textContent = 'Extraits des sections';
+                    else if (type === 'intention') titleEl.textContent = 'Intention élargie';
+                    else if (type === 'test-curl') titleEl.textContent = 'Diagnostic cURL — Séquence LLM';
+                    else titleEl.textContent = 'Détail mémoire';
+                }
+                if (modal) modal.classList.add('open');
+            }
+
+            function closeRebeccaModal(){
+                const modal = document.getElementById('rebecca-modal');
+                if(modal) modal.classList.remove('open');
+            }
+
+            // Délégation : fonctionne même si le bouton est après le <script>
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('#rebecca-modal-copy');
+                if (!btn) return;
+                const text = document.getElementById('rebecca-modal-content')?.textContent || '';
+                navigator.clipboard.writeText(text).then(() => {
+                    const orig = btn.textContent;
+                    btn.textContent = 'Copié !';
+                    setTimeout(() => { btn.textContent = orig; }, 1500);
+                }).catch(() => {
+                    const orig = btn.textContent;
+                    btn.textContent = 'Erreur';
+                    setTimeout(() => { btn.textContent = orig; }, 1500);
+                });
+            });
+
+            // ===== BLOC 2 bis : Extraction des blocs PREUVES / EXTRAITS / INTENTION =====
+            function extractProofsBlock(ctx) {
+                if (!ctx) return '';
+                const m = ctx.match(/PREUVES DIRECTES[\s\S]*?(?=\n\nExtraits|\n\n--- Section|\n\nAucune|$)/i);
+                let text = m ? m[0].trim() : '';
+                if (!text) {
+                    const lines = ctx.split('\n').filter(l => /^-\s*\[/.test(l.trim()));
+                    text = lines.length ? lines.join('\n') : ctx;
+                }
+                // Saut de ligne propre après l'en-tête
+                text = text.replace(
+                    /^(PREUVES DIRECTES[^\n]*:)\s*/i,
+                    '$1\n\n'
+                );
+                return text;
+            }
+
+            function extractExcerptsBlock(ctx) {
+                if (!ctx) return '';
+                // Forme exacte produite par build_memory_context_for_topic()
+                let m = ctx.match(/Extraits courts des sections[\s\S]*$/i);
+                if (m && m[0].trim().length > 40) return m[0].trim();
+
+                // Fallback : tous les blocs --- Section
+                const parts = ctx.split(/(?=---\s*Section\s*:)/i).filter(p => /---\s*Section/i.test(p));
+                if (parts.length) return parts.join('\n\n').trim();
+
+                // Dernier recours : tout ce qui suit PREUVES
+                m = ctx.match(/PREUVES DIRECTES[\s\S]*$/i);
+                if (m) {
+                    const after = m[0].replace(/^PREUVES DIRECTES[\s\S]*?(?=\n---|\n\n[A-Z]|$)/i, '').trim();
+                    if (after.length > 40) return after;
+                }
+                return '';
+            }
+
+            function extractIntentionBlock(ctx) {
+                if (!ctx) return '';
+                const m = ctx.match(/Intention elargie[\s\S]*?(?=\n\nPREUVES DIRECTES|\n\nExtraits|\n\n--- Section|$)/i);
+                let text = m ? m[0].trim() : '';
+                if (text) {
+                    text = text.replace(
+                        /^(Intention elargie[^\n]*:)\s*/i,
+                        '$1\n\n'
+                    );
+                }
+                return text;
+            }
+
+            function render(){
+                messagesEl.innerHTML = '';
+                history.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'msg ' + (m.role === 'assistant' ? 'assistant' : 'user');
+
+                    const bubbleText = document.createElement('div');
+                    bubbleText.className = 'bubble-body';
+                    bubbleText.innerHTML = formatChatHtml(m.content);
+                    div.appendChild(bubbleText);
+
+                    if (m.role === 'assistant') {
+                        // Bouton Copier
+                        const toolbar = document.createElement('div');
+                        toolbar.className = 'msg-toolbar';
+                        const cp = document.createElement('button');
+                        cp.className = 'copy-btn';
+                        cp.textContent = '📋 Copier';
+                        cp.onclick = () => {
+                            navigator.clipboard.writeText(m.content).then(() => {
+                                cp.textContent = 'Copié !';
+                                setTimeout(() => cp.textContent = '📋 Copier', 1500);
+                            });
+                        };
+                        toolbar.appendChild(cp);
+                        div.appendChild(toolbar);
+
+                        // Ligne meta (propre, comme ce matin)
+                        const meta = document.createElement('div');
+                        meta.className = 'meta';
+                        const metaSpan = document.createElement('span');
+                        metaSpan.textContent = (m.model || '') + (m.engine ? ' · ' + m.engine.toUpperCase() : '');
+                        meta.appendChild(metaSpan);
+                        div.appendChild(meta);
+
+                        // Debug collapsible + liens utiles
+                        if (m.debug) {
+                            let proofCount = 0, excerptCount = 0;
+                            const proofMatch = m.debug.match(/(\d+)\s*preuve\(s\)/i);
+                            if (proofMatch) proofCount = parseInt(proofMatch[1], 10);
+                            const excerptMatch = m.debug.match(/(\d+)\s*extrait\(s\)/i);
+                            if (excerptMatch) excerptCount = parseInt(excerptMatch[1], 10);
+                            const hasIntention = /intention/i.test(m.debug);
+
+                            // Nombre de caractères (extrait du debug)
+                            let charsInfo = '';
+                            const charsMatch = m.debug.match(/envoye\s+(\d+)\s*car/i);
+                            if (charsMatch) charsInfo = ' — ' + charsMatch[1] + ' car.';
+
+                            const details = document.createElement('details');
+                            details.className = 'debug-panel';
+
+                            const summary = document.createElement('summary');
+                            summary.textContent = '(preuves / contexte memoire)';
+                            summary.title = 'Cliquer pour afficher les preuves, extraits et intention';
+                            details.appendChild(summary);
+
+                            const body = document.createElement('div');
+                            body.style.padding = '.55rem .75rem .7rem';
+                            body.style.fontSize = '.72rem';
+                            body.style.lineHeight = '1.45';
+                            body.style.color = '#4b5563';
+                            body.style.borderTop = '1px solid #e5e7eb';
+                            body.style.background = '#fafbff';
+
+                            const linksRow = document.createElement('div');
+                            const linkParts = [];
+                            if (proofCount > 0) {
+                                linkParts.push(`<a href="#" class="debug-link" data-type="proofs" style="color:#0a3d62;text-decoration:underline;">${proofCount} preuve(s)</a>`);
+                            }
+                            if (excerptCount > 0) {
+                                linkParts.push(`<a href="#" class="debug-link" data-type="extraits" style="color:#0a3d62;text-decoration:underline;">${excerptCount} extrait(s)</a>`);
+                            }
+                            if (hasIntention && m.memoryContext) {
+                                linkParts.push(`<a href="#" class="debug-link" data-type="intention" style="color:#0a3d62;text-decoration:underline;">Intention</a>`);
+                            }
+                            linksRow.innerHTML = (linkParts.length ? linkParts.join(' · ') : 'Aucun détail') + charsInfo;
+                            body.appendChild(linksRow);
+
+                            details.appendChild(body);
+                            div.appendChild(details);
+
+                            details.querySelectorAll('.debug-link').forEach(link => {
+                                link.addEventListener('click', function (e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const type = this.dataset.type;
+                                    let content = '';
+                                    if (type === 'proofs') content = extractProofsBlock(m.memoryContext);
+                                    else if (type === 'extraits') content = extractExcerptsBlock(m.memoryContext);
+                                    else if (type === 'intention') content = extractIntentionBlock(m.memoryContext) || m.memoryContext;
+                                    openModal(type, content || '(contenu non disponible — memoryContext vide ou format inattendu)');
+                                });
+                            });
+                        }
+                    }
+
+                    messagesEl.appendChild(div);
+                });
+            }
+
             // Re-scroll au resize (clavier mobile qui s'ouvre/ferme)
             window.addEventListener('resize', ()=>scrollToBottom(true));
             if(window.visualViewport){
@@ -1054,7 +1227,14 @@
                     if(dataFinal.error) throw new Error(dataFinal.error);
 
                     // On intègre la réponse à l'historique
-                    history.push({role:'assistant', content:dataFinal.reply, engine:dataFinal.engine, model:dataFinal.model, debug:dataFinal.debug});
+                    history.push({
+                        role: 'assistant',
+                        content: dataFinal.reply,
+                        engine: dataFinal.engine,
+                        model: dataFinal.model,
+                        debug: dataFinal.debug || '',
+                        memoryContext: dataFinal.memoryContext || ''
+                    });
                     saveHistory(); render();
 
                     if (typeof scrollToMessageStart === 'function') scrollToMessageStart();
@@ -1111,41 +1291,20 @@
 
             // ===== Modale diagnostic cURL =====
             function openTestCurlModal() {
-                const modal = document.getElementById('testCurlModal');
-                const content = document.getElementById('testCurlContent');
-                modal.style.display = 'flex';
-                content.textContent = 'Exécution du test cURL et interrogation du service Node.js ...';
-
+                openModal('test-curl', 'Exécution du test cURL et interrogation du service Node.js ...');
                 fetch('../moteurs/test_curl.php?plain=1')
                     .then(res => res.text())
                     .then(text => {
-                        content.textContent = text;
+                        const contentEl = document.getElementById('rebecca-modal-content');
+                        if (contentEl) contentEl.textContent = text;
                     })
                     .catch(err => {
-                        content.textContent = 'Erreur lors de la récupération du test cURL : ' + err.message;
+                        const contentEl = document.getElementById('rebecca-modal-content');
+                        if (contentEl) contentEl.textContent = 'Erreur lors de la récupération du test cURL : ' + err.message;
                     });
             }
 
-            const copyTestCurlBtn = document.getElementById('copyTestCurlOutput');
-            if (copyTestCurlBtn) {
-                copyTestCurlBtn.addEventListener('click', function () {
-                    const content = document.getElementById('testCurlContent');
-                    const text = content ? content.textContent : '';
-                    navigator.clipboard.writeText(text).then(function () {
-                        const orig = copyTestCurlBtn.textContent;
-                        copyTestCurlBtn.textContent = 'Copie effectuee !';
-                        setTimeout(function () { copyTestCurlBtn.textContent = orig; }, 1800);
-                    }).catch(function () {
-                        const orig = copyTestCurlBtn.textContent;
-                        copyTestCurlBtn.textContent = 'Erreur de copie';
-                        setTimeout(function () { copyTestCurlBtn.textContent = orig; }, 1800);
-                    });
-                });
-            }
-
-            function closeTestCurlModal() {
-                document.getElementById('testCurlModal').style.display = 'none';
-            }
+            render(); // initialise l'affichage et les événements
         </script>
 
         <footer style="max-width:1100px;width:100%;margin:0 auto;padding:.65rem 1.2rem 1rem;text-align:right;font-size:.82rem;color:#6b7280;border-top:1px solid #e5e7eb;background:#f9fafb;">
@@ -1158,6 +1317,30 @@
                 <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
             </p>
         </footer>
+
+        <div id="rebecca-modal" class="modal-overlay" onclick="if(event.target===this)closeRebeccaModal()">
+        <div class="modal" style="max-width:860px;">
+            <div class="modal-header">
+            <h2 id="rebecca-modal-title">Détail mémoire</h2>
+            <button onclick="closeRebeccaModal()" class="modal-close" aria-label="Fermer">✕</button>
+            </div>
+            <div id="rebecca-modal-body" class="modal-body" style="background:#f7f9ff;">
+            <pre id="rebecca-modal-content" style="padding:1rem; white-space:pre-wrap; word-break:break-word; font-family:Menlo,Consolas,monospace; font-size:.82rem; line-height:1.45; color:#1d1d1d;"></pre>
+            </div>
+            <div class="modal-footer" style="padding:.75rem 1rem; background:#f5f5f5; text-align:right; display:flex; justify-content:flex-end; gap:.5rem; flex-wrap:wrap;">
+                <button type="button" id="rebecca-modal-copy"
+                    style="padding:.4rem .9rem; border-radius:6px; border:1px solid #d1d5db;
+                        background:#374e8c; color:#fff !important; cursor:pointer; font-size:.9rem;">
+                    Copier
+                </button>
+                <button type="button" onclick="closeRebeccaModal()"
+                    style="padding:.4rem .9rem; border-radius:6px; border:1px solid #d1d5db;
+                        background:#fff; color:#111 !important; cursor:pointer; font-size:.9rem;">
+                    Fermer
+                </button>
+            </div>
+        </div>
+        </div>
 
         <?php
             if (function_exists('r3m3m83r_node_health_ui')) {
