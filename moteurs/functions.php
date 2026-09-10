@@ -937,7 +937,7 @@
         ];
         $debug_text = count($rankedLines) . ' preuve(s), ' . count($orderedTitles) . ' extrait(s)'
             . ($intentExpanded !== '' ? ' + intention' : '')
-            . ' — envoye ' . $sentChars . ' car. (fichier local NON transmis)';
+            . ' — envoye ' . $sentChars . ' car.';
 
         return [
             'context' => cap_memory_context_for_llm($ctx, 24000),
@@ -2654,15 +2654,42 @@
             // Appel LLM final — meme fonction que Rebecca (sans CHAT_ADDON)
             $finalResponse = finalize_query_response_via_node($input_text, '', $memoryContext);
 
+            // Est-ce que le fichier contient vraiment l'info demandee ?
+            $keywordsFromQuery = extract_keywords($input_text);
+            $normContext = normalize_for_matching((string) $memoryContext);
+            $infoInFile = false;
+            foreach ($keywordsFromQuery as $kw) {
+                if ($kw !== '' && mb_strpos($normContext, normalize_for_matching($kw)) !== false) {
+                    $infoInFile = true;
+                    break;
+                }
+            }
+            // Si contexte quasi-vide (fallback generique uniquement) => info absente
+            if (mb_strlen((string) $memoryContext, 'UTF-8') < 800 && !$infoInFile) {
+                $infoInFile = false;
+            }
+
             if ($finalResponse !== '' && !is_negative_query_answer($finalResponse)) {
                 $query_result = $finalResponse;
                 $reformule_msg = 'Reponse generee par l\'IA (' . $query_debug_mode . ')';
+            } elseif ($finalResponse !== '' && is_negative_query_answer($finalResponse)) {
+                // Le LLM dit "non mentionnė"
+                if ($infoInFile) {
+                    // Info presente dans le fichier mais LLM ne la restitue pas : erreur technique
+                    $query_result = "Erreur de traitement : L'information est presente dans le fichier mais le LLM ne l'a pas retrouvée.";
+                    $reformule_msg = 'Erreur de traitement (info presente, reponse incorrecte).';
+                } else {
+                    // Info vraiment absente du fichier : "non mentionné" autorise
+                    $query_result = "Information non mentionnée dans le fichier d'instructions.";
+                    $reformule_msg = 'Aucune information trouvee dans le fichier.';
+                }
             } elseif ($finalResponse !== '') {
                 $query_result = $finalResponse;
                 $reformule_msg = 'Reponse generee par l\'IA (' . $query_debug_mode . ')';
             } else {
-                $query_result = "Je n'ai pas trouve d'information pertinente dans tes memoires pour cette question.";
-                $reformule_msg = 'Aucune information trouvee.';
+                // Reponse vide = erreur technique
+                $query_result = "Erreur de traitement : Le service n'a pas pu produire de réponse.";
+                $reformule_msg = 'Erreur de traitement (reponse vide).';
             }
         }
 

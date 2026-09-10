@@ -971,7 +971,7 @@
                     const details = document.createElement('details');
                     details.className='debug-panel';
                     const summary = document.createElement('summary');
-                    summary.textContent='Debug (preuves / contexte memoire)';
+                    summary.textContent='(preuves / contexte memoire)';
                     const pre = document.createElement('pre');
                     pre.textContent = m.debug;
                     details.appendChild(summary);
