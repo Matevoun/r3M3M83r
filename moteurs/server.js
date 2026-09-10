@@ -259,7 +259,7 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   const maxTokens = (purpose === 'merge-smart') ? 4000
     : (purpose === 'chat-route') ? 400
     : (purpose === 'chat-talk') ? 400
-    : (purpose === 'query' || purpose === 'query-chat') ? 3000
+    : (purpose === 'query' || purpose === 'query-chat') ? 6000
     : 1500;
   return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
 };

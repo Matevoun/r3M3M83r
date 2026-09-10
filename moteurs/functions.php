@@ -571,7 +571,14 @@
         return '';
     }
 
-    function cap_memory_context_for_llm(?string $ctx, int $maxChars = 18000): string {
+    /**
+     * PLAFOND LLM (caracteres, pas tokens).
+     * - 18000 : prudent (Groq / petits quotas)
+     * - 28000–32000 : meilleur pour listes longues (cadastre, chronologie)
+     * - Au-dela : risque 413 / rate limit selon moteur
+     * L'UI (memoryContext JSON) n'est PAS plafonnee ici si build renvoie $ctx brut.
+     */
+    function cap_memory_context_for_llm(?string $ctx, int $maxChars = 30000): string {
         $ctx = trim((string) $ctx);
         if ($ctx === '') {
             return '';
@@ -865,36 +872,19 @@
             $relevantSections = [];
         }
 
-        $maxSections = 4;
-        $perSectionLimit = 4000;
+        // CORRECTIF 10/09/2026 : ordre Intention -> Extraits -> Preuves (tronquees)
+        // + plafond de preuves pour le LLM. Avant : Preuves (64 lignes) puis
+        // Extraits : les listes longues (cadastre, etc.) tombaient apres le
+        // cap_memory_context_for_llm (30k) -> le modele repondait "non detaille"
+        // alors que l'UI montrait la liste complete.
+        $maxSections = 6;
+        $perSectionLimit = 6000;
+        $maxProofLines = 28; // lignes PREUVES envoyees au LLM (debug compte toujours tout)
         $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
         $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
 
-        $ctx = '';
-        if ($intentExpanded !== '') {
-            $ctx .= "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
-        }
-
         $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 64, $primaryTerms);
-        if (!empty($rankedLines)) {
-            $ctx .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
-            foreach ($rankedLines as $item) {
-                $ctx .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
-            }
-            $ctx .= "\n";
-            $hitsInProofs = [];
-            $blob = normalize_for_matching(implode(' ', array_column($rankedLines, 'line')));
-            foreach ($primaryTerms as $pt) {
-                if (term_matches_in_text($blob, $pt) > 0) {
-                    $hitsInProofs[] = $pt;
-                }
-            }
-            if (!empty($hitsInProofs)) {
-                $ctx .= "Termes de la question presents dans les preuves ci-dessus : "
-                    . implode(', ', $hitsInProofs)
-                    . ". Tu dois les utiliser ; interdit de repondre \"non mentionne\".\n\n";
-            }
-        }
+        $rankedForLlm = array_slice($rankedLines, 0, $maxProofLines);
 
         $sectionBoost = [];
         foreach ($rankedLines as $item) {
@@ -912,16 +902,49 @@
         });
         $orderedTitles = array_slice($orderedTitles, 0, $maxSections);
 
-        if (!empty($orderedTitles) && !empty($rankedLines)) {
-            $ctx .= "Extraits courts des sections ou les preuves ont ete trouvees :\n";
+        // --- 1. Intention ---
+        $intentionBlock = '';
+        if ($intentExpanded !== '') {
+            $intentionBlock = "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
+        }
+
+        // --- 2. Extraits de sections (listes, detail) EN PRIORITE pour le LLM ---
+        $excerptsBlock = '';
+        if (!empty($orderedTitles)) {
+            $excerptsBlock .= "Extraits courts des sections ou les preuves ont ete trouvees :\n";
             foreach ($orderedTitles as $title) {
                 if (!isset($relevantSections[$title])) {
                     continue;
                 }
                 $block = build_section_excerpt_for_query($relevantSections[$title], $queryTerms, $perSectionLimit);
-                $ctx .= "\n--- Section : $title ---\n" . $block . "\n";
+                $excerptsBlock .= "\n--- Section : $title ---\n" . $block . "\n";
+            }
+            $excerptsBlock .= "\n";
+        }
+
+        // --- 3. PREUVES DIRECTES (sous-ensemble pour tenir sous le plafond LLM) ---
+        $proofsBlock = '';
+        if (!empty($rankedForLlm)) {
+            $proofsBlock .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
+            foreach ($rankedForLlm as $item) {
+                $proofsBlock .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
+            }
+            $proofsBlock .= "\n";
+            $hitsInProofs = [];
+            $blob = normalize_for_matching(implode(' ', array_column($rankedForLlm, 'line')));
+            foreach ($primaryTerms as $pt) {
+                if (term_matches_in_text($blob, $pt) > 0) {
+                    $hitsInProofs[] = $pt;
+                }
+            }
+            if (!empty($hitsInProofs)) {
+                $proofsBlock .= "Termes de la question presents dans les preuves ci-dessus : "
+                    . implode(', ', $hitsInProofs)
+                    . ". Tu dois les utiliser ; interdit de repondre \"non mentionne\".\n\n";
             }
         }
+
+        $ctx = $intentionBlock . $excerptsBlock . $proofsBlock;
 
         if (trim($ctx) === '') {
             $ctx = "Aucune preuve locale trouvee dans instructions.md pour cette question.\n";
@@ -931,13 +954,17 @@
         $metrics = [
             'sections_count' => count($orderedTitles),
             'evidence_lines' => count($rankedLines ?? []),
+            'evidence_lines_sent' => count($rankedForLlm ?? []),
             'top_section'    => $orderedTitles[0] ?? '',
             'top_evidence'   => array_slice($rankedLines ?? [], 0, 3),
             'sent_chars'     => $sentChars,
         ];
         $debug_text = count($rankedLines) . ' preuve(s), ' . count($orderedTitles) . ' extrait(s)'
             . ($intentExpanded !== '' ? ' + intention' : '')
-            . ' — envoye ' . $sentChars . ' car.';
+            . ' — envoye ' . $sentChars . ' car.'
+            . (count($rankedLines) > $maxProofLines
+                ? ' (preuves LLM: ' . count($rankedForLlm) . '/' . count($rankedLines) . ')'
+                : '');
 
         return [
             'context' => $ctx,
