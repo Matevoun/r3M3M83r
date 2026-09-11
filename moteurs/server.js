@@ -199,12 +199,13 @@ const upload = multer({
 // ==================== CONFIG LLM ====================
 const PORT = process.env.PORT || 3000;
 
-const DEFAULT_LLM_ENGINE = 'groq';
+// LLM engine par defaut (Gemini) + fallback order (Groq, OpenRouter, Mistral, Cerebras)
+const DEFAULT_LLM_ENGINE = 'gemini';
 const LLM_ENGINE = (process.env.LLM_ENGINE || DEFAULT_LLM_ENGINE).toLowerCase();
 // Liste des moteurs LLM fallback, dans l'ordre de preference.
 // Peut etre surchargee par la variable d'environnement LLM_FALLBACK_ORDER.
 // 'cerebras,groq,mistral,openrouter'
-const DEFAULT_FALLBACK_ORDER = 'groq,mistral,openrouter';
+const DEFAULT_FALLBACK_ORDER = 'gemini,groq,openrouter,mistral,cerebras';
 const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_ORDER)
   .split(',')
   .map(function(item) { return item.trim().toLowerCase(); })
@@ -272,28 +273,29 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
 
 // Stockage en mémoire du dernier statut réel de chaque moteur
 const engineRuntimeStatus = {
-  cerebras: { status: 'unknown', code: null, cooldownUntil: 0 },
+  gemini: { status: 'unknown', code: null, cooldownUntil: 0 },
   groq: { status: 'unknown', code: null, cooldownUntil: 0 },
+  openrouter: { status: 'unknown', code: null, cooldownUntil: 0 },
   mistral: { status: 'unknown', code: null, cooldownUntil: 0 },
-  openrouter: { status: 'unknown', code: null, cooldownUntil: 0 }
+  cerebras: { status: 'unknown', code: null, cooldownUntil: 0 }
 };
 const ENGINE_COOLDOWN_MS = {
-  402: 30 * 60 * 1000,
+  402: 6 * 60 * 60 * 1000,   // 6h : credit epuise, inutile de re-tenter toutes les 30 min
   404: 10 * 60 * 1000,
   429: 90 * 1000,
-  401: 15 * 60 * 1000
+  401: 6 * 60 * 60 * 1000    // 6h : cle invalide/expiree, meme logique que 402
 };
 
 const LLM_ENGINES = {
-  // Cerebras
-  cerebras: {
-    name: 'Cerebras',
-    apiKeyEnv: 'CEREBRAS_API_KEY',
-    modelEnv: 'CEREBRAS_MODEL',
-    apiBase: process.env.CEREBRAS_API_BASE || 'https://api.cerebras.ai/v1',
-    engineUrl: 'https://cloud.cerebras.ai',
-    defaultModel: 'gpt-oss-120b',
-    models: ['gpt-oss-120b'],
+  // Google AI Studio (Gemini) — endpoint compatible OpenAI
+  gemini: {
+    name: 'Gemini',
+    apiKeyEnv: 'GEMINI_API_KEY',
+    modelEnv: 'GEMINI_MODEL',
+    apiBase: process.env.GEMINI_API_BASE || 'https://generativelanguage.googleapis.com/v1beta/openai',
+    engineUrl: 'https://aistudio.google.com/app/apikey',
+    defaultModel: 'gemini-2.5-flash',
+    models: ['gemini-2.5-flash', 'gemini-2.5-flash-lite'],
     createPayload: createOpenAICompatiblePayload,
   },
   // Groq
@@ -307,6 +309,22 @@ const LLM_ENGINES = {
     models: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'],
     createPayload: createOpenAICompatiblePayload
   },
+  // OpenRouter
+  openrouter: {
+    name: 'OpenRouter',
+    apiKeyEnv: 'OPENROUTER_API_KEY',
+    modelEnv: 'OPENROUTER_MODEL',
+    apiBase: process.env.OPENROUTER_API_BASE || 'https://openrouter.ai/api/v1',
+    engineUrl: 'https://openrouter.ai',
+    defaultModel: 'openrouter/free',
+    models: [
+      'openrouter/free',
+      'deepseek/deepseek-chat',
+      'google/gemini-2.0-flash-lite-preview:free',
+      'mistralai/mistral-small-3.2-2409:free'
+    ],
+    createPayload: createOpenAICompatiblePayload,
+  },
   // Mistral
   mistral: {
     name: 'Mistral',
@@ -318,22 +336,17 @@ const LLM_ENGINES = {
     models: ['mistral-small-latest'],
     createPayload: createOpenAICompatiblePayload,
   },
-  // OpenRouter
-  openrouter: {
-      name: 'OpenRouter',
-      apiKeyEnv: 'OPENROUTER_API_KEY',
-      modelEnv: 'OPENROUTER_MODEL',
-      apiBase: process.env.OPENROUTER_API_BASE || 'https://openrouter.ai/api/v1',
-      engineUrl: 'https://openrouter.ai',
-      defaultModel: 'openrouter/free',
-      models: [
-        'openrouter/free',
-        'deepseek/deepseek-chat',
-        'google/gemini-2.0-flash-lite-preview:free',
-        'mistralai/mistral-small-3.2-2409:free'
-      ],
-      createPayload: createOpenAICompatiblePayload,
-    },
+  // Cerebras
+  cerebras: {
+    name: 'Cerebras',
+    apiKeyEnv: 'CEREBRAS_API_KEY',
+    modelEnv: 'CEREBRAS_MODEL',
+    apiBase: process.env.CEREBRAS_API_BASE || 'https://api.cerebras.ai/v1',
+    engineUrl: 'https://cloud.cerebras.ai',
+    defaultModel: 'gpt-oss-120b',
+    models: ['gpt-oss-120b'],
+    createPayload: createOpenAICompatiblePayload,
+  },
 };
 
 const getEngineConfig = function(engineName) { return LLM_ENGINES[engineName] || null; };
@@ -449,6 +462,24 @@ const truncateContext = function(context, maxChars) {
   if (context.length <= maxChars) return context;
   return context.slice(0, maxChars) + '\n...[contexte tronque pour rester sous les quotas TPM]...';
 };
+const extractRateLimitHeaders = function(headers) {
+  headers = headers || {};
+  var out = {};
+  Object.keys(headers).forEach(function(k) {
+    var lk = k.toLowerCase();
+    if (lk === 'retry-after' || lk.indexOf('ratelimit') !== -1 || lk.indexOf('rate-limit') !== -1) {
+      out[k] = headers[k];
+    }
+  });
+  return out;
+};
+const hasZeroQuota = function(headers) {
+  headers = headers || {};
+  return Object.keys(headers).some(function(k) {
+    var lk = k.toLowerCase();
+    return lk.indexOf('limit') !== -1 && lk.indexOf('remaining') === -1 && String(headers[k]) === '0';
+  });
+};
 const modelsToTryForEngine = function(engineName) {
   var engine = getEngineConfig(engineName);
   if (!engine) return [];
@@ -523,7 +554,7 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
           }
         });
 
-        attempts.push({ engine: engineName, model: model, status: 'success', error: null });
+        attempts.push({ engine: engineName, model: model, status: 'success', error: null, headers: extractRateLimitHeaders(response.headers) });
         engineRuntimeStatus[engineName] = { status: 'success', code: 200 };
         if (response.data && response.data.choices && response.data.choices[0] && response.data.choices[0].message) {
           var cleaned = response.data.choices[0].message.content;
@@ -564,13 +595,18 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
           continue;
         }
 
-        attempts.push({ engine: engineName, model: model, status: 'HTTP ' + status, error: errMsg });
+        var rlHeaders = extractRateLimitHeaders(error.response && error.response.headers);
+        attempts.push({ engine: engineName, model: model, status: 'HTTP ' + status, error: errMsg, headers: rlHeaders });
         engineRuntimeStatus[engineName] = { status: 'error', code: status };
         allErrors.push(engineName + ':' + status + ' ' + errMsg);
           if (status === 404 && m < modelCandidates.length - 1) {
             break;
           }
-          markEngineCooldown(engineName, status);
+          if (hasZeroQuota(rlHeaders)) {
+            engineRuntimeStatus[engineName].cooldownUntil = Date.now() + (6 * 60 * 60 * 1000);
+          } else {
+            markEngineCooldown(engineName, status);
+          }
           break;
         }
       }
@@ -615,7 +651,7 @@ app.get('/r3M3M83r/moteurs/', function(req, res) {
 });
 
 var lastLlmInfoProbeAt = 0;
-var LLM_INFO_PROBE_TTL_MS = 5 * 60 * 1000;
+var LLM_INFO_PROBE_TTL_MS = 60 * 60 * 1000; // 1h au lieu de 5 min : evite de gaspiller le quota juste pour le statut visuel
 
 const handleLlmInfo = async function(req, res) {
   var force = String((req.query && (req.query.probe || req.query.reset)) || '') === '1';

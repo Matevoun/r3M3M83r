@@ -578,7 +578,7 @@
      * - Au-dela : risque 413 / rate limit selon moteur
      * L'UI (memoryContext JSON) n'est PAS plafonnee ici si build renvoie $ctx brut.
      */
-    function cap_memory_context_for_llm(?string $ctx, int $maxChars = 30000): string {
+    function cap_memory_context_for_llm(?string $ctx, int $maxChars = 45000): string {
         $ctx = trim((string) $ctx);
         if ($ctx === '') {
             return '';
@@ -878,8 +878,8 @@
         // cap_memory_context_for_llm (30k) -> le modele repondait "non detaille"
         // alors que l'UI montrait la liste complete.
         $maxSections = 6;
-        $perSectionLimit = 6000;
-        $maxProofLines = 28; // lignes PREUVES envoyees au LLM (debug compte toujours tout)
+        $perSectionLimit = 12000;
+        $maxProofLines = 20; // lignes PREUVES envoyees au LLM (debug compte toujours tout)
         $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
         $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
 

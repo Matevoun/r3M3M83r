@@ -1292,7 +1292,9 @@
             // ===== Modale diagnostic cURL =====
             function openTestCurlModal() {
                 openModal('test-curl', 'Exécution du test cURL et interrogation du service Node.js ...');
-                fetch('../moteurs/test_curl.php?plain=1')
+                var selectedEngine = (engineSelect && engineSelect.value) ? engineSelect.value : '';
+                var testCurlUrl = '../moteurs/test_curl.php?plain=1&mode=creatif' + (selectedEngine ? '&engine=' + encodeURIComponent(selectedEngine) : '');
+                fetch(testCurlUrl)
                     .then(res => res.text())
                     .then(text => {
                         const contentEl = document.getElementById('rebecca-modal-content');

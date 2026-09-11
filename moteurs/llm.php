@@ -41,16 +41,17 @@ function llm_apply_selected_engine(?string $engine): string {
 
 /** Slugs connus (alignes sur server.js LLM_ENGINES). */
 function llm_known_engine_slugs(): array {
-    return ['mistral', 'groq', 'cerebras', 'openrouter'];
+    return ['gemini', 'groq', 'openrouter', 'mistral', 'cerebras'];
 }
 
 /** Labels affichage UI. */
 function llm_engine_labels(): array {
     return [
-        'cerebras'   => 'Cerebras',
+        'gemini'     => 'Gemini',
         'groq'       => 'Groq',
-        'mistral'    => 'Mistral',
         'openrouter' => 'OpenRouter',
+        'mistral'    => 'Mistral',
+        'cerebras'   => 'Cerebras',
     ];
 }
 
@@ -82,14 +83,11 @@ function llm_current_engine_slug(?array $llmInfo = null): string {
         $llmInfo = get_llm_info();
     }
     $llmInfo = is_array($llmInfo) ? $llmInfo : [];
-    $name = strtolower((string) ($llmInfo['engineName'] ?? $llmInfo['defaultEngine'] ?? 'mistral'));
-    $map = ['mistral' => 'mistral', 'groq' => 'groq', 'cerebras' => 'cerebras', 'openrouter' => 'openrouter'];
-    foreach ($map as $slug => $_) {
-        if (strpos($name, $slug) !== false) {
-            return $slug;
-        }
-    }
-    return 'mistral';
+    // Le nom renvoye par Node (engineName, ex. "Gemini") est deja identique
+    // au slug une fois en minuscule -- pas besoin de table de correspondance
+    // a maintenir a la main a chaque ajout de moteur.
+    $name = strtolower((string) ($llmInfo['engineName'] ?? $llmInfo['defaultEngine'] ?? 'gemini'));
+    return $name !== '' ? $name : 'gemini';
 }
 
 /**

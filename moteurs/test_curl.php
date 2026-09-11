@@ -12,7 +12,10 @@ $endpointBase  = 'https://mathieu.charreyre.net/r3M3M83r/moteurs';
 $endpoint      = $endpointBase . '/reformuler';
 
 // === PROMPT TEST PRÉ-RENSIGNÉ (optimisé) ===
-$defaultTestText = "TEST : Raconte de manière créative et drôle un souvenir fictif et aléatoire où Mathieu CHARREYRE fait une chose délirante. Commence directement par l'histoire sans introduction.";
+$testMode = trim($_GET['mode'] ?? '');
+$defaultTestText = ($testMode === 'creatif')
+    ? "[TEST_CREATIF] Raconte de manière créative et drôle un souvenir fictif et aléatoire où Mathieu CHARREYRE fait une chose délirante. Commence directement par l'histoire sans introduction."
+    : "Nous sommes au moyen-age en France, reformules le texte suivant de manière médiévale :\n\n\"Je suis un castor bleu qui clignote le soir au fond des bois!\"";
 
 $testText = trim($_REQUEST['text'] ?? $defaultTestText);
 if (empty($testText)) {
@@ -20,7 +23,7 @@ if (empty($testText)) {
 }
 
 $testEngine = trim($_GET['engine'] ?? '');
-if ($testEngine !== '' && in_array($testEngine, ['cerebras','groq','mistral','openrouter'], true)) {
+if ($testEngine !== '' && in_array($testEngine, ['gemini','groq','openrouter','mistral','cerebras'], true)) {
     $testEngineLabel = strtoupper($testEngine) . ' (manuel)';
 } else {
     $testEngine = '';
@@ -167,6 +170,11 @@ if (!empty($attempts)) {
         echo "  $icon $n. $eng ($mod) → $status";
         if ($err !== '' && $err !== null) echo " — " . esc($err);
         echo "\n";
+        if (!empty($a['headers']) && is_array($a['headers'])) {
+            foreach ($a['headers'] as $hk => $hv) {
+                echo "      · " . esc($hk) . ": " . esc((string) $hv) . "\n";
+            }
+        }
     }
     echo "\n";
 }
