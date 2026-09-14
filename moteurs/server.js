@@ -199,13 +199,13 @@ const upload = multer({
 // ==================== CONFIG LLM ====================
 const PORT = process.env.PORT || 3000;
 
-// LLM engine par defaut (Gemini) + fallback order (Groq, OpenRouter, Mistral, Cerebras)
-const DEFAULT_LLM_ENGINE = 'gemini';
+// CORRECTIF 14/09/2026 : defaut = Groq (gratuit, stable). Gemini reste
+// dans le fallback mais plus en tete : son quota free saute souvent.
+const DEFAULT_LLM_ENGINE = 'groq';
 const LLM_ENGINE = (process.env.LLM_ENGINE || DEFAULT_LLM_ENGINE).toLowerCase();
-// Liste des moteurs LLM fallback, dans l'ordre de preference.
-// Peut etre surchargee par la variable d'environnement LLM_FALLBACK_ORDER.
-// 'cerebras,groq,mistral,openrouter'
-const DEFAULT_FALLBACK_ORDER = 'gemini,groq,openrouter,mistral,cerebras';
+// Ordre : verts d'abord (Groq, Cerebras, OpenRouter), puis Gemini, Mistral.
+// Peut etre surchargee par LLM_FALLBACK_ORDER dans l'env cPanel.
+const DEFAULT_FALLBACK_ORDER = 'groq,cerebras,openrouter,gemini,mistral';
 const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_ORDER)
   .split(',')
   .map(function(item) { return item.trim().toLowerCase(); })
@@ -319,7 +319,6 @@ const LLM_ENGINES = {
     defaultModel: 'openrouter/free',
     models: [
       'openrouter/free',
-      'deepseek/deepseek-chat',
       'google/gemini-2.0-flash-lite-preview:free',
       'mistralai/mistral-small-3.2-2409:free'
     ],
@@ -452,8 +451,8 @@ const isPayloadTooLargeError = function(status, errMsg) {
 };
 const maxContextCharsForEngine = function(engineName, purpose) {
   if (purpose === 'chat-route' || purpose === 'chat-talk' || purpose === 'query-keywords') return 0;
-  if (engineName === 'groq') return 12000;
-  if (engineName === 'cerebras') return 16000;
+  if (engineName === 'groq') return 18000;
+  if (engineName === 'cerebras') return 18000;
   return 24000;
 };
 const truncateContext = function(context, maxChars) {
@@ -538,9 +537,6 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
 
     while (true) {
       var payload = engine.createPayload(text, model, workingContext, purpose);
-        if (engineName === 'groq' && payload.max_tokens > 1200) {
-          payload.max_tokens = 1200;
-        }
       var requestUrl = buildRequestUrl(engine.apiBase);
 
       try {

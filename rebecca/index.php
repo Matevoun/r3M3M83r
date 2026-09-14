@@ -65,6 +65,9 @@
     include_once __DIR__ . '/../moteurs/functions.php'; // Pipeline memoire + Node
     include_once __DIR__ . '/../moteurs/llm.php';      // Selection moteur partagee
 
+    @set_time_limit(120);
+    @ini_set('max_execution_time', '120');
+
     // ==================== CONSTANTES ====================
     // CORRECTIF 19/08/2026 : CHAT_PROMPT_JS pointait vers un nom de fichier
     // fixe et exact ('chat_prompts.js', minuscules + underscore). Le fichier
@@ -179,10 +182,6 @@
         if (preg_match('/\b(salut|bonjour|bonsoir|hello|hi|hey|yo|wesh|coucou|merci|ok|okay|ciao|bonne\s+journ|bon\s+app|[cç]a\s+va|[cç]a\s+farte|[cç]a\s+gaze|farte|kiff|la\s+forme|quoi\s+de\s+neuf|et\s+toi|tu\s+vas|vous\s+allez|comment\s+([cç]a|tu|vous)|vas[\s-]*tu|allez[\s-]*vous)\b/iu', $m)) {
             return true;
         }
-        // Court SANS « ? » → possible politesse ; avec « ? » on laisse le routeur / filet
-        if (mb_strlen($m, 'UTF-8') <= 40 && strpos($m, '?') === false) {
-            return true;
-        }
         return false;
     }
 
@@ -192,7 +191,7 @@
             return false;
         }
         return (bool) preg_match(
-            '/\b(qui\s+(est|sont|était|etait|étaient|etaient)|c[\'’ ]?est\s+qui|qui\s+c[\'’ ]?est|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousin|chien|chat|luna|domaine|saint-?antonin|mathieu|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire|avait|nommé|nomme)\b/iu',
+            '/\b(qui\s+(est|sont|était|etait|étaient|etaient)|c[\'’ ]?est\s+qui|qui\s+c[\'’ ]?est|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quels?\s+sont|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousins?e?s?|paternel|maternel|cadastre|parcelle|chien|chat|luna|domaine|saint-?antonin|mathieu|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire|avait|nommé|nomme)\b/iu',
             $m
         );
     }
@@ -326,8 +325,16 @@
                 }
 
                 $retrievalQuery = $message;
-                if ($lastUserForRetrieval !== '' && mb_strlen($message, 'UTF-8') < 40) {
-                    $retrievalQuery = $lastUserForRetrieval . " " . $message;
+                // Suite utile : "et elle ?", "son pere ?", "et Luna ?"
+                // Pas une question neuve meme courte ("Quels sont mes cousins...").
+                $looksLikeFollowup = (bool) preg_match(
+                    '/\b(elle|elles|il|ils|lui|eux|son|sa|ses|cet?|cette|ceux|celles|lequel|laquelle)\b/iu',
+                    $message
+                );
+                $isTiny = mb_strlen($message, 'UTF-8') <= 22
+                    && !preg_match('/\b(qui|quel|quelle|quels|quelles|quand|combien|liste)\b/iu', $message);
+                if ($lastUserForRetrieval !== '' && ($looksLikeFollowup || $isTiny)) {
+                    $retrievalQuery = $lastUserForRetrieval . ' ' . $message;
                 }
 
                 if ($needsMemory && function_exists('build_memory_context_for_topic')) {
@@ -390,6 +397,17 @@
                     }
                 }
 
+                if ($needsMemory && $finalReply !== ''
+                    && function_exists('is_negative_query_answer')
+                    && is_negative_query_answer($finalReply)
+                    && preg_match('/PREUVES DIRECTES/u', $memoryContext)
+                    && function_exists('finalize_query_response_via_node')) {
+                    $retry = trim((string) finalize_query_response_via_node($message, '', $memoryContext, 'query'));
+                    if ($retry !== '' && !is_negative_query_answer($retry)) {
+                        $finalReply = $retry;
+                    }
+                }
+
                 if ($finalReply === '') {
                     $baseUrl = function_exists('get_reformulator_base_url') ? get_reformulator_base_url() : 'https://mathieu.charreyre.net/r3M3M83r/moteurs';
                     $url = rtrim($baseUrl, '/') . '/reformuler';
@@ -411,7 +429,7 @@
                         CURLOPT_POST => true,
                         CURLOPT_POSTFIELDS => json_encode($payload),
                         CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-                        CURLOPT_TIMEOUT => 25
+                        CURLOPT_TIMEOUT => 90
                     ]);
                     $resp = curl_exec($ch);
                     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -430,8 +448,13 @@
 
                 if ($finalReply === '') {
                     chat_log_error('Erreur critique : reponse LLM finale vide pour le message : ' . $message);
-                    http_response_code(500);
-                    echo json_encode(['error' => "Le moteur n'a pas répondu. Vérifie que Node tourne.", '_debug' => $debugInfo], JSON_UNESCAPED_UNICODE);
+                    echo json_encode([
+                        'reply' => "Les moteurs gratuits sont saturés pour le moment (quota). Reessaie dans une minute, sans relancer Node.",
+                        'engine' => $usedEngine,
+                        'model' => $usedModel,
+                        'debug' => trim($debugInfo . ' · quota LLM (pas une panne Node)'),
+                        'memoryContext' => $memoryContext
+                    ], JSON_UNESCAPED_UNICODE);
                     exit;
                 }
 
@@ -1103,7 +1126,9 @@
                             // Nombre de caractères (extrait du debug)
                             let charsInfo = '';
                             const charsMatch = m.debug.match(/envoye\s+(\d+)\s*car/i);
-                            if (charsMatch) charsInfo = ' — ' + charsMatch[1] + ' car.';
+                            if (charsMatch) charsInfo = ' - ' + charsMatch[1] + ' car.';
+                            if (/parse local/i.test(m.debug)) charsInfo += ' · parse local (sans expand/select)';
+                            else if (/intention/i.test(m.debug)) charsInfo += ' · + intention';
 
                             const details = document.createElement('details');
                             details.className = 'debug-panel';

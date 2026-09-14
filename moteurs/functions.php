@@ -98,6 +98,9 @@
     // saisie.php). SOURCE_FILE reste a la racine r3M3M83r (un niveau au-dessus).
     define('SOURCE_FILE', dirname(__DIR__) . '/instructions.md');
 
+    @set_time_limit(120);
+    @ini_set('max_execution_time', '120');
+
     // Calcule l'URL de base du service reformulator.
     // Priorite 1 : connexion directe via 127.0.0.1:PORT (lit le fichier .port ecrit par Node.js
     //   au demarrage). Bypass complet d'Apache/Passenger, plus rapide et fiable.
@@ -477,7 +480,7 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 90);
         $result = curl_exec($ch);
         $error  = curl_error($ch);
         close_curl_handle($ch);
@@ -502,7 +505,7 @@
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 90);
         $result = curl_exec($ch);
         $error  = curl_error($ch);
         close_curl_handle($ch);
@@ -530,12 +533,20 @@
         if (!empty($selected_engine) && !isset($payload['engine'])) {
             $payload['engine'] = $selected_engine;
         }
+        // Timeout selon le purpose : query/query-chat doivent laisser
+        // Node jongler entre moteurs (jusqu a 15 s chacun).
+        $timeout = 20;
+        if (in_array($purpose, ['query', 'query-chat', 'merge-smart', 'rewrite', 'location'], true)) {
+            $timeout = 90;
+        } elseif (in_array($purpose, ['chat-route', 'chat-talk', 'query-expand', 'query-select'], true)) {
+            $timeout = 25;
+        }
         $ch = curl_init(REFORMULATOR_BASE_URL . '/reformuler');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         $result = curl_exec($ch);
         $curlError  = curl_error($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -577,8 +588,10 @@
      * - 28000–32000 : meilleur pour listes longues (cadastre, chronologie)
      * - Au-dela : risque 413 / rate limit selon moteur
      * L'UI (memoryContext JSON) n'est PAS plafonnee ici si build renvoie $ctx brut.
+     * CORRECTIF 14/09/2026 : 18000 aligne PHP sur le plafond Groq cote Node.
+     * Au-dela, Node recoupait en tete et le LLM ne voyait pas les listes.
      */
-    function cap_memory_context_for_llm(?string $ctx, int $maxChars = 45000): string {
+    function cap_memory_context_for_llm(?string $ctx, int $maxChars = 18000): string {
         $ctx = trim((string) $ctx);
         if ($ctx === '') {
             return '';
@@ -614,6 +627,10 @@
             "/je n(?:'|’)?ai pas trouve(?:e|é)/",
             '/pas de mention/',
             '/rien trouve(?:e)?/',
+            '/non mentionn/',
+            '/information non mentionn/',
+            "/pas (?:d'|de )acc[eè]s/",
+            '/je suis d[eé]sol/',
         ];
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $text)) {
@@ -784,29 +801,268 @@
     }
 
     /**
-     * Construit un contexte memoire cible sur un sujet (meme logique qu'Interroger :
-     * intention, selection de sections, preuves rankees). Utilise par Interroger
-     * et par Comparer/Fusionner pour ne pas dupliquer la logique.
-     * Retourne ['context' => string, 'debug' => string].
+     * =======================================================================
+     * PARSEUR MEMOIRE — architecture unique (plus de rustines nominatives)
+     *
+     * Le fichier est un arbre de titres. Chaque BLOC = un titre + son corps
+     * jusqu'au titre suivant. Score = IDF des termes de la QUESTION.
+     * Aucun nom propre, aucun lieu, aucun mot metier en dur.
+     *
+     * Formes de question (grammaire francaise, pas le sujet) :
+     *   who       = "qui est", "c'est qui"
+     *   inventory = "liste", "lister", "quels sont", "combien"
+     * Un bloc est une LISTE si une majorite de lignes sont des puces / n.
+     *
+     * IDF : terme frequent dans le fichier -> poids faible.
+     *        terme rare -> poids fort. Un nouveau prenom marche tout seul.
+     * =======================================================================
      */
+    function query_shape(string $q): string {
+        if (preg_match('/\b(qui\s+(est|sont|etait|était)|c[\'’ ]?est\s+qui|qui\s+c[\'’ ]?est)\b/iu', $q)) {
+            return 'who';
+        }
+        if (preg_match('/\b(liste|lister|quels?\s+sont|quelles?\s+sont|combien|inventaire)\b/iu', $q)) {
+            return 'inventory';
+        }
+        return 'fact';
+    }
+
+    function extract_who_subject(string $q): string {
+        $q = preg_replace('/\b(qui\s+(est|sont|etait|était)|c[\'’ ]?est\s+qui|qui\s+c[\'’ ]?est)\b/iu', ' ', $q);
+        $q = preg_replace('/[?!.:,;]+/u', ' ', $q);
+        $stop = ['le','la','les','un','une','des','du','de','d','l','mon','ma','mes','son','sa','ses','cet','cette'];
+        $keep = [];
+        foreach (preg_split('/\s+/u', $q, -1, PREG_SPLIT_NO_EMPTY) as $p) {
+            $n = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $p));
+            if ($n === '' || mb_strlen($n, 'UTF-8') < 3) {
+                continue;
+            }
+            if (in_array($n, $stop, true)) {
+                continue;
+            }
+            $keep[] = $n;
+        }
+        return implode(' ', $keep);
+    }
+
+    function is_heading_line(string $trim, &$titleOut = null, &$levelOut = null): bool {
+        $titleOut = '';
+        $levelOut = 9;
+        if (preg_match('/^(#{1,6})\s+(.+)$/u', $trim, $m)) {
+            $titleOut = trim($m[2]);
+            $levelOut = strlen($m[1]);
+            return true;
+        }
+        // Ligne = uniquement un gras : **Titre**  /  - **Titre**
+        // Une PUCE markdown n'est jamais un titre (c'est un item de liste).
+        if (preg_match('/^\s*[-*]\s+/u', $trim)) {
+            return false;
+        }
+        if (preg_match('/^\s*\*{2,3}([^*]{3,200})\*{2,3}\s*:?\s*$/u', $trim, $m)) {
+            $titleOut = trim($m[1]);
+            $levelOut = 6;
+            return true;
+        }
+        // Gras puis deux-points : **Titre** : suite...  (la suite devient le corps)
+        if (preg_match('/^\s*\*{2,3}([^*]{3,200})\*{2,3}\s*:/u', $trim, $m)) {
+            $titleOut = trim($m[1]);
+            $levelOut = 6;
+            return true;
+        }
+        // Structure de document (pas un nom) : Article 4, Chapitre 2
+        if (preg_match('/^\s*\*{0,3}(article|chapitre|annexe)\s+\d+/iu', $trim)) {
+            $titleOut = $trim;
+            $levelOut = 5;
+            return true;
+        }
+        return false;
+    }
+
+    function split_heading_blocks(string $content): array {
+        $lines = preg_split('/\R/u', (string) $content);
+        $blocks = [];
+        $cur = null;
+        foreach ($lines as $line) {
+            $trim = trim($line);
+            $title = '';
+            $level = 9;
+            if ($trim !== '' && is_heading_line($trim, $title, $level)) {
+                if ($cur !== null) {
+                    $cur['body'] = rtrim($cur['body']);
+                    $cur['full'] = trim(($cur['heading_raw'] !== '' ? $cur['heading_raw'] . "\n" : '') . $cur['body']);
+                    $blocks[] = $cur;
+                }
+                $cur = [
+                    'heading'      => $title,
+                    'heading_norm' => normalize_for_matching($title),
+                    'heading_raw'  => $line,
+                    'level'        => $level,
+                    'body'         => '',
+                ];
+                continue;
+            }
+            if ($cur === null) {
+                $cur = [
+                    'heading'      => '(intro)',
+                    'heading_norm' => '',
+                    'heading_raw'  => '',
+                    'level'        => 9,
+                    'body'         => '',
+                ];
+            }
+            $cur['body'] .= $line . "\n";
+        }
+        if ($cur !== null) {
+            $cur['body'] = rtrim($cur['body']);
+            $cur['full'] = trim(($cur['heading_raw'] !== '' ? $cur['heading_raw'] . "\n" : '') . $cur['body']);
+            $blocks[] = $cur;
+        }
+        return $blocks;
+    }
+
+    function block_looks_like_list(string $body): bool {
+        $lines = [];
+        foreach (preg_split('/\R/u', $body) as $l) {
+            $l = trim($l);
+            if ($l !== '' && mb_strlen($l, 'UTF-8') >= 8) {
+                $lines[] = $l;
+            }
+        }
+        $n = count($lines);
+        if ($n < 6) {
+            return false;
+        }
+        $bullet = 0;
+        foreach ($lines as $l) {
+            if (preg_match('/^\s*(?:[-*]|\d+[.)])/u', $l)
+                || preg_match('/^\s*-?\s*\*\*[^*]+\*\*/u', $l)
+                || preg_match('/\bn[°o]\s*\d/iu', $l)) {
+                $bullet++;
+            }
+        }
+        return ($bullet / $n) >= 0.45;
+    }
+
+    function fold_stub_heading_blocks(array $blocks): array {
+        $out = [];
+        $n = count($blocks);
+        $i = 0;
+        while ($i < $n) {
+            $b = $blocks[$i];
+            $bodyLen = mb_strlen(trim((string) $b['body']), 'UTF-8');
+            $next = (($i + 1) < $n) ? $blocks[$i + 1] : null;
+            if ($next !== null
+                && $bodyLen < 80
+                && (int) $b['level'] >= 6
+                && (int) $next['level'] >= 6
+            ) {
+                $b['body'] = trim((string) $b['body'] . "\n" . $next['heading_raw'] . "\n" . $next['body']);
+                $b['full'] = trim($b['heading_raw'] . "\n" . $b['body']);
+                $i += 2;
+                $out[] = $b;
+                continue;
+            }
+            $out[] = $b;
+            $i++;
+        }
+        return $out;
+    }
+
+    function index_all_heading_blocks(array $sections): array {
+        $out = [];
+        foreach ($sections as $secTitle => $content) {
+            $split = fold_stub_heading_blocks(split_heading_blocks((string) $content));
+            foreach ($split as $b) {
+                $b['section'] = $secTitle;
+                $out[] = $b;
+            }
+        }
+        return $out;
+    }
+
+    function compute_term_idf(array $blocks, array $terms): array {
+        $N = max(1, count($blocks));
+        $idf = [];
+        foreach ($terms as $t) {
+            $t = normalize_for_matching((string) $t);
+            if ($t === '') {
+                continue;
+            }
+            $df = 0;
+            foreach ($blocks as $b) {
+                $blob = $b['heading_norm'] . ' ' . normalize_for_matching(mb_substr((string) $b['body'], 0, 8000, 'UTF-8'));
+                if (term_matches_in_text($blob, $t) > 0) {
+                    $df++;
+                }
+            }
+            $idf[$t] = log(($N + 1) / ($df + 1)) + 1.0;
+        }
+        return $idf;
+    }
+
+    function score_heading_block(array $block, array $terms, array $idf, string $shape, string $subjectNorm): float {
+        $head = (string) $block['heading_norm'];
+        $bodyN = normalize_for_matching(mb_substr((string) $block['body'], 0, 6000, 'UTF-8'));
+        $sc = 0.0;
+        foreach ($terms as $t) {
+            $t = normalize_for_matching((string) $t);
+            if ($t === '' || mb_strlen($t, 'UTF-8') < 3) {
+                continue;
+            }
+            $w = (float) ($idf[$t] ?? 1.0);
+            $hHits = term_matches_in_text($head, $t);
+            $bHits = term_matches_in_text($bodyN, $t);
+            $sc += $w * (8.0 * $hHits + 1.0 * min(8, $bHits));
+            if ($hHits > 0) {
+                $sc += $w * 12.0;
+            }
+        }
+        if ($shape === 'inventory' && block_looks_like_list((string) $block['body'])) {
+            $sc *= 2.2;
+        }
+        if ($shape === 'who' && $subjectNorm !== '' && $head !== '') {
+            $headTokens = preg_split('/\s+/u', $head, -1, PREG_SPLIT_NO_EMPTY);
+            $first = $headTokens[0] ?? '';
+            if ($head === $subjectNorm || $first === $subjectNorm) {
+                $sc *= 8.0;
+            } elseif (strpos($head, $subjectNorm) !== false) {
+                $sc *= 1.15;
+            }
+        }
+        return $sc;
+    }
+
+    function log_memory_retrieval(string $query, array $info): void {
+        $file = __DIR__ . '/log/retrieval.log';
+        if (function_exists('ensure_reformulator_log_file')) {
+            ensure_reformulator_log_file($file);
+        }
+        $bits = [];
+        foreach ($info as $k => $v) {
+            if (is_array($v)) {
+                $v = implode(' ; ', array_map('strval', $v));
+            }
+            $bits[] = $k . '=' . str_replace(["\n", "\r"], ' ', (string) $v);
+        }
+        $q = str_replace(["\n", "\r"], ' ', mb_substr($query, 0, 180, 'UTF-8'));
+        $line = '[' . date('Y-m-d H:i:s') . '] q=' . $q . ' | ' . implode(' | ', $bits) . "\n";
+        @file_put_contents($file, $line, FILE_APPEND | LOCK_EX);
+    }
+
     function build_memory_context_for_topic(string $topicText): array {
         $topicText = trim($topicText);
-        $debug = '';
         if ($topicText === '') {
             return ['context' => '', 'debug' => ''];
         }
 
-        $intentExpanded = expand_query_intent_via_node($topicText);
         $sections = extract_instructions_sections();
-
-        // Meme strategie qu'Interroger (CORRECTIF 16/08/2026) : local d'abord.
         $outline = extract_instructions_outline();
-        $selectQuestion = $topicText;
-        if ($intentExpanded !== '') {
-            $selectQuestion = $topicText . "\n\nIntention elargie :\n" . $intentExpanded;
-        }
-        // Termes primaires : mots bruts de la question EN TETE (ordre stable),
-        // puis extract_keywords. Les plus courts seront preferes au focus.
+        $shape = query_shape($topicText);
+        $subjectNorm = ($shape === 'who') ? extract_who_subject($topicText) : '';
+
+        $stopPrimary = ['que','sais','tu','du','des','les','une','est','sont','dans','pour','avec','comment','quoi','elle','ils','quand','ete','fait','date','dates','annee','annees','fois','aussi','donc','puis','entre','sous','vers','chez','dont','cette','cet','ces','aux','par','sur','plus','tres','bien','tout','tous','toute','toutes','comme','mais','car','ou','ni','si','ne','pas','peu','leur','leurs','son','sa','ses','mon','ma','mes','ton','ta','tes','nos','vos'];
+        $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention'];
+
         $primaryTerms = [];
         foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $w) {
             $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
@@ -817,174 +1073,330 @@
         foreach (extract_keywords($topicText) as $kw) {
             $primaryTerms[] = $kw;
         }
-        $primaryTerms = array_values(array_unique($primaryTerms));
-        // CORRECTIF 21/08/2026 : noms propres de la question (Philippe, AnSo...)
-        // gardes en tete pour le ranking (pseudo, surnom, etc.).
         $properFromQuestion = [];
+        $notProper = ['qui','que','quel','quelle','quels','quelles','comment','quand','pourquoi','liste','lister','donne','donnes','dis','parle','montre','cherche','retrouve','explique','combien','est','sont'];
         foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $rawW) {
             $clean = preg_replace('/[^\p{L}\p{N}]/u', '', $rawW);
             if ($clean === '' || mb_strlen($clean, 'UTF-8') < 3) {
                 continue;
             }
-            // Majuscule initiale hors debut de phrase trop generique
             if (preg_match('/^\p{Lu}/u', $clean)) {
-                $properFromQuestion[] = normalize_for_matching($clean);
-            }
-        }
-        // Stopwords generiques uniquement (pas de filtre metier)
-        $stopPrimary = ['que','sais','tu','du','des','les','une','est','sont','dans','pour','avec','comment','quoi','elle','ils','quand','ete','fait','date','dates','annee','annees','fois','aussi','donc','puis','entre','sous','vers','chez','dont','cette','cet','ces','aux','par','sur','plus','tres','bien','tout','tous','toute','toutes','comme','mais','car','ou','ni','si','ne','pas','peu','leur','leurs','son','sa','ses','mon','ma','mes','ton','ta','tes','nos','vos'];
-        $primaryTerms = array_values(array_filter($primaryTerms, function ($t) use ($stopPrimary) {
-            return !in_array($t, $stopPrimary, true);
-        }));
-        if (!empty($properFromQuestion)) {
-            $properFromQuestion = array_values(array_filter($properFromQuestion, function ($t) use ($stopPrimary) {
-                return $t !== '' && !in_array($t, $stopPrimary, true);
-            }));
-            // Noms propres en tete (ranking + injection prioritaires)
-            $primaryTerms = array_values(array_unique(array_merge($properFromQuestion, $primaryTerms)));
-        }
-        $intentTerms = $intentExpanded !== '' ? extract_keywords($intentExpanded) : [];
-        $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention'];
-        $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($genericNoise) {
-            return !in_array($t, $genericNoise, true);
-        }));
-        $intentTerms = array_values(array_filter(array_unique($intentTerms), function ($t) use ($genericNoise) {
-            return !in_array($t, $genericNoise, true);
-        }));
-        $searchBag = trim($topicText . ' ' . implode(' ', array_slice($intentTerms, 0, 20)));
-        $localSearchPad = search_with_counts_light($searchBag, $sections);
-
-        $relevantSections = [];
-        foreach (($localSearchPad['sections'] ?? []) as $title => $info) {
-            if (isset($sections[$title])) {
-                $relevantSections[$title] = $sections[$title];
-            }
-        }
-        $selectedTitles = select_relevant_sections_via_node($selectQuestion, $outline);
-        if (!empty($selectedTitles)) {
-            foreach ($selectedTitles as $title) {
-                if (isset($sections[$title]) && !isset($relevantSections[$title])) {
-                    $relevantSections[$title] = $sections[$title];
+                $normClean = normalize_for_matching($clean);
+                if (!in_array($normClean, $notProper, true)) {
+                    $properFromQuestion[] = $normClean;
                 }
             }
         }
-        if (empty($relevantSections)) {
-            $relevantSections = [];
+        $primaryTerms = array_values(array_filter(array_unique($primaryTerms), function ($t) use ($stopPrimary, $genericNoise) {
+            return !in_array($t, $stopPrimary, true) && !in_array($t, $genericNoise, true);
+        }));
+        if (!empty($properFromQuestion)) {
+            $primaryTerms = array_values(array_unique(array_merge($properFromQuestion, $primaryTerms)));
         }
 
-        // CORRECTIF 10/09/2026 : ordre Intention -> Extraits -> Preuves (tronquees)
-        // + plafond de preuves pour le LLM. Avant : Preuves (64 lignes) puis
-        // Extraits : les listes longues (cadastre, etc.) tombaient apres le
-        // cap_memory_context_for_llm (30k) -> le modele repondait "non detaille"
-        // alors que l'UI montrait la liste complete.
-        $maxSections = 6;
-        $perSectionLimit = 12000;
-        $maxProofLines = 20; // lignes PREUVES envoyees au LLM (debug compte toujours tout)
-        $relevantSections = array_slice($relevantSections, 0, $maxSections, true);
+        $probeLocal = search_with_counts_light($topicText, $sections);
+        // Local "fort" = le fichier contient deja les mots (pas besoin d'expand LLM).
+        $strongLocal = (($probeLocal['total_occ'] ?? 0) >= 2)
+            && count($probeLocal['sections'] ?? []) >= 1;
+
+        $intentExpanded = '';
+        if (!$strongLocal) {
+            $intentExpanded = expand_query_intent_via_node($topicText);
+        }
+        $intentTerms = $intentExpanded !== '' ? extract_keywords($intentExpanded) : [];
+        $intentTerms = array_values(array_filter(array_unique($intentTerms), function ($t) use ($genericNoise, $stopPrimary) {
+            return !in_array($t, $genericNoise, true) && !in_array($t, $stopPrimary, true);
+        }));
         $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
 
-        $rankedLines = collect_ranked_evidence_lines($sections, $queryTerms, 64, $primaryTerms);
-        $rankedForLlm = array_slice($rankedLines, 0, $maxProofLines);
-
-        $sectionBoost = [];
-        foreach ($rankedLines as $item) {
-            $t = $item['title'];
-            $sectionBoost[$t] = ($sectionBoost[$t] ?? 0) + (int) ($item['score'] ?? 1);
-        }
-        $orderedTitles = array_keys($relevantSections);
-        usort($orderedTitles, function ($a, $b) use ($sectionBoost) {
-            $sa = $sectionBoost[$a] ?? 0;
-            $sb = $sectionBoost[$b] ?? 0;
-            if ($sb !== $sa) {
-                return $sb <=> $sa;
+        $civilProofs = [];
+        if ($shape === 'who' && $subjectNorm !== '') {
+            foreach ($sections as $secTitle => $content) {
+                foreach (preg_split('/\R/u', (string) $content) as $ln) {
+                    $ln = trim($ln);
+                    if (mb_strlen($ln, 'UTF-8') < 20) {
+                        continue;
+                    }
+                    $nn = normalize_for_matching($ln);
+                    if (term_matches_in_text($nn, $subjectNorm) < 1) {
+                        continue;
+                    }
+                    $civil = 0;
+                    if (preg_match('/n[eé]e?\s+le\b/iu', $ln)) {
+                        $civil += 4;
+                    }
+                    if (preg_match('/\b(fille|fils|epoux|epouse|pere|mere|parent)\b/iu', $ln)) {
+                        $civil += 3;
+                    }
+                    if ($civil < 3) {
+                        continue;
+                    }
+                    $civilProofs[] = ['title' => $secTitle, 'line' => $ln, 'score' => $civil];
+                }
             }
-            return 0;
-        });
-        $orderedTitles = array_slice($orderedTitles, 0, $maxSections);
+            usort($civilProofs, function ($a, $c) {
+                return $c['score'] <=> $a['score'];
+            });
+            $civilProofs = array_slice($civilProofs, 0, 6);
+        }
 
-        // --- 1. Intention ---
+        $allBlocks = index_all_heading_blocks($sections);
+        $idf = compute_term_idf($allBlocks, $queryTerms);
+
+        $scored = [];
+        foreach ($allBlocks as $b) {
+            $s = score_heading_block($b, $queryTerms, $idf, $shape, $subjectNorm);
+            if ($s <= 0) {
+                continue;
+            }
+            $b['score'] = $s;
+            $scored[] = $b;
+        }
+        usort($scored, function ($a, $c) {
+            return $c['score'] <=> $a['score'];
+        });
+
+        $budget = 14000;
+        $chosen = [];
+        $used = 0;
+        $exactWho = [];
+        if ($shape === 'who' && $subjectNorm !== '') {
+            foreach ($scored as $blk) {
+                $h = (string) $blk['heading_norm'];
+                $first = (preg_split('/\s+/u', $h, -1, PREG_SPLIT_NO_EMPTY)[0] ?? '');
+                if ($h === $subjectNorm || $first === $subjectNorm) {
+                    $exactWho[] = $blk;
+                }
+            }
+        }
+        if ($shape === 'inventory' && !empty($scored)) {
+            $blk = $scored[0];
+            $txt = $blk['full'];
+            $itemLines = [];
+            foreach (preg_split('/\R/u', $txt) as $ln) {
+                if (preg_match('/^\s*[-*]\s+\S/u', $ln)) {
+                    $itemLines[] = $ln;
+                }
+            }
+            if (count($itemLines) >= 3) {
+                $txt = $blk['heading_raw'] . "\n" . implode("\n", $itemLines);
+            }
+            if (mb_strlen($txt, 'UTF-8') > 18000) {
+                $txt = mb_substr($txt, 0, 18000, 'UTF-8');
+            }
+            $blk['full'] = $txt;
+            $chosen[] = $blk;
+            $used = mb_strlen($txt, 'UTF-8');
+        } elseif ($shape === 'who' && !empty($exactWho)) {
+            foreach ($exactWho as $blk) {
+                if (count($chosen) >= 2) {
+                    break;
+                }
+                $chosen[] = $blk;
+                $used += mb_strlen((string) $blk['full'], 'UTF-8');
+            }
+        } else {
+            $maxBlocks = 3;
+            foreach ($scored as $blk) {
+                if (count($chosen) >= $maxBlocks) {
+                    break;
+                }
+                $txt = $blk['full'];
+                $len = mb_strlen($txt, 'UTF-8');
+                if ($len < 40) {
+                    continue;
+                }
+                if ($used > 0 && $used + $len > $budget) {
+                    $remain = $budget - $used;
+                    if ($remain < 400) {
+                        break;
+                    }
+                    $txt = mb_substr($txt, 0, $remain, 'UTF-8');
+                    $len = mb_strlen($txt, 'UTF-8');
+                    $blk['full'] = $txt;
+                }
+                $chosen[] = $blk;
+                $used += $len;
+                if ($used >= $budget) {
+                    break;
+                }
+            }
+        }
+
         $intentionBlock = '';
         if ($intentExpanded !== '') {
             $intentionBlock = "Intention elargie (boussole de recherche) :\n" . $intentExpanded . "\n\n";
         }
+        if ($shape === 'who') {
+            $intentionBlock .= "Consigne identite : si le contexte donne un lien de parente et/ou une date de naissance, la PREMIERE phrase les donne. Le reste ensuite.\n\n";
+        }
+        if ($shape === 'inventory') {
+            $intentionBlock .= "Consigne LISTE : recopie TOUTES les lignes du bloc fourni. Interdit de resumer a 3-5 exemples. Interdit de couper une ligne.\n\n";
+        }
 
-        // --- 2. Extraits de sections (listes, detail) EN PRIORITE pour le LLM ---
         $excerptsBlock = '';
-        if (!empty($orderedTitles)) {
+        if (!empty($chosen)) {
             $excerptsBlock .= "Extraits courts des sections ou les preuves ont ete trouvees :\n";
-            foreach ($orderedTitles as $title) {
-                if (!isset($relevantSections[$title])) {
-                    continue;
-                }
-                $block = build_section_excerpt_for_query($relevantSections[$title], $queryTerms, $perSectionLimit);
-                $excerptsBlock .= "\n--- Section : $title ---\n" . $block . "\n";
+            foreach ($chosen as $blk) {
+                $excerptsBlock .= "\n--- Section : " . $blk['section'] . " / " . $blk['heading'] . " ---\n"
+                    . $blk['full'] . "\n";
             }
             $excerptsBlock .= "\n";
         }
 
-        // --- 3. PREUVES DIRECTES (sous-ensemble pour tenir sous le plafond LLM) ---
         $proofsBlock = '';
-        if (!empty($rankedForLlm)) {
+        $proofCount = 0;
+        if ($shape === 'who' && !empty($civilProofs)) {
             $proofsBlock .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
-            foreach ($rankedForLlm as $item) {
+            foreach ($civilProofs as $item) {
                 $proofsBlock .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
             }
             $proofsBlock .= "\n";
-            $hitsInProofs = [];
-            $blob = normalize_for_matching(implode(' ', array_column($rankedForLlm, 'line')));
-            foreach ($primaryTerms as $pt) {
-                if (term_matches_in_text($blob, $pt) > 0) {
-                    $hitsInProofs[] = $pt;
+            $proofCount = count($civilProofs);
+        } elseif ($shape !== 'inventory' && !empty($chosen)) {
+            $proofLines = [];
+            foreach ($chosen as $blk) {
+                foreach (preg_split('/\R/u', (string) $blk['full']) as $ln) {
+                    $ln = trim($ln);
+                    if (mb_strlen($ln, 'UTF-8') < 24) {
+                        continue;
+                    }
+                    $nn = normalize_for_matching($ln);
+                    $hit = 0;
+                    foreach ($queryTerms as $t) {
+                        $t = normalize_for_matching((string) $t);
+                        if ($t !== '' && term_matches_in_text($nn, $t) > 0) {
+                            $hit++;
+                        }
+                    }
+                    if ($hit < 1) {
+                        continue;
+                    }
+                    $civil = 0;
+                    if (preg_match('/n[eé]e?\s+le\b/iu', $ln)) {
+                        $civil += 3;
+                    }
+                    if (preg_match('/\b(fille|fils|epoux|epouse|pere|mere|parent)\b/iu', $ln)) {
+                        $civil += 2;
+                    }
+                    $proofLines[] = [
+                        'score' => $hit * 10 + $civil * 20,
+                        'title' => $blk['heading'] !== '' ? $blk['heading'] : $blk['section'],
+                        'line'  => $ln,
+                    ];
                 }
             }
-            if (!empty($hitsInProofs)) {
-                $proofsBlock .= "Termes de la question presents dans les preuves ci-dessus : "
-                    . implode(', ', $hitsInProofs)
-                    . ". Tu dois les utiliser ; interdit de repondre \"non mentionne\".\n\n";
+            usort($proofLines, function ($a, $c) {
+                return $c['score'] <=> $a['score'];
+            });
+            $proofLines = array_slice($proofLines, 0, 16);
+            $proofCount = count($proofLines);
+            if ($proofCount > 0) {
+                $proofsBlock .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
+                foreach ($proofLines as $item) {
+                    $proofsBlock .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
+                }
+                $proofsBlock .= "\n";
             }
         }
 
         $ctx = $intentionBlock . $excerptsBlock . $proofsBlock;
-
         if (trim($ctx) === '') {
             $ctx = "Aucune preuve locale trouvee dans instructions.md pour cette question.\n";
         }
 
         $sentChars = mb_strlen($ctx, 'UTF-8');
-        $metrics = [
-            'sections_count' => count($orderedTitles),
-            'evidence_lines' => count($rankedLines ?? []),
-            'evidence_lines_sent' => count($rankedForLlm ?? []),
-            'top_section'    => $orderedTitles[0] ?? '',
-            'top_evidence'   => array_slice($rankedLines ?? [], 0, 3),
-            'sent_chars'     => $sentChars,
-        ];
-        $debug_text = count($rankedLines) . ' preuve(s), ' . count($orderedTitles) . ' extrait(s)'
-            . ($intentExpanded !== '' ? ' + intention' : '')
-            . ' — envoye ' . $sentChars . ' car.'
-            . (count($rankedLines) > $maxProofLines
-                ? ' (preuves LLM: ' . count($rankedForLlm) . '/' . count($rankedLines) . ')'
-                : '');
+        $headList = [];
+        $idfPreview = [];
+        foreach ($chosen as $blk) {
+            $headList[] = $blk['heading'] . '(' . (int) round($blk['score']) . ')';
+        }
+        arsort($idf);
+        $nIdf = 0;
+        foreach ($idf as $term => $w) {
+            $idfPreview[] = $term . ':' . round($w, 2);
+            if (++$nIdf >= 6) {
+                break;
+            }
+        }
+
+        log_memory_retrieval($topicText, [
+            'shape'    => $shape,
+            'strong'   => $strongLocal ? '1' : '0',
+            'terms'    => implode(',', $queryTerms),
+            'idf'      => implode(',', $idfPreview),
+            'blocs'    => $headList,
+            'chars'    => $sentChars,
+            'preuves'  => $proofCount,
+        ]);
+
+        $debug_text = $proofCount . ' preuve(s), ' . count($chosen) . ' extrait(s)'
+            . ($strongLocal ? ' (parse local, sans expand/select)' : ($intentExpanded !== '' ? ' + intention' : ''))
+            . ' - envoye ' . $sentChars . ' car.'
+            . (!empty($headList) ? ' [' . implode(' | ', $headList) . ']' : '');
 
         return [
             'context' => $ctx,
             'debug'   => [
                 'text'      => $debug_text,
-                'metrics'   => $metrics,
-                'raw_debug' => $debug,
+                'metrics'   => [
+                    'sections_count' => count($chosen),
+                    'evidence_lines' => $proofCount,
+                    'evidence_lines_sent' => $proofCount,
+                    'top_section'    => $chosen[0]['heading'] ?? '',
+                    'sent_chars'     => $sentChars,
+                ],
+                'raw_debug' => $debug_text,
             ],
         ];
     }
 
-    /**
-     * CORRECTIF 05/08/2026 : extrait centre sur les OCCURRENCES des termes
-     * dans la section (pas seulement le debut du texte). Les grosses sections
-     * (Famille, Chronologie) mettaient les passages utiles au milieu / en fin ;
-     * un simple tronquage debut faisait croire au LLM que "VILLIERS" n'existait pas.
-     * Aucune personnalisation metier : uniquement les termes fournis (question
-     * + intention elargie LLM).
-     */
+    function extract_heading_anchored_block(string $content, array $terms, int $maxChars): string {
+        $blocks = split_heading_blocks($content);
+        if (empty($blocks)) {
+            return '';
+        }
+        $idf = compute_term_idf($blocks, $terms);
+        $best = '';
+        $bestSc = 0.0;
+        foreach ($blocks as $b) {
+            $s = score_heading_block($b, $terms, $idf, 'fact', '');
+            if ($s > $bestSc) {
+                $bestSc = $s;
+                $best = $b['full'];
+            }
+        }
+        if ($best === '' || $bestSc <= 0) {
+            return '';
+        }
+        if (mb_strlen($best, 'UTF-8') > $maxChars) {
+            $best = mb_substr($best, 0, $maxChars, 'UTF-8');
+        }
+        return mb_strlen($best, 'UTF-8') >= 80 ? $best : '';
+    }
+
+    function pick_best_heading_block(array $sections, array $terms, int $maxChars): array {
+        $blocks = index_all_heading_blocks($sections);
+        $idf = compute_term_idf($blocks, $terms);
+        $best = ['text' => '', 'score' => 0, 'section' => ''];
+        foreach ($blocks as $b) {
+            $s = score_heading_block($b, $terms, $idf, 'fact', '');
+            if ($s > $best['score']) {
+                $txt = $b['full'];
+                if (mb_strlen($txt, 'UTF-8') > $maxChars) {
+                    $txt = mb_substr($txt, 0, $maxChars, 'UTF-8');
+                }
+                $best = ['text' => $txt, 'score' => $s, 'section' => $b['section']];
+            }
+        }
+        return $best;
+    }
+
     function build_section_excerpt_for_query(string $content, array $terms, int $maxChars = 10000): string {
+        $anchored = extract_heading_anchored_block($content, $terms, $maxChars);
+        if ($anchored !== '') {
+            return $anchored;
+        }
         $content = trim($content);
         if ($content === '') {
             return '';
@@ -992,113 +1404,7 @@
         if (mb_strlen($content, 'UTF-8') <= $maxChars) {
             return $content;
         }
-
-        $terms = array_values(array_filter(array_map(function ($t) {
-            return normalize_for_matching((string) $t);
-        }, $terms), function ($t) {
-            return $t !== '' && mb_strlen($t, 'UTF-8') >= 3;
-        }));
-
-        // 1) Decoupage fin : paragraphes, sinon lignes, sinon phrases
-        $chunks = preg_split('/\n\s*\n/', $content);
-        if (count($chunks) < 3) {
-            $chunks = preg_split('/\n+/', $content);
-        }
-        if (count($chunks) < 3) {
-            $chunks = preg_split('/(?<=[.!?])\s+/u', $content, -1, PREG_SPLIT_NO_EMPTY);
-        }
-
-        $scored = [];
-        foreach ($chunks as $idx => $chunk) {
-            $chunk = trim($chunk);
-            if ($chunk === '') {
-                continue;
-            }
-            $normalized = normalize_for_matching($chunk);
-            $score = 0;
-            foreach ($terms as $term) {
-                $score += substr_count($normalized, $term) * 3;
-            }
-            if ($score > 0) {
-                $scored[] = ['score' => $score, 'text' => $chunk, 'idx' => $idx];
-            }
-        }
-
-        // 2) Si aucun chunk ne matche, fenetres glissantes autour des positions
-        if (empty($scored) && !empty($terms)) {
-            $normFull = normalize_for_matching($content);
-            $window = 900;
-            $positions = [];
-            foreach ($terms as $term) {
-                $offset = 0;
-                while (($pos = strpos($normFull, $term, $offset)) !== false) {
-                    $positions[] = $pos;
-                    $offset = $pos + mb_strlen($term, 'UTF-8');
-                    if (count($positions) > 40) {
-                        break 2;
-                    }
-                }
-            }
-            $positions = array_values(array_unique($positions));
-            sort($positions);
-            $lenFull = mb_strlen($content, 'UTF-8');
-            foreach ($positions as $p) {
-                // Approximation : indices sur texte normalise ~ proches du brut
-                $start = max(0, (int) ($p * 0.95) - (int) ($window / 2));
-                $piece = mb_substr($content, $start, $window, 'UTF-8');
-                if (trim($piece) !== '') {
-                    $scored[] = ['score' => 5, 'text' => trim($piece), 'idx' => $start];
-                }
-            }
-        }
-
-        if (empty($scored)) {
-            // Dernier recours : debut + milieu + fin
-            $len = mb_strlen($content, 'UTF-8');
-            $third = (int) ($maxChars / 3);
-            return mb_substr($content, 0, $third, 'UTF-8')
-                . "\n\n[...]\n\n"
-                . mb_substr($content, (int) ($len / 2) - (int) ($third / 2), $third, 'UTF-8')
-                . "\n\n[...]\n\n"
-                . mb_substr($content, max(0, $len - $third), $third, 'UTF-8');
-        }
-
-        usort($scored, function ($a, $b) {
-            if ($b['score'] !== $a['score']) {
-                return $b['score'] <=> $a['score'];
-            }
-            return $a['idx'] <=> $b['idx'];
-        });
-
-        $selected = [];
-        $totalLen = 0;
-        $seen = [];
-        foreach ($scored as $item) {
-            $key = md5($item['text']);
-            if (isset($seen[$key])) {
-                continue;
-            }
-            $len = mb_strlen($item['text'], 'UTF-8');
-            if ($totalLen + $len > $maxChars && !empty($selected)) {
-                break;
-            }
-            $seen[$key] = true;
-            $selected[] = $item;
-            $totalLen += $len + 2;
-        }
-
-        usort($selected, function ($a, $b) {
-            return $a['idx'] <=> $b['idx'];
-        });
-
-        $excerpt = implode("\n\n", array_map(function ($item) {
-            return $item['text'];
-        }, $selected));
-
-        if (mb_strlen($excerpt, 'UTF-8') > $maxChars) {
-            $excerpt = mb_substr($excerpt, 0, $maxChars, 'UTF-8') . '...';
-        }
-        return $excerpt;
+        return mb_substr($content, 0, $maxChars, 'UTF-8');
     }
 
     /**
@@ -1902,6 +2208,30 @@
                     continue;
                 }
                 $norm = normalize_for_matching($line);
+                // Homonyme : "Ambre 9" (groupe) vs "Ambre" (fille).
+                // Si le nom est suivi d'un chiffre dans la ligne, mais pas
+                // dans la question, on ignore la ligne.
+                $skipHomonym = false;
+                foreach ($primaryTerms as $pt) {
+                    if (!preg_match('/(?<![\p{L}\p{N}])' . preg_quote($pt, '/') . '\s+\d/u', $norm)) {
+                        continue;
+                    }
+                    $compoundInQuery = false;
+                    foreach ($terms as $qt) {
+                        if (preg_match('/(?<![\p{L}\p{N}])' . preg_quote($pt, '/') . '\s+\d/u', $qt)
+                            || preg_match('/^\d+$/', $qt)) {
+                            $compoundInQuery = true;
+                            break;
+                        }
+                    }
+                    if (!$compoundInQuery) {
+                        $skipHomonym = true;
+                        break;
+                    }
+                }
+                if ($skipHomonym) {
+                    continue;
+                }
                 $hitTerms = 0;
                 $hitPrimary = 0;
                 $score = 0;
@@ -1942,6 +2272,10 @@
                 // CORRECTIF 21/08/2026 : pseudo/surnom + nom propre de la question
                 if ($hitPrimary > 0 && preg_match('/surnom|pseudo|surnomme|appele|dit\b|aka\b/iu', $line)) {
                     $score += 60;
+                }
+                // Identite civile : "sa fille Ambre ... nee le 07/06/2015"
+                if ($hitPrimary > 0 && preg_match('/\b(fille|fils|nee|ne le|epouse|pere|mere|sosa)\b/u', $norm)) {
+                    $score += 90;
                 }
                 if (preg_match('/\b[\p{Lu}][\p{L}]{2,}/u', $line)) {
                     $score += 2;
