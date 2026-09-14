@@ -1970,7 +1970,7 @@ Toutes les caméras (Domaine Saint-Antonin, Villa Jacquemont, Faisanderie) pouss
 - Amplificateur Pioneer VSX-709RDS fonctionnel (mais bouton du volume à réparer et télécommande HS)
 - Platine Blu-ray Panasonic DMP-BDT460 fonctionnelle
 - 2 Enceintes Canon S-50 fonctionnelles
-- 2 Enceintes Canon 200 DH (je pense) fonctionnelles
+- 2 Enceintes Canon 200 DH (pas sur du modele) fonctionnelles
 - Enceinte Celestion IMPACT C1 fonctionnelle
 - Caisson Pioneer S-W200 fonctionnel
 - Videoprojecteur ViewSonic PX701HD fonctionnel
@@ -2747,121 +2747,148 @@ Le CD était accompagné d'un mot personnel, après des échanges par mail.
 
 ##### Concerts et tournées connus
 ###### 2000
-**Korn à Paris-Bercy le 16 mai 2000** (tournée et "Cage" avec Clément BARATIER, voir anecdote).
+- **Korn à Paris-Bercy le 16 mai 2000** (tournée et "Cage" avec Clément BARATIER, voir anecdote).
 
 ###### 2003
-**Superbus au Bataclan le 4 juin 2003** (3 tickets placement libre à 23,10 € chacun, probablement avec Eva SALOMON et Charles de LEUSSE, tickets conservés à Saint-Antonin).
+- **Superbus au Bataclan le 4 juin 2003** (3 tickets placement libre à 23,10 € chacun, probablement avec Eva SALOMON et Charles de LEUSSE, tickets conservés à Saint-Antonin).
 
 ###### 2004
-**Metallica avec Slipknot au Parc des Princes le 23 juin 2004** (tribune rouge présidentielle, 50,50 €, billet seul de Mathieu retrouvé ; non certain s'il était allé seul ou non, ticket conservé précieusement à Saint-Antonin).
+- **Metallica avec Slipknot au Parc des Princes le 23 juin 2004** (tribune rouge présidentielle, 50,50 €, billet seul de Mathieu retrouvé ; non certain s'il était allé seul ou non, ticket conservé précieusement à Saint-Antonin).
 
 ###### 2005
-**Iron Maiden au Parc des Princes le 25 juin 2005** (pelouse 45 €, une seule place, ticket conservé à Saint-Antonin).
+- **Iron Maiden au Parc des Princes le 25 juin 2005** (pelouse 45 €, une seule place, ticket conservé à Saint-Antonin).
 
 ###### 2006
-**Concert Guns N' Roses Hammersmith Apollo, London, 7 juin 2006** (Avec Eva SALOMON, 3000 places, complet, Izzy absent).
-**Concert Red Hot Chilli Peppers, Palais Omnisports de Paris-Bercy, 9 juin 2006** (tournée *Stadium Arcadium*, avec Eva SALOMON -- Mathieu ne savait plus en 2026 si c'était GNR ou RHCP, confirmation setlist.fm : c'était les RHCP).
-**Concert Guns N' Roses — Palais Omnisports de Paris-Bercy, 20 juin 2006** (setlist.fm/Wikipedia confirment le 20 ; Mathieu et Clément BARATIER se souviennent du 21 -- solstice 2006 = 21 juin, écart d'un jour dans les souvenirs 20 ans après) : Mathieu, Clément et Eva SALOMON ont assisté ensemble à ce concert, tournée *Chinese Democracy Tour 06/07*. Même salle que le Korn de mai 2000. Placement : fond de salle, gradins bas centraux. Eva et Mathieu restés dans les gradins ; Clément est allé en fosse avec un pote à lui pour se coller à la scène.
-**Concert Guns N' Roses Wembley Arena, London, 30 juillet 2006** - tournée *Chinese Democracy Tour 06/07*. Avec Eva SALOMON, hôtel quartier Westminster, places VIP Eva = uniquement diner salle de réception, aucune rencontre groupe, Eva déçue ; Axl très en retard ; Mathieu a tenté de filouter pour aller en backstage, sans succès ; photos Minolta Dimage 7i horodatées "06/08/2006" = date transfert ordinateur, non date de concert ; retour Eurostar 31 juillet, première grande engueulade avec Eva dans le train, amorce de la séparation ; dernier voyage de Mathieu à Londres.
+- **Concert Guns N' Roses Hammersmith Apollo, London, 7 juin 2006** (Avec Eva SALOMON, 3000 places, complet, Izzy absent).
+- **Concert Red Hot Chilli Peppers, Palais Omnisports de Paris-Bercy, 9 juin 2006** (tournée *Stadium Arcadium*, avec Eva SALOMON -- Mathieu ne savait plus en 2026 si c'était GNR ou RHCP, confirmation setlist.fm : c'était les RHCP).
+- **Concert Guns N' Roses — Palais Omnisports de Paris-Bercy, 20 juin 2006** (setlist.fm/Wikipedia confirment le 20 ; Mathieu et Clément BARATIER se souviennent du 21 -- solstice 2006 = 21 juin, écart d'un jour dans les souvenirs 20 ans après) : Mathieu, Clément et Eva SALOMON ont assisté ensemble à ce concert, tournée *Chinese Democracy Tour 06/07*. Même salle que le Korn de mai 2000. Placement : fond de salle, gradins bas centraux. Eva et Mathieu restés dans les gradins ; Clément est allé en fosse avec un pote à lui pour se coller à la scène.
+- **Concert Guns N' Roses Wembley Arena, London, 30 juillet 2006** - tournée *Chinese Democracy Tour 06/07*. Avec Eva SALOMON, hôtel quartier Westminster, places VIP Eva = uniquement diner salle de réception, aucune rencontre groupe, Eva déçue ; Axl très en retard ; Mathieu a tenté de filouter pour aller en backstage, sans succès ; photos Minolta Dimage 7i horodatées "06/08/2006" = date transfert ordinateur, non date de concert ; retour Eurostar 31 juillet, première grande engueulade avec Eva dans le train, amorce de la séparation ; dernier voyage de Mathieu à Londres.
 
 ###### 2010
-**Concert Oldelaf à l'Olympia le 30 janvier 2010** et à l'Alhambra le 10 décembre 2010.
-**Concert AC/DC au Stade de France le 18 juin 2010** (pelouse or).
-**Concert Guns N' Roses à Paris-Bercy le 13 septembre 2010** (Balcon T1 catégorie 3 places 89 et 68, 49,90 € ; fosse porte 27, 59,80 € ; ticket(s) conservé(s) précieusement à Saint-Antonin).
-**Concert Ozzy Osbourne avec Korn en première partie à Paris-Bercy le 20 septembre 2010** (fosse porte 27, 67,50 €, mousse projetée sur le public ; ticket conservé précieusement à Saint-Antonin).
-**Concert Oldelaf à l'Alhambra le 10 décembre 2010** Tout premier grand concert d'Oldelaf en solo à Paris après la séparation du groupe.
+- **Concert Oldelaf à l'Olympia le 30 janvier 2010** et à l'Alhambra le 10 décembre 2010.
+- **Concert AC/DC au Stade de France le 18 juin 2010** (pelouse or).
+- **Concert Guns N' Roses à Paris-Bercy le 13 septembre 2010** (Balcon T1 catégorie 3 places 89 et 68, 49,90 € ; fosse porte 27, 59,80 € ; ticket(s) conservé(s) précieusement à Saint-Antonin).
+- **Concert Ozzy Osbourne avec Korn en première partie à Paris-Bercy le 20 septembre 2010** (fosse porte 27, 67,50 €, mousse projetée sur le public ; ticket conservé précieusement à Saint-Antonin).
+- **Concert Oldelaf à l'Alhambra le 10 décembre 2010** Tout premier grand concert d'Oldelaf en solo à Paris après la séparation du groupe.
 
 ###### 2012
-**Concert Ambre 9 à la Guinness Tavern en juillet-septembre 2012**.
-**Concert Captain FraPat au Glazart le 6 octobre 2012** puis au Fallenfest au Petit Bain les 15 et 22 février 2013.
+- **Concert Ambre 9 à la Guinness Tavern en juillet-septembre 2012**.
+- **Concert Captain FraPat au Glazart le 6 octobre 2012** puis au Fallenfest au Petit Bain les 15 et 22 février 2013.
 
 ###### 2013
-**Concert Iron Maiden à Bercy le 5 juin 2013** (tournée *Made in England European Tour 2013*, fosse porte 27, un ticket invitation, l'autre billet 51 €, tickets conservés à Saint-Antonin).
+- **Concert Iron Maiden à Bercy le 5 juin 2013** (tournée *Made in England European Tour 2013*, fosse porte 27, un ticket invitation, l'autre billet 51 €, tickets conservés à Saint-Antonin).
 
 ###### 2015
-**Concert AC/DC au Stade de France le 26 mai 2015** (tournée *Rock or Bust World Tour*, pelouse Or secteur Ouest porte R, ticket acheté 89,50 €, ticket conservé précieusément à Saint-Antonin).
+- **Concert AC/DC au Stade de France le 26 mai 2015** (tournée *Rock or Bust World Tour*, pelouse Or secteur Ouest porte R, ticket acheté 89,50 €, ticket conservé précieusément à Saint-Antonin).
 
 ###### 2023
-**Concert Hollywood Vampires au Zénith de Paris le 25 juin 2023** (fosse debout, 85 €, avec AnSo ; seul le billet de Mathieu est retrouvé, conservé précieusement à Saint-Antonin).
-**Concert The Hives à l'Olympia le 16 septembre 2023** (tournée *The Death of Randy FITZSIMMONS - European Tour 2023*, e-tickets conservés à Saint-Antonin).
+- **Concert Hollywood Vampires au Zénith de Paris le 25 juin 2023** (fosse debout, 85 €, avec AnSo ; seul le billet de Mathieu est retrouvé, conservé précieusement à Saint-Antonin).
+- **Concert The Hives à l'Olympia le 16 septembre 2023** (tournée *The Death of Randy FITZSIMMONS - European Tour 2023*, e-tickets conservés à Saint-Antonin).
 
 ###### 2024
-**Concert Tenacious D à l'Accor Arena le 15 mai 2024** (Fosse OR VIP, 62 € + 93,50 €, e-ticket offert par AnSo, conservé à Saint-Antonin).
+- **Concert Tenacious D à l'Accor Arena le 15 mai 2024** (Fosse OR VIP, 62 € + 93,50 €, e-ticket offert par AnSo, conservé à Saint-Antonin).
 
 ###### 2025
-**Concert Iron Maiden à la Defense Arena le 19 juillet 2025** (Ambre et Mathieu) en gradins (obtenus en doublon des places fosses de Mathieu) via le Pr Nicolas MANSENCAL - Grand moment Père-Fille.
-**Concert Marilyn Manson au Zénith de Paris le 11 novembre 2025** (e-ticket gradins porte E rang 37 siège 78, 77 € le billet, 2 billets conservés : Mathieu et AnSo).
+- **Concert Iron Maiden à la Defense Arena le 19 juillet 2025** (Ambre et Mathieu) en gradins (obtenus en doublon des places fosses de Mathieu) via le Pr Nicolas MANSENCAL - Grand moment Père-Fille.
+- **Concert Marilyn Manson au Zénith de Paris le 11 novembre 2025** (e-ticket gradins porte E rang 37 siège 78, 77 € le billet, 2 billets conservés : Mathieu et AnSo).
 
 #### Jeux Vidéo
-Sur mobile, Mathieu a longtemps été accro, avant que les éditeurs ne tuent ses jeux préférés les uns après les autres — il n'arrive plus à s'investir dans un jeu mobile depuis :
-- **Doctor Who Legacy** : Il trouvait ce jeu GENIAL. Bien entendu, l'éditeur l'a tué. Grande déception.
-- **Iron Maiden: Legacy of the Beast** : Joué sur sa tablette Android, il avait récupéré au moins une trentaine de personnages Eddie différents. Arrêté par son éditeur. C'est précisément ce type d'abandon qui a définitivement tué sa confiance dans les jeux mobiles.
-- **Star Wars: Tiny Death Star** : Un autre titre mobile qu'il avait beaucoup apprécié à l'époque.
-
-Mathieu joue à 'Hogwarts Legacy' sur Nintendo Switch et explore souvent la Forêt interdite. Il y joue aussi sur xBox. Ambre aussi.
-
-Mathieu se concentre principalement sur le leveling de ses personnages dans World of Warcraft depuis 2005. Mathieu entretient sa propre guilde dans World of Warcraft. Il utilise cette guilde pour ses propres personnages ainsi que ceux de sa compagne et de sa fille. Il a hérité cette guilde d'un joueur qui a arrêté de jouer il y a une dizaine d'années. Mathieu est un joueur de l'Alliance dans World of Warcraft.
-
 Mathieu aime les classiques (Doom, Another World, Flashback, Qix, QBert, Tétris, Sonic, Duck Tales, Bugs Bunny in Crazy Castle, ...) et les jeux plus récents (Star Wars Outlaws, Cyberpunk 2077, No Man's Sky, South of Midnight, ...)
 
-De **mai 2004 à novembre 2018**, Mathieu a mis en partage des jeux Java et Flash sur le forum WDA, via l'extension phpBB **"Arcade"**. Il y proposait des classiques (Rick Dangerous, Puzzle Bobble, Berzerk, Xevious, Qix, Bejewelled...). En novembre 2018, trois raisons l'ont conduit à arrêter : l'extension Arcade phpBB n'était plus maintenue par ses développeurs, la fin imminente de Flash condamnait les jeux existants, et les portages JS de remplacement devenaient payants. Il a néanmoins conservé l'intégralité des scores réalisés par les utilisateurs du forum — une mémoire collective précieuse. À noter que phpBB lui-même commence malheureusement à ne plus être activement mis à jour, ce qui est une préoccupation pour l'avenir du forum WDA. Une page de l'histoire du forum WDA.
+Mathieu a une prédilection particulière pour la 3D isométrique, qu'il considère comme un format intemporel.
 
-Mathieu a une prédilection particulière pour la 3D isométrique, qu'il considère comme un format intemporel. Voici ses titres et licences marquants, au-delà des incontournables déjà cités :
+Voici ses titres et licences marquants, classés par ordre chronologique de souvenirs :
 
-- **Transport Tycoon** : Des heures passées à construire des réseaux de transport. Il lui arrive encore de jouer à OpenTTD, mais il trouve que c'est devenu trop évolué par rapport à l'original.
-- **Sim Tower** (PC) : Un jeu de gestion rigolo — des heures passées à construire sa tour.
-- **SimCity** (sur Palm Pilot) : Des heures et des heures sur ce petit PDA. L'un des souvenirs de jeu mobile de l'époque, bien avant les smartphones.
-- **Alpha Waves** : Sur PC 286 — un jeu qu'il a trouvé tellement "terrible" (dans le bon sens). Par la suite, il a rencontré son créateur, Christophe de DINECHIN, qui est venu au Domaine Saint-Antonin lui remettre en mains propres les fichiers sources du jeu et les machines sur lesquelles il l'avait développé. Il est devenu **Bienfaiteur WDA en juillet 2024** (pseudo forum : **c3d**, secteur 04/SE, tél. 0687985999, christophe.de.dinechin@gmail.com, Facebook : christophe.dedinechin.18).
-- **Commandos** (le I) : Des heures passées sur PC.
-- **Syndicate** : Des heures sur PC, à écouter de la musique de The Police par-dessus.
-- **Maniac Mansion II** (Day of the Tentacle) : Un classique LucasArts.
-- **Tomb Raider** (licence moderne) : Il apprécie particulièrement les opus modernes, en vue FPS.
-- **BioShock** (la série) : Il a adoré, et surtout le troisième : BioShock Infinite.
-- **Cat Quest** (la licence) : Appréciée.
-- **Guardians of the Galaxy** : "Terrible à jouer" — un vrai coup de coeur.
-- **GTA** (toute la série) : Il a adoré le V, passé des heures sur le I, GTA London 1969 et le II. Il a adoré Vice City. Un peu moins le IV, qu'il trouve chiant.
-- **No Man's Sky** : Il fait partie des tous premiers joueurs, ayant participé au financement participatif dès les débuts du projet.
-- **Red Dead Redemption II** : Un de ses jeux marquants.
-- **Portal** (I et II) : Il apprécie la série, surtout le II avec GLaDOS (l'IA méchante hilarante).
-- **Sid Meier's Pirates!** : Des heures et des heures dessus.
-- **Half-Life** (la série) : HL2 en particulier — "quelle tuerie". Et Half-Life: Alyx en VR, qu'il a adoré.
-- **Down the Rabbit Hole** (VR) : Une expérience VR adorée (descente dans le terrier du lapin d'Alice).
-- **Moss** (VR) : Un autre coup de coeur en réalité virtuelle.
-- **Duke Nukem** (la série) : Un classique incontournable.
-- **Command & Conquer** (la série) : Surtout le III. Il adore le genre RTS en général, comme StarCraft ou Dune II.
-- **Dune** (le I) : Des heures sur PC.
-- **Mirror's Edge** : Fier de l'avoir terminé sur PS3.
-- **Trine** (la licence) : Appréciée.
-- **The Cave** : Très drôle.
-- **Brütal Legend** : Avec Jack Black, son Dieu.
-- **Stray** : "Terrible" (dans le bon sens).
-- **Runaway** : Un point-and-click apprécié.
-- **Legend of Kyrandia** (la série) : Quels graphismes... Mais qu'est-ce qu'il était con, ce Brandon. Un classique culte.
+- **Stunt Car Racer** (1989) : Sur le Commodore PC 40 III acquis en 1989 (80286, Geoworks Ensemble 2.0), Mathieu a longuement pratiqué Stunt Car Racer, récupéré en disquette 720 Ko. Le jeu, sorti la même année, proposait des circuits aériens exigeants en 3D vectorielle. Mathieu le trouvait difficile mais parfaitement dosé : Chaque progression débloquait de nouveaux tracés et donnait envie de continuer. Il y jouait en EGA. Ce titre reste pour lui un classique de l’époque.
+Indianapolis 500: The Simulation (1989)
+- **Indianapolis 500** (1989) : Toujours sur le même Commodore PC 40 III, Mathieu a beaucoup joué à Indianapolis 500: The Simulation (souvent appelé Indy 500), sorti en 1989 chez Electronic Arts. Avec Julien GAUTIER, leur plus grand plaisir consistait à générer le plus gros bouchon possible en multipliant volontairement les accidents partout sur la piste, transformant le simulateur en pure machine à chaos. C’était de l’anti-jeu assumé, et l’un de leurs divertissements favoris de l’époque.
+- **Retour vers le Futur** (vers 1989) : Sur PC 286, en disquette, dans une compilation, à l'époque. Cette musique ... Il a encore très souvent la musique du jeu dans la tête.
+- **Silent Service II** (1990) : Avant Gunship 2000, Mathieu a joué à Silent Service II (MicroProse, 1990) sur PC. Son père Henri CHARREYRE était impressionné par le réalisme du simulateur de sous-marin et a même essayé d’y jouer. Les missions duraient très longtemps. La boîte cartonnée était grande, accompagnée d’un épais manuel et du cache-clavier en carton (le calque à poser sur le clavier pour repérer toutes les commandes). Le jeu tenait sur deux disquettes.
+- **Alpha Waves** (1990) : Sur PC 286 — un jeu qu'il a trouvé tellement "terrible" (dans le bon sens). Par la suite, il a rencontré son créateur, Christophe de DINECHIN, qui est venu au Domaine Saint-Antonin lui remettre en mains propres les fichiers sources du jeu et les machines sur lesquelles il l'avait développé. Il est devenu **Bienfaiteur WDA en juillet 2024** (pseudo forum : **c3d**, secteur 04/SE, tél. 0687985999, christophe.de.dinechin@gmail.com, Facebook : christophe.dedinechin.18).
+- **Paperboy** (1990) : Sur Lynx. Quel jeu dur ...
 - **Les point-and-click LucasArts** : En règle générale, il en est un grand fan.
-- **Monkey Island** (la série) : Un classique indétrônable.
-- **Sea of Thieves** : Apprécié. Joue en co-op avec Ambre — virées pirates en duo père-fille (lui Xbox, elle PC).
-- **The 7th Guest** : Des heures sur PC.
-- **Space Quest** (la série) : "Trop drôle".
-- **Gylt** : "Terrible" (dans le bon sens).
-- **Under a Killing Moon** et **Phantasmagoria** : Deux jeux marquants.
-- **Rayman** (la série) : Appréciée.
-- **Metal Slug** (la série) : Appréciée. Il y joue sur MVS et Switch.
-- **Police Quest** (la série) : Appréciée.
-- **Retour vers le Futur** : Sur PC 286, en disquette, à l'époque. Cette musique ...
-- **Borderlands** : Le I est sympa.
-- **Commander Keen** : Un classique.
-- **Far Cry** (le I) : Apprécié.
-- **Gris** : "Très mignon".
-- **Monument Valley** (les 3 opus) : Apprécié.
-- **MegaRace** (1 et 2) : Des heures sur PC.
-- **Stick It to the Man** : Apprécié.
-- **Stunt Car Racer** : Un classique.
-- **Populous** : Un de ses jeux fétiches ! Découvert lors d'un voyage d'échange scolaire d'environ deux semaines à Dawlish (Devon, Angleterre). Il avait acheté avec son argent de poche, dans une boutique à Exeter, Populous en disquette 3"1/2 FD — et en même temps, **Mines of Titan** en 5"1/4 et 3"1/2 (les deux supports dans le même packaging). Il a dû attendre la fin du séjour à Dawlish pour tester ça sur son PC 286 Commodore. Il a ADORÉ Populous immédiatement. Mines of Titan, en revanche, lui a donné du fil à retordre : c'était son tout premier jeu de rôle de ce type, avec l'exploration bloc par bloc caractéristique des dungeon crawlers de l'époque — il était assez dérouté au début. En plus, tout était en Anglais, et il le parlait encore plus mal à l'époque qu'aujourd'hui — fatalement. Il rêve d'un Populous "zen" de l'époque qui tournerait nativement sur machines modernes — rien n'a jamais vraiment comblé ce manque. Pistes à explorer : Populous: The Beginning via Wine/CrossOver ou patch "Populous Reloaded" ; le I et II via DOSBox/ScummVM. Dans l'esprit god game contemplatif moderne : From Dust (Ubisoft, 2011) ou Reus.
-- **Rick Dangerous** : Un jeu qu'il aime beaucoup. Partagé sur le forum WDA via l'Arcade phpBB.
-- **Puzzle Bobble** (alias Bust-a-Move) : Il ADORE ce jeu. Il le possède en cartouche MVS sur la borne d'arcade Neo Geo de la collection WDA.
-- **Xevious** : Un classique partagé sur l'Arcade forum WDA.
-- **Bejewelled** : Il ADORE. Un des jeux Flash/Java proposés sur l'Arcade forum WDA.
+- **Space Quest** (la série, 1986) : "Trop drôle".
+- **Police Quest** (la série, 1987) : Appréciée.
+- **Populous** (1989) : Un de ses jeux fétiches ! Découvert lors d'un voyage d'échange scolaire d'environ deux semaines à Dawlish (Devon, Angleterre). Il avait acheté avec son argent de poche, dans une boutique à Exeter, Populous en disquette 3"1/2 FD — et en même temps, **Mines of Titan** en 5"1/4 et 3"1/2 (les deux supports dans le même packaging). Il a dû attendre la fin du séjour à Dawlish pour tester ça sur son PC 286 Commodore. Il a ADORÉ Populous immédiatement. Mines of Titan, en revanche, lui a donné du fil à retordre : c'était son tout premier jeu de rôle de ce type, avec l'exploration bloc par bloc caractéristique des dungeon crawlers de l'époque — il était assez dérouté au début. En plus, tout était en Anglais, et il le parlait encore plus mal à l'époque qu'aujourd'hui — fatalement. Il rêve d'un Populous "zen" de l'époque qui tournerait nativement sur machines modernes — rien n'a jamais vraiment comblé ce manque. Pistes à explorer : Populous: The Beginning via Wine/CrossOver ou patch "Populous Reloaded" ; le I et II via DOSBox/ScummVM. Dans l'esprit god game contemplatif moderne : From Dust (Ubisoft, 2011) ou Reus.
+- **Tennis** (1989) sur GameBoy : Un classique. Il y passait aussi des heures à Carrouges.
+- **Bugs Bunny Crazy Castle** (1990) sur GameBoy : Un must-have. Mathieu y joue encore souvent sur sa vieille Game Boy Fat. Il y jouait déjà à Carrouges.
+- **Radar Mission** (1990) sur GameBoy : L’un des jeux que son père aimait.
+- **Gargoyle’s Quest** (1990) sur GameBoy : Quelle difficulté ... Échangé contre un autre jeu avec un pote de Charles-de-Foucault. Mathieu y passait des heures à l’arrière de la BMW de son père pendant les départs en vacances.
+- **Chase H.Q.** (1990) sur GameBoy
+- **DuckTales** (1990) sur GameBoy : Il adorait !
+- **Batman** (1990) sur GameBoy : Quelle difficulté.
+- **Commander Keen** (1990) : Un classique. En CGA ?
+- **Michael Jackson’s Moonwalker** (1990) sur MegaDrive : Mathieu l’avait presque terminé. Il mettait la console sur pause pendant l’école en croisant les doigts pour que sa mère ne l’éteigne pas dans sa chambre. Il la cachait pour éviter qu’elle la voie allumée.
+- **ESWAT** (1990) sur MegaDrive : Très dur. C’était Julien GAUTIER qui adorait ce jeu.
+- **Marble Madness** (1991) : Sur Megadrive ... Genial !
+- **Andro Dunos** (1992) sur MegaDrive : Top jeu.
+- **QuackShot** (1991) sur MegaDrive : Très beau et sympa.
+- **Sonic the Hedgehog** (1991) sur GameGear : Des heures à Méribel.
+- **Gunship 2000** (1991) : Dominique PAULY, oncle de Mathieu, lui a offert Gunship 2000 (MicroProse, 1991) lors d’un dîner chez Élisabeth PAULY, probablement pour un anniversaire ou un Noël un peu tardif. Le jeu tournait sur son TARGA Series II de 1992. Mathieu a galéré des heures avant de réussir à faire décoller l’hélicoptère. La première version avait une disquette boot défectueuse ; il a multiplié les allers-retours à la FNAC des Ternes pour se la faire échanger, puis pour optimiser correctement l’autoexec.bat et le config.sys. Comme pour Silent Service II, la grande boîte cartonnée contenait un imposant manuel et le cache-clavier en carton à poser sur le clavier. Le jeu tenait sur quatre disquettes.
+- **Another World** (1991) : Mathieu a acheté Another World (Éric CHAHI, Delphine Software, 1991) avec son argent de poche à la FNAC, toujours sur PC. Il ne se souvient plus précisément de la machine utilisée, surement le TARGA, mais le titre l’a marqué comme une tuerie absolue. Très dur !
+- **Sonic the Hedgehog** sur MegaDrive et surtout Sonic 2 (1992).
+- **Legend of Kyrandia** (la série, 1992) : Quels graphismes... Mais qu'est-ce qu'il était con, ce Brandon. Un classique culte.
+- **Dune** (le I, 1992) : Des heures sur PC.
+- **Monkey Island** (la série, 1990) : Un classique indétrônable.
+- **The 7th Guest** (1993) : Des heures sur PC.
+- **Maniac Mansion II** (Day of the Tentacle, 1993) : Un classique LucasArts.
+- **Syndicate** (1993) : Des heures sur PC, à écouter de la musique de The Police par-dessus.
+- **MegaRace** (1 et 2, 1993) : Des heures sur PC. Le présentateur était délirant !
+- **Transport Tycoon** (1994) : Des heures passées à construire des réseaux de transport. Il lui arrive encore de jouer à OpenTTD, mais il trouve que c'est devenu trop évolué par rapport à l'original.
+- **Sim Tower** (1994) : Un jeu de gestion rigolo — des heures passées à construire sa tour chez Club-Internet, sur son PC de boulot.
+- **Puzzle Bobble** (alias Bust-a-Move, 1994) : Il ADORE ce jeu. Il le possède en cartouche MVS sur la borne d'arcade Neo Geo de la collection WDA.
+- **Xplora1** (1994-95) : Toujours de Dominique PAULY, Mathieu a reçu Xplora1 (Peter Gabriel’s Secret World). Sorti fin 1993 sur Macintosh puis en 1995 sur Windows, le titre demandait une machine puissante et multimédia. Mathieu a trouvé le concept génial : Exploration interactive, puzzles, vidéos et musique mêlés. Comme pour Gunship 2000, il a dû retourner plusieurs fois à la FNAC pour résoudre des problèmes techniques. Ce cadeau l’a particulièrement marqué.
+- **Under a Killing Moon** (1994) et **Phantasmagoria** (1995) : Deux jeux marquants.
+- **Rayman** (la série, 1995) : Appréciée. C'est Julien GAUTIER qui lui a fait découvrir. Il était fan.
+- **Duke Nukem** (la série, les principaux : Duke Nukem 1991, Duke Nukem II 1993, Duke Nukem 3D 1996, Duke Nukem Forever 2011.)) : Un classique incontournable.
+- **Metal Slug** (la série, 1996) : Appréciée. Il y joue sur MVS et Switch.
+- **GTA** (toute la série) : Il a adoré le V (2013), passé des heures sur le I (1997), GTA London 1969 et le II (1999). Il a adoré Vice City (2002). Un peu moins le IV (2008), qu'il trouve chiant.
+- **Commandos** (le I, 1998) : Des heures passées sur PC.
+- **SimCity** (en 1999, sur Palm Pilot) : Des heures et des heures sur ce petit PDA pendant ses pauses déjeuner extérieures chez Club-Internet sur son Palm V. L'un des souvenirs de jeu mobile de l'époque, bien avant les smartphones.
+- **Bejewelled** (2001) : Il ADORE. Un des jeux Flash/Java proposés sur l'Arcade forum WDA.
+- **Runaway** (2001) : Un point-and-click apprécié.
+- **Far Cry** (le I, 2004) : Apprécié. Il y jouait chez Laetitia LAMY, à Orléans, sur son PC portable SONY.
+- **Sid Meier's Pirates!** (2004) : Des heures et des heures dessus.
+- **Half-Life** (la série) : HL2 (2004) en particulier — "quelle tuerie". Et Half-Life: Alyx (2020) en VR, qu'il a adoré.
+
+De **mai 2004 à novembre 2018**, Lorsqu'il habitait à Aix-en-Provence, Mathieu a mis en partage des jeux Java et Flash sur le forum WDA, via l'extension phpBB **"Arcade"**. Il y proposait des classiques (Rick Dangerous, Puzzle Bobble, Berzerk, Xevious, Qix, Bejewelled...). En novembre 2018, trois raisons l'ont conduit à arrêter : l'extension Arcade phpBB n'était plus maintenue par ses développeurs, la fin imminente de Flash condamnait les jeux existants, et les portages JS de remplacement devenaient payants. Il a néanmoins conservé l'intégralité des scores réalisés par les utilisateurs du forum — une mémoire collective précieuse. À noter que phpBB lui-même commence malheureusement à ne plus être activement mis à jour, ce qui est une préoccupation pour l'avenir du forum WDA. Une page de l'histoire du forum WDA. C'est ainsi qu'il à fait la connaissance de Flora & Guillaume, de FrenchKiss.
+
+- **Rick Dangerous** (1989) : Un jeu qu'il aime beaucoup. Partagé sur le forum WDA via l'Arcade phpBB.
+- **Xevious** (1982) : Un classique partagé sur l'Arcade forum WDA.
+- **WoW** (depuis 2005) : Mathieu se concentre principalement sur le leveling de ses personnages dans World of Warcraft depuis 2005. Mathieu entretient sa propre guilde dans World of Warcraft. Il utilise cette guilde pour ses propres personnages ainsi que ceux de sa compagne et de sa fille. Il a hérité cette guilde d'un joueur qui a arrêté de jouer il y a une dizaine d'années. Mathieu est un joueur de l'Alliance dans World of Warcraft.
+- **Command & Conquer** (la série) : Surtout le III (2007). Il adore le genre RTS en général, comme StarCraft ou Dune II.
 - **Guerre des Gangs** ("Gang Wars", au tout début de Facebook, vers 2007-2008) : Un jeu qu'il a beaucoup pratiqué. Quasiment pas visuel, très peu d'images, progression textuelle du personnage. Il fallait équiper son gang avec une voiture, un flingue, un bateau... Un des tout premiers jeux Facebook du genre, avant l'ère Zynga.
+- **Portal** (I et II, 2007-2011) : Il apprécie la série, surtout le II avec GLaDOS (l'IA méchante hilarante).
+- **BioShock** (la série, 2007-2013) : Il a adoré, et surtout le troisième : BioShock Infinite (2013).
+- **Mirror's Edge** (2008) : Fier de l'avoir terminé sur PS3.
+- **Trine** (la licence, 2009) : Appréciée.
+- **Brütal Legend** (2009) : Avec Jack BLACK, son Dieu.
+- **Borderlands** (2009) : Le I est sympa.
+
+Sur mobile, Mathieu a longtemps été accro, avant que les éditeurs ne tuent ses jeux préférés les uns après les autres — il n'arrive plus à s'investir dans un jeu mobile depuis ...
+
+- **Doctor Who Legacy** (2013) : Sur Android, Mathieu trouvait ce jeu GENIAL. Bien entendu, l'éditeur l'a tué. Grande déception.
+- **Star Wars: Tiny Death Star** (2013) : Un autre titre mobile qu'il avait beaucoup apprécié à l'époque.
+- **The Cave** (2013) : Très drôle.
+- **Monument Valley** (les 3 opus, 2014) : Découvert sur Android, Très apprécié.
+- **No Man's Sky** (2016) : Il fait partie des tous premiers joueurs, ayant participé au financement participatif dès les débuts du projet. Il adore le concept de liberté. Il à même un disque vinyle collector de la bande originale à Saint-Antonin.
+- **Iron Maiden: Legacy of the Beast** (2016) : Joué sur sa tablette et mobile Android, il avait récupéré au moins une trentaine de personnages Eddie différents. Arrêté par son éditeur. C'est précisément ce type d'abandon qui a définitivement tué sa confiance dans les jeux mobiles.
+- **Tomb Raider** (licence moderne) : Il apprécie particulièrement les opus modernes, en vue FPS.
+- **Cat Quest** (la licence, 2017) : Très appréciée, surtout sur Switch.
+- **Red Dead Redemption II** (2018) : Un de ses jeux marquants, sur Xbox ou PC.
+- **Moss** (VR, 2018) : Un autre coup de coeur en réalité virtuelle. Il a acheté le portage 2D en 2026 sur Xbox et Switch.
+- **Gris** (2018) : "Très mignon". Sur Xbox et Switch.
+- **Sea of Thieves** (2018) : Apprécié. Joue en co-op avec Ambre — virées pirates en duo père-fille (lui Xbox, elle PC via Battle.net).
+- **Gylt** (2019) : "Terrible" (dans le bon sens), découvert sur Stadia, il a adoré. Acheté aussi sur Xbox.
+- **Down the Rabbit Hole** (VR, 2020) : Une expérience VR adorée (descente dans le terrier du lapin d'Alice).
+- **Cyberpunk 2077** (2020) : Il a ADORÉ. Sur Xbox et PC (Steam et GOG.com). Connexion d’ailleurs via GOG.com au tout départ, dès sa sortie. Il l’a toujours sur toutes ces plateformes.
+- **Guardians of the Galaxy** (2021) : "Terrible à jouer" — un vrai coup de coeur. Sur Switch au début (streaming) puis sur Xbox.
+- **Stray** (2022) : "Terrible" (dans le bon sens). Sur Steam au départ, puis sur Xbox.
+- **Stick It to the Man** (2013) : Apprécié. Découvert sur Xbox.
+- **Hogwarts Legacy** (2023) : Mathieu joue sur Nintendo Switch et explore souvent la Forêt interdite. Il y joue aussi sur Xbox. Ambre aussi.
+- **Star Wars Outlaws** (2024) : Une claque. Mathieu a bouffé ce jeu à toute vitesse sur Xbox. C’est surtout là qu’il a découvert le **Sabbacc**. Il a ADORÉ. Il y joue tout le temps. Il a d’ailleurs un jeu sur mobile Android (*Holocard Cantina*) qu’il adore. Il est devenu un pro de ce jeu de cartes. AnSo lui a même offert le jeu en vrai (cartes et dés).
+- **South of Midnight** (2025) : Quelle beauté ce jeu... Cela fait plaisir de voir qu’il y a encore des studios capables de te faire rêver. Bravo !
+
 
 ### Créativité
 Sites web comme exutoire, généalogie humoristique.
