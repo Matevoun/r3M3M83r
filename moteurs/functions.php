@@ -39,23 +39,8 @@
      *   - `moteurs/log/requests.log` (requêtes)
      *   - `moteurs/log/error.log` (erreurs PHP)
      *
-     * REGLES D'OR (immuables - a relire avant toute modification) :
-     *   1. Toute modification doit etre documentee clairement dans ce fichier.
-     *   2. Ne pas deplacer la logique metier vers moteurs/server.js sans note.
-     *   3. Le backend Node.js est gere par moteurs/server.js ; ici on reste interface.
-     *   4. Toute nouvelle route ou dependance externe doit etre decrite dans les commentaires.
-     *   5. En cas de panne du service, le code doit basculer proprement vers un fallback local.
-     *   6. Orthographe archaique OBLIGATOIRE dans le code et les commentaires :
-     *      - ecrire CLEF (jamais "cle" ni "clés"), NENUPHAR (jamais "nenufar"),
-     *        soeurs avec O et E separes (jamais la ligature oe).
-     *      - Pas de tiret cadratin, pas d'emoji en dur, pas de glyphe special.
-     *   7. Interroger (saisie) et Rebecca (chat) partagent le meme pipeline :
-     *      build_memory_context_for_topic() + finalize_query_response_via_node().
-     *      AUCUNE liste de synonymes metier ; intention via QUERY_EXPAND.
-     *      Ne pas re-dupliquer le pipeline dans le handler POST.
-     *   8. Meme exigence de comprehension pour tous les boutons.
-     *   9. Matching technique (limites de mots pour termes courts) n'est pas
-     *      un filtre metier : evite seulement "gan" dans "organisateur".
+     * DOCTRINE : ../DOCTRINE.md (racine r3M3M83r). A relire avant toute modif.
+     * Ce fichier = parse local + pont PHP->Node. Pas de noms propres en dur.
      *
      * CORRECTIF 04/07/2026 (Mathieu CHARREYRE) :
      *   - extract_via_node() et extract_text_from_file() renvoient desormais un

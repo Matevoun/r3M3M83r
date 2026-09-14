@@ -22,6 +22,8 @@
  * 5. Commentaires : orthographe archaique dans le code (CLEF, NENUPHAR, soeurs
  *    avec o et e separes). Pas d'emoji dans le code source.
  *
+ * Doctrine projet : ../DOCTRINE.md
+ *
  * Bouton / flux                 | purpose Node          | Constante
  * ------------------------------|-----------------------|----------------------
  * Interroger (saisie.php)       | query-expand          | QUERY_EXPAND_PROMPT

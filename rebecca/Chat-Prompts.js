@@ -19,6 +19,8 @@
  *  - Historique = pronoms uniquement ; si conflit avec les preuves, les preuves gagnent.
  *  - Style humain tchat : pas de rapport, pas de ### ni **Faits etablis**.
  *  - Orthographe : CLEF, NENUPHAR, noms de famille en MAJUSCULES.
+ *
+ * Doctrine projet : ../DOCTRINE.md
  */
 
 // Réutilise STYLE_RULES_ORTHOGRAPHY depuis prompts.js

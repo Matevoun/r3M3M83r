@@ -6,28 +6,9 @@
  * Version avec support upload de fichiers + Mistral par defaut + logique dynamique modeles
  * Mise a jour 03/08/2026 - Mathieu CHARREYRE
  *
- * REGLES D'OR (a relire avant toute modification) :
- *   1. Documenter chaque correctif dans ce fichier (commentaires sans accents
- *      ni caracteres speciaux pour eviter les bugs d'encodage).
- *   2. Orthographe archaique obligatoire : CLEF (jamais "cle"), NENUPHAR
- *      (jamais "nenufar"), soeurs avec O et E separes (jamais ligature oe).
- *      Pas de tiret cadratin, pas d'emoji en dur dans le code source.
- *   3. Le prompt QUERY doit faire comprendre l'INTENTION de la question
- *      (synthese, decompte, liste) et non se contenter de compter un mot.
- *      Luna est un chien ; une 2CV est une voiture. Les noms propres comptent.
- *   3b. Le prompt SAISIE (bouton Reformulation avancee) doit COMPRENDRE
- *      l'anecdote, la transposer en 3e personne (Mathieu), et synthetiser
- *      intelligemment (ni mot a mot, ni resume seche). Voir SAISIE_PROMPT.
- *   3c. STYLE_RULES (Regles d'Or d'instructions.md) est appende a tous les
- *      prompts qui produisent du texte francais : SAISIE, QUERY, LOCATION,
- *      MERGE_CHECK, MERGE_SMART. CLEF, NENUPHAR, noms en MAJUSCULES, etc.
- *   3d. Bouton Comparer/Fusionner (purpose=merge-smart) : contexte memoire
- *      comme Interroger + texte nouveau du champ -> fusion prete a coller
- *      + emplacement. Voir MERGE_SMART_PROMPT et merge_smart_via_node().
- *   4. Les modeles OpenRouter :free tournent souvent (HTTP 404). Preferer
- *      openrouter/free ou verifier la disponibilite avant de changer le defaut.
- *   5. Ne jamais laisser une erreur Multer ou Express renvoyer du HTML :
- *      toujours repondre en JSON et logger dans moteurs/log/error.log.
+ * DOCTRINE : ../DOCTRINE.md (racine r3M3M83r). A relire avant toute modif.
+ * Ce fichier = moteurs gratuits, fallback, timeouts, extraction fichiers.
+ * Prompts : prompts.js (restart Node apres edition).
  *
  * CORRECTIF 04/07/2026 :
  *   - Creation explicite du dossier uploads/ avant Multer.
