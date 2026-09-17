@@ -614,6 +614,9 @@
             '/rien trouve(?:e)?/',
             '/non mentionn/',
             '/information non mentionn/',
+            '/rien l[aà]-dessus dans le fichier/',
+            '/pas de trace dans le fichier/',
+            '/un trou, ou une autre formulation/',
             "/pas (?:d'|de )acc[eè]s/",
             '/je suis d[eé]sol/',
         ];
@@ -817,17 +820,119 @@
         $q = preg_replace('/[?!.:,;]+/u', ' ', $q);
         $stop = ['le','la','les','un','une','des','du','de','d','l','mon','ma','mes','son','sa','ses','cet','cette'];
         $keep = [];
-        foreach (preg_split('/\s+/u', $q, -1, PREG_SPLIT_NO_EMPTY) as $p) {
-            $n = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $p));
-            if ($n === '' || mb_strlen($n, 'UTF-8') < 3) {
-                continue;
-            }
+        foreach (split_query_tokens($q) as $n) {
             if (in_array($n, $stop, true)) {
                 continue;
             }
             $keep[] = $n;
         }
         return implode(' ', $keep);
+    }
+
+    function split_query_tokens(string $text): array {
+        $text = str_replace(array('-', "'", '’', '–', '—'), ' ', $text);
+        $out = [];
+        foreach (preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY) as $p) {
+            $n = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $p));
+            if ($n !== '' && mb_strlen($n, 'UTF-8') >= 3) {
+                $out[] = $n;
+            }
+        }
+        return $out;
+    }
+
+    function pick_distinctive_terms(array $terms, array $sections): array {
+        $terms = array_values(array_unique(array_filter(array_map(function ($t) {
+            return normalize_for_matching((string) $t);
+        }, $terms), function ($t) {
+            return $t !== '' && mb_strlen($t, 'UTF-8') >= 3;
+        })));
+        if (empty($terms) || empty($sections)) {
+            return $terms;
+        }
+        $df = array_fill_keys($terms, 0);
+        foreach ($sections as $content) {
+            foreach (preg_split('/\R/u', (string) $content) as $ln) {
+                $ln = trim($ln);
+                if ($ln === '' || mb_strlen($ln, 'UTF-8') < 12) {
+                    continue;
+                }
+                $nn = normalize_for_matching($ln);
+                foreach ($terms as $t) {
+                    if (term_matches_in_text($nn, $t) > 0) {
+                        $df[$t]++;
+                    }
+                }
+            }
+        }
+        $scored = [];
+        foreach ($terms as $t) {
+            $len = mb_strlen($t, 'UTF-8');
+            $d = (int) ($df[$t] ?? 0);
+            $sc = ($len >= 6 ? 80 : 8)
+                + ($d <= 3 ? 100 : ($d <= 12 ? 40 : ($d <= 40 ? 10 : 0)))
+                - min(80, $d);
+            $scored[] = ['t' => $t, 'sc' => $sc, 'df' => $d, 'len' => $len];
+        }
+        usort($scored, function ($a, $c) {
+            if ($a['sc'] !== $c['sc']) {
+                return $c['sc'] <=> $a['sc'];
+            }
+            return $c['len'] <=> $a['len'];
+        });
+        $out = [];
+        foreach ($scored as $row) {
+            if ($row['sc'] >= 40 || ($row['len'] >= 6 && $row['df'] <= 25)) {
+                $out[] = $row['t'];
+            }
+            if (count($out) >= 3) {
+                break;
+            }
+        }
+        if (empty($out) && !empty($scored)) {
+            $out[] = $scored[0]['t'];
+        }
+        return $out;
+    }
+
+    function line_hits_any_term(string $line, array $terms): bool {
+        $nn = normalize_for_matching($line);
+        foreach ($terms as $t) {
+            $t = normalize_for_matching((string) $t);
+            if ($t !== '' && term_matches_in_text($nn, $t) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function fallback_reply_from_proofs(string $question, string $memoryContext): string {
+        if (!preg_match_all('/^- \[([^\]]+)\]\s+(.+)$/mu', $memoryContext, $mm, PREG_SET_ORDER)) {
+            return '';
+        }
+        $sections = function_exists('extract_instructions_sections') ? extract_instructions_sections() : [];
+        $distinct = pick_distinctive_terms(split_query_tokens($question), $sections);
+        $hits = [];
+        foreach ($mm as $row) {
+            $line = trim($row[2]);
+            if ($line === '') {
+                continue;
+            }
+            if (!empty($distinct) && !line_hits_any_term($line, $distinct)) {
+                continue;
+            }
+            $hits[] = $line;
+        }
+        $hits = array_values(array_unique(array_filter($hits)));
+        if (empty($hits)) {
+            return '';
+        }
+        $hits = array_slice($hits, 0, 10);
+        $out = "Voici ce que le fichier memoire contient :\n\n";
+        foreach ($hits as $h) {
+            $out .= '- ' . $h . "\n";
+        }
+        return trim($out);
     }
 
     function is_heading_line(string $trim, &$titleOut = null, &$levelOut = null): bool {
@@ -1048,19 +1153,13 @@
         $stopPrimary = ['que','sais','tu','du','des','les','une','est','sont','dans','pour','avec','comment','quoi','elle','ils','quand','ete','fait','date','dates','annee','annees','fois','aussi','donc','puis','entre','sous','vers','chez','dont','cette','cet','ces','aux','par','sur','plus','tres','bien','tout','tous','toute','toutes','comme','mais','car','ou','ni','si','ne','pas','peu','leur','leurs','son','sa','ses','mon','ma','mes','ton','ta','tes','nos','vos'];
         $genericNoise = ['tous','toutes','tout','toute','mes','mon','ma','les','des','une','listes','liste','parle','moi','donc','aussi','comme','avec','dans','pour','plus','tres','bien','axes','recherche','sections','utiles','probables','intention'];
 
-        $primaryTerms = [];
-        foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $w) {
-            $w = normalize_for_matching(preg_replace('/[^\p{L}\p{N}]/u', '', $w));
-            if ($w !== '' && mb_strlen($w, 'UTF-8') >= 3) {
-                $primaryTerms[] = $w;
-            }
-        }
+        $primaryTerms = split_query_tokens($topicText);
         foreach (extract_keywords($topicText) as $kw) {
             $primaryTerms[] = $kw;
         }
         $properFromQuestion = [];
         $notProper = ['qui','que','quel','quelle','quels','quelles','comment','quand','pourquoi','liste','lister','donne','donnes','dis','parle','montre','cherche','retrouve','explique','combien','est','sont'];
-        foreach (preg_split('/\s+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $rawW) {
+        foreach (preg_split('/[\s\-]+/u', $topicText, -1, PREG_SPLIT_NO_EMPTY) as $rawW) {
             $clean = preg_replace('/[^\p{L}\p{N}]/u', '', $rawW);
             if ($clean === '' || mb_strlen($clean, 'UTF-8') < 3) {
                 continue;
@@ -1093,6 +1192,23 @@
             return !in_array($t, $genericNoise, true) && !in_array($t, $stopPrimary, true);
         }));
         $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
+
+        $distinctive = pick_distinctive_terms($queryTerms, $sections);
+        $fileWideProofs = [];
+        if ($shape !== 'inventory') {
+            $fileWideProofs = collect_ranked_evidence_lines($sections, $queryTerms, 24, $primaryTerms);
+            if (!empty($distinctive) && !empty($fileWideProofs)) {
+                $kept = [];
+                foreach ($fileWideProofs as $item) {
+                    if (line_hits_any_term((string) ($item['line'] ?? ''), $distinctive)) {
+                        $kept[] = $item;
+                    }
+                }
+                if (!empty($kept)) {
+                    $fileWideProofs = $kept;
+                }
+            }
+        }
 
         $civilProofs = [];
         if ($shape === 'who' && $subjectNorm !== '') {
@@ -1172,14 +1288,8 @@
             $blk['full'] = $txt;
             $chosen[] = $blk;
             $used = mb_strlen($txt, 'UTF-8');
-        } elseif ($shape === 'who' && !empty($exactWho)) {
-            foreach ($exactWho as $blk) {
-                if (count($chosen) >= 2) {
-                    break;
-                }
-                $chosen[] = $blk;
-                $used += mb_strlen((string) $blk['full'], 'UTF-8');
-            }
+        } elseif ($shape === 'who' && !empty($fileWideProofs)) {
+            $chosen = [];
         } else {
             $maxBlocks = 3;
             foreach ($scored as $blk) {
@@ -1231,13 +1341,27 @@
 
         $proofsBlock = '';
         $proofCount = 0;
+        $proofSource = $fileWideProofs;
         if ($shape === 'who' && !empty($civilProofs)) {
+            $merged = [];
+            $seenP = [];
+            foreach (array_merge($civilProofs, $fileWideProofs) as $item) {
+                $k = md5((string) ($item['line'] ?? ''));
+                if (isset($seenP[$k])) {
+                    continue;
+                }
+                $seenP[$k] = true;
+                $merged[] = $item;
+            }
+            $proofSource = $merged;
+        }
+        if (!empty($proofSource)) {
             $proofsBlock .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
-            foreach ($civilProofs as $item) {
-                $proofsBlock .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
+            foreach (array_slice($proofSource, 0, 16) as $item) {
+                $proofsBlock .= '- [' . ($item['title'] ?? '') . '] ' . $item['line'] . "\n";
             }
             $proofsBlock .= "\n";
-            $proofCount = count($civilProofs);
+            $proofCount = min(16, count($proofSource));
         } elseif ($shape !== 'inventory' && !empty($chosen)) {
             $proofLines = [];
             foreach ($chosen as $blk) {
@@ -1257,35 +1381,41 @@
                     if ($hit < 1) {
                         continue;
                     }
-                    $civil = 0;
-                    if (preg_match('/n[eé]e?\s+le\b/iu', $ln)) {
-                        $civil += 3;
-                    }
-                    if (preg_match('/\b(fille|fils|epoux|epouse|pere|mere|parent)\b/iu', $ln)) {
-                        $civil += 2;
-                    }
                     $proofLines[] = [
-                        'score' => $hit * 10 + $civil * 20,
                         'title' => $blk['heading'] !== '' ? $blk['heading'] : $blk['section'],
                         'line'  => $ln,
                     ];
                 }
             }
-            usort($proofLines, function ($a, $c) {
-                return $c['score'] <=> $a['score'];
-            });
-            $proofLines = array_slice($proofLines, 0, 16);
-            $proofCount = count($proofLines);
-            if ($proofCount > 0) {
+            if (!empty($proofLines)) {
                 $proofsBlock .= "PREUVES DIRECTES du fichier (citations locales — lire en priorite) :\n";
-                foreach ($proofLines as $item) {
+                foreach (array_slice($proofLines, 0, 16) as $item) {
                     $proofsBlock .= '- [' . $item['title'] . '] ' . $item['line'] . "\n";
                 }
                 $proofsBlock .= "\n";
+                $proofCount = min(16, count($proofLines));
             }
         }
 
-        $ctx = $intentionBlock . $excerptsBlock . $proofsBlock;
+        if ($shape === 'who' && empty($chosen) && !empty($proofSource)) {
+            $byTitle = [];
+            foreach ($proofSource as $item) {
+                $byTitle[(string) ($item['title'] ?? '')][] = $item['line'];
+            }
+            $excerptsBlock = "Extraits courts des sections ou les preuves ont ete trouvees :\n";
+            foreach ($byTitle as $title => $lines) {
+                $excerptsBlock .= "\n--- Section : " . $title . " ---\n" . implode("\n", $lines) . "\n";
+                $chosen[] = [
+                    'heading' => $title,
+                    'section' => $title,
+                    'score'   => 0,
+                    'full'    => implode("\n", $lines),
+                ];
+            }
+            $excerptsBlock .= "\n";
+        }
+
+        $ctx = $proofsBlock . $intentionBlock . $excerptsBlock;
         if (trim($ctx) === '') {
             $ctx = "Aucune preuve locale trouvee dans instructions.md pour cette question.\n";
         }
@@ -1313,6 +1443,7 @@
             'blocs'    => $headList,
             'chars'    => $sentChars,
             'preuves'  => $proofCount,
+            'distinct' => implode(',', $distinctive),
         ]);
 
         $debug_text = $proofCount . ' preuve(s), ' . count($chosen) . ' extrait(s)'
@@ -2163,6 +2294,13 @@
                 }
             }
         }
+        $hasLongPrimary = false;
+        foreach ($primaryTerms as $pt2) {
+            if (mb_strlen($pt2, 'UTF-8') >= 6) {
+                $hasLongPrimary = true;
+                break;
+            }
+        }
         $primaryWeight = [];
         foreach ($primaryTerms as $pt) {
             $df = (int) ($dfPrimary[$pt] ?? 0);
@@ -2179,7 +2317,7 @@
                 $primaryWeight[$pt] = 4; // tres frequent : domaine, saint...
             }
             $tlen = mb_strlen($pt, 'UTF-8');
-            if ($tlen <= 5 && $primaryWeight[$pt] < 40) {
+            if (!$hasLongPrimary && $tlen <= 5 && $primaryWeight[$pt] < 40) {
                 $primaryWeight[$pt] = max($primaryWeight[$pt], 40);
             }
         }
@@ -2266,11 +2404,13 @@
                     $score += 2;
                 }
                 $hasShort = false;
-                foreach ($primaryTerms as $pt) {
-                    if (mb_strlen($pt, 'UTF-8') <= 5 && term_matches_in_text($norm, $pt) > 0) {
-                        $score += 80;
-                        $hasShort = true;
-                        break;
+                if (!$hasLongPrimary) {
+                    foreach ($primaryTerms as $pt) {
+                        if (mb_strlen($pt, 'UTF-8') <= 5 && term_matches_in_text($norm, $pt) > 0) {
+                            $score += 80;
+                            $hasShort = true;
+                            break;
+                        }
                     }
                 }
                 $bySection[$title][] = [
@@ -3026,7 +3166,7 @@
                     $reformule_msg = 'Erreur de traitement (info presente, reponse incorrecte).';
                 } else {
                     // Info vraiment absente du fichier : "non mentionné" autorise
-                    $query_result = "Information non mentionnée dans le fichier d'instructions.";
+                    $query_result = "Rien là-dessus dans le fichier mémoire — un trou, ou une autre formulation ?";
                     $reformule_msg = 'Aucune information trouvee dans le fichier.';
                 }
             } elseif ($finalResponse !== '') {

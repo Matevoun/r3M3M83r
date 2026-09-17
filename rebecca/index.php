@@ -405,6 +405,11 @@
                     $retry = trim((string) finalize_query_response_via_node($message, '', $memoryContext, 'query'));
                     if ($retry !== '' && !is_negative_query_answer($retry)) {
                         $finalReply = $retry;
+                    } elseif (function_exists('fallback_reply_from_proofs')) {
+                        $quoted = fallback_reply_from_proofs($message, $memoryContext);
+                        if ($quoted !== '') {
+                            $finalReply = $quoted;
+                        }
                     }
                 }
 
