@@ -895,6 +895,29 @@
         return $out;
     }
 
+    /**
+     * True si le contexte final n'accroche pas les termes les plus distinctifs
+     * de la question (signal de faux trou). Generique : IDF local, pas de whitelist.
+     */
+    function memory_context_misses_distinctive(string $ctx, array $primaryTerms, array $allSections): bool {
+        $primaryTerms = array_values(array_filter(array_map('strval', $primaryTerms)));
+        if ($ctx === '' || empty($primaryTerms) || empty($allSections)) {
+            return false;
+        }
+        $distinctive = pick_distinctive_terms($primaryTerms, $allSections);
+        $must = array_slice($distinctive, 0, 2);
+        if (empty($must)) {
+            return false;
+        }
+        $norm = normalize_for_matching($ctx);
+        foreach ($must as $t) {
+            if (term_matches_in_text($norm, (string) $t) < 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function line_hits_any_term(string $line, array $terms): bool {
         $nn = normalize_for_matching($line);
         foreach ($terms as $t) {
@@ -906,22 +929,79 @@
         return false;
     }
 
-    function fallback_reply_from_proofs(string $question, string $memoryContext): string {
-        if (!preg_match_all('/^- \[([^\]]+)\]\s+(.+)$/mu', $memoryContext, $mm, PREG_SET_ORDER)) {
-            return '';
+    /** True si le texte accroche au moins un terme distinctif (variantes incluses). */
+    function block_covers_distinctive(string $text, array $distinctive): bool {
+        if ($text === '' || empty($distinctive)) {
+            return true; // rien a exiger
         }
+        $nn = normalize_for_matching($text);
+        foreach ($distinctive as $t) {
+            if (term_matches_in_text($nn, (string) $t) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Suivi de dialogue generique : « liste-les », « combien », « et ceux-la »
+     * sans nom propre dans la phrase → on rattache le tour user precedent.
+     */
+    function question_looks_like_followup(string $q): bool {
+        $q = trim($q);
+        if ($q === '') {
+            return false;
+        }
+        $len = mb_strlen($q, 'UTF-8');
+        if ($len > 120) {
+            return false;
+        }
+        $hasDeixis = (bool) preg_match(
+            '/\b(les|leurs|en|y|ça|cela|ceux|celles|celui|celle|dessus|dit|mentionn\w*|précédent\w*|precedent\w*)\b/iu',
+            $q
+        );
+        $hasAsk = (bool) preg_match(
+            '/\b(liste|lister|détaille|detaille|donne|donnes|montre|rappelle|combien|lequel|laquelle|lesquels|lesquelles|et\s+pour)\b/iu',
+            $q
+        );
+        return $hasDeixis && $hasAsk;
+    }
+
+    function merge_followup_with_prior(string $current, string $priorUser): string {
+        $current = trim($current);
+        $priorUser = trim($priorUser);
+        if ($priorUser === '' || $current === '' || !question_looks_like_followup($current)) {
+            return $current;
+        }
+        // Evite de boucler si deja fusionne
+        if (mb_stripos($current, $priorUser, 0, 'UTF-8') !== false) {
+            return $current;
+        }
+        return $current . "\n(suite de : " . $priorUser . ')';
+    }
+
+    function fallback_reply_from_proofs(string $question, string $memoryContext): string {
         $sections = function_exists('extract_instructions_sections') ? extract_instructions_sections() : [];
         $distinct = pick_distinctive_terms(split_query_tokens($question), $sections);
         $hits = [];
-        foreach ($mm as $row) {
-            $line = trim($row[2]);
-            if ($line === '') {
-                continue;
+        if (preg_match_all('/^- \[([^\]]+)\]\s+(.+)$/mu', $memoryContext, $mm, PREG_SET_ORDER)) {
+            foreach ($mm as $row) {
+                $line = trim($row[2]);
+                if ($line !== '' && (empty($distinct) || line_hits_any_term($line, $distinct))) {
+                    $hits[] = $line;
+                }
             }
-            if (!empty($distinct) && !line_hits_any_term($line, $distinct)) {
-                continue;
+        }
+        if (empty($hits)) {
+            foreach (preg_split('/\R/u', $memoryContext) as $ln) {
+                $ln = trim($ln);
+                if (mb_strlen($ln, 'UTF-8') < 24) {
+                    continue;
+                }
+                if (!empty($distinct) && line_hits_any_term($ln, $distinct)) {
+                    $hits[] = $ln;
+                }
             }
-            $hits[] = $line;
         }
         $hits = array_values(array_unique(array_filter($hits)));
         if (empty($hits)) {
@@ -1024,6 +1104,9 @@
         }
         $bullet = 0;
         foreach ($lines as $l) {
+            if (line_looks_like_chronicle($l)) {
+                continue; // recit date, pas inventaire
+            }
             if (preg_match('/^\s*(?:[-*]|\d+[.)])/u', $l)
                 || preg_match('/^\s*-?\s*\*\*[^*]+\*\*/u', $l)
                 || preg_match('/\bn[°o]\s*\d/iu', $l)) {
@@ -1031,6 +1114,44 @@
             }
         }
         return ($bullet / $n) >= 0.45;
+    }
+
+    /** Ligne de chronique datee (puce + annee) — forme narrative, pas inventaire. */
+    function line_looks_like_chronicle(string $line): bool {
+        $line = trim($line);
+        if ($line === '') {
+            return false;
+        }
+        // - **1984** : ...  |  - 1984 ...  |  - **~1990** ...
+        return (bool) preg_match(
+            '/^\s*[-*]\s+(?:\*\*)?~?\d{4}\b/u',
+            $line
+        ) || (bool) preg_match(
+            '/^\s*[-*]\s+\*\*[^*\n]{0,60}\d{4}/u',
+            $line
+        );
+    }
+
+    /** Bloc surtout narratif/chronologique (beaucoup de puces datees). */
+    function block_looks_like_chronicle(string $body): bool {
+        $lines = [];
+        foreach (preg_split('/\R/u', $body) as $l) {
+            $l = trim($l);
+            if ($l !== '' && mb_strlen($l, 'UTF-8') >= 8) {
+                $lines[] = $l;
+            }
+        }
+        $n = count($lines);
+        if ($n < 8) {
+            return false;
+        }
+        $dated = 0;
+        foreach ($lines as $l) {
+            if (line_looks_like_chronicle($l)) {
+                $dated++;
+            }
+        }
+        return ($dated / $n) >= 0.30;
     }
 
     function fold_stub_heading_blocks(array $blocks): array {
@@ -1107,8 +1228,13 @@
                 $sc += $w * 12.0;
             }
         }
-        if ($shape === 'inventory' && block_looks_like_list((string) $block['body'])) {
-            $sc *= 2.2;
+        if ($shape === 'inventory') {
+            $body = (string) $block['body'];
+            if (block_looks_like_chronicle($body)) {
+                $sc *= 0.22; // forme recit datee : tres penalisante pour une liste
+            } elseif (block_looks_like_list($body)) {
+                $sc *= 2.4;  // vraie liste (puces non datees)
+            }
         }
         if ($shape === 'who' && $subjectNorm !== '' && $head !== '') {
             $headTokens = preg_split('/\s+/u', $head, -1, PREG_SPLIT_NO_EMPTY);
@@ -1139,14 +1265,23 @@
         @file_put_contents($file, $line, FILE_APPEND | LOCK_EX);
     }
 
-    function build_memory_context_for_topic(string $topicText): array {
-        $topicText = trim($topicText);
+    function build_memory_context_for_topic(string $topicText, bool $widen = false, string $priorUserTurn = ''): array {
+        $topicText = merge_followup_with_prior(trim($topicText), $priorUserTurn);
         if ($topicText === '') {
             return ['context' => '', 'debug' => ''];
         }
 
-        $sections = extract_instructions_sections();
+        $allSections = extract_instructions_sections();
         $outline = extract_instructions_outline();
+        if ($widen) {
+            $sections = $allSections;
+        } else {
+            // Comme /sections puis /sN : on ne score en profondeur que les rubriques candidates.
+            $sections = shortlist_instruction_sections($topicText, $allSections, 5);
+            if (count($sections) < 1) {
+                $sections = $allSections;
+            }
+        }
         $shape = query_shape($topicText);
         $subjectNorm = ($shape === 'who') ? extract_who_subject($topicText) : '';
 
@@ -1183,6 +1318,24 @@
         $strongLocal = (($probeLocal['total_occ'] ?? 0) >= 2)
             && count($probeLocal['sections'] ?? []) >= 1;
 
+        if ($shape === 'inventory' && $strongLocal) {
+            $hasRealList = false;
+            foreach ($sections as $body) {
+                $body = (string) $body;
+                if (block_looks_like_list($body) && !block_looks_like_chronicle($body)) {
+                    $hasRealList = true;
+                    break;
+                }
+            }
+            if (!$hasRealList) {
+                $strongLocal = false; // laisse expand si on n'a que du recit
+            }
+        }
+
+        if ($widen) {
+            $strongLocal = false; // 2e passe : autoriser expand
+        }
+
         $intentExpanded = '';
         if (!$strongLocal) {
             $intentExpanded = expand_query_intent_via_node($topicText);
@@ -1194,19 +1347,16 @@
         $queryTerms = array_values(array_unique(array_merge($primaryTerms, array_slice($intentTerms, 0, 12))));
 
         $distinctive = pick_distinctive_terms($queryTerms, $sections);
-        $fileWideProofs = [];
-        if ($shape !== 'inventory') {
-            $fileWideProofs = collect_ranked_evidence_lines($sections, $queryTerms, 24, $primaryTerms);
-            if (!empty($distinctive) && !empty($fileWideProofs)) {
-                $kept = [];
-                foreach ($fileWideProofs as $item) {
-                    if (line_hits_any_term((string) ($item['line'] ?? ''), $distinctive)) {
-                        $kept[] = $item;
-                    }
+        $fileWideProofs = collect_ranked_evidence_lines($sections, $queryTerms, 24, $primaryTerms);
+        if (!empty($distinctive) && !empty($fileWideProofs)) {
+            $kept = [];
+            foreach ($fileWideProofs as $item) {
+                if (line_hits_any_term((string) ($item['line'] ?? ''), $distinctive)) {
+                    $kept[] = $item;
                 }
-                if (!empty($kept)) {
-                    $fileWideProofs = $kept;
-                }
+            }
+            if (!empty($kept)) {
+                $fileWideProofs = $kept;
             }
         }
 
@@ -1257,6 +1407,21 @@
             return $c['score'] <=> $a['score'];
         });
 
+        if ($shape !== 'who' && !empty($scored) && !empty($distinctive)) {
+            foreach ($scored as $cand) {
+                $b = (string) ($cand['body'] ?? '');
+                $full = (string) ($cand['full'] ?? $b);
+                if (block_looks_like_chronicle($b)) {
+                    continue;
+                }
+                if (block_looks_like_list($b) && block_covers_distinctive($full, $distinctive)) {
+                    $shape = 'inventory';
+                    $fileWideProofs = [];
+                    break;
+                }
+            }
+        }
+
         $budget = 14000;
         $chosen = [];
         $used = 0;
@@ -1271,23 +1436,109 @@
             }
         }
         if ($shape === 'inventory' && !empty($scored)) {
-            $blk = $scored[0];
-            $txt = $blk['full'];
-            $itemLines = [];
-            foreach (preg_split('/\R/u', $txt) as $ln) {
-                if (preg_match('/^\s*[-*]\s+\S/u', $ln)) {
-                    $itemLines[] = $ln;
+            // Termes rares de LA question (ex. « chat ») — pas la 1re liste du fichier.
+            $mustCover = pick_distinctive_terms($primaryTerms, $allSections);
+            $blk = null;
+            // 1) vraie liste + couvre les termes distinctifs
+            foreach ($scored as $cand) {
+                $b = (string) ($cand['body'] ?? '');
+                $full = (string) ($cand['full'] ?? $b);
+                if (!block_covers_distinctive($full, $mustCover)) {
+                    continue;
+                }
+                if (block_looks_like_chronicle($b)) {
+                    continue;
+                }
+                if (block_looks_like_list($b)) {
+                    $blk = $cand;
+                    break;
                 }
             }
-            if (count($itemLines) >= 3) {
-                $txt = $blk['heading_raw'] . "\n" . implode("\n", $itemLines);
+            // 2) autre bloc non-chronique qui couvre
+            if ($blk === null) {
+                foreach ($scored as $cand) {
+                    $b = (string) ($cand['body'] ?? '');
+                    $full = (string) ($cand['full'] ?? $b);
+                    if (!block_covers_distinctive($full, $mustCover)) {
+                        continue;
+                    }
+                    if (block_looks_like_chronicle($b)) {
+                        continue;
+                    }
+                    $blk = $cand;
+                    break;
+                }
             }
-            if (mb_strlen($txt, 'UTF-8') > 18000) {
-                $txt = mb_substr($txt, 0, 18000, 'UTF-8');
+            // 3) chronique autorisee SI c'est la seule a porter le terme rare
+            //    (ex. chats dans une chronologie datee — cas « combien »)
+            if ($blk === null) {
+                foreach ($scored as $cand) {
+                    $full = (string) ($cand['full'] ?? $cand['body'] ?? '');
+                    if (block_covers_distinctive($full, $mustCover)) {
+                        $blk = $cand;
+                        break;
+                    }
+                }
             }
-            $blk['full'] = $txt;
-            $chosen[] = $blk;
-            $used = mb_strlen($txt, 'UTF-8');
+            if ($blk === null) {
+                // Pas de bloc pertinent : bascule sur le chemin multi-blocs (comme fact)
+                $maxBlocks = 3;
+                foreach ($scored as $blk2) {
+                    if (count($chosen) >= $maxBlocks) {
+                        break;
+                    }
+                    $txt = $blk2['full'];
+                    $len = mb_strlen($txt, 'UTF-8');
+                    if ($len < 40) {
+                        continue;
+                    }
+                    if ($used > 0 && $used + $len > $budget) {
+                        $remain = $budget - $used;
+                        if ($remain < 400) {
+                            break;
+                        }
+                        $txt = mb_substr($txt, 0, $remain, 'UTF-8');
+                        $len = mb_strlen($txt, 'UTF-8');
+                        $blk2['full'] = $txt;
+                    }
+                    $chosen[] = $blk2;
+                    $used += $len;
+                    if ($used >= $budget) {
+                        break;
+                    }
+                }
+            } else {
+                $txt = $blk['full'];
+                $bodyForShape = (string) ($blk['body'] ?? '');
+                $itemLines = [];
+                foreach (preg_split('/\R/u', $txt) as $ln) {
+                    // Ne jette une ligne datee que si elle n'accroche aucun terme distinctif
+                    if (line_looks_like_chronicle($ln) && !line_hits_any_term($ln, $mustCover)) {
+                        continue;
+                    }
+                    if (preg_match('/^\s*[-*]\s+\S/u', $ln) || preg_match('/^\s*\d+[.)]\s+\S/u', $ln)) {
+                        $itemLines[] = $ln;
+                    }
+                }
+                // Ne reduit a la liste de puces que si ce n'est PAS une chronique porteuse
+                if (count($itemLines) >= 3 && !block_looks_like_chronicle($bodyForShape)) {
+                    $txt = $blk['heading_raw'] . "\n" . implode("\n", $itemLines);
+                }
+                if (mb_strlen($txt, 'UTF-8') > 18000) {
+                    $txt = mb_substr($txt, 0, 18000, 'UTF-8');
+                }
+                $blk['full'] = $txt;
+                $chosen[] = $blk;
+                $used = mb_strlen($txt, 'UTF-8');
+            }
+        } elseif ($shape === 'who' && !empty($exactWho)) {
+            foreach ($exactWho as $blk) {
+                if (count($chosen) >= 2) {
+                    break;
+                }
+                $chosen[] = $blk;
+                $used += mb_strlen((string) $blk['full'], 'UTF-8');
+            }
         } elseif ($shape === 'who' && !empty($fileWideProofs)) {
             $chosen = [];
         } else {
@@ -1341,7 +1592,7 @@
 
         $proofsBlock = '';
         $proofCount = 0;
-        $proofSource = $fileWideProofs;
+        $proofSource = ($shape === 'inventory') ? [] : $fileWideProofs;
         if ($shape === 'who' && !empty($civilProofs)) {
             $merged = [];
             $seenP = [];
@@ -1450,6 +1701,14 @@
             . ($strongLocal ? ' (parse local, sans expand/select)' : ($intentExpanded !== '' ? ' + intention' : ''))
             . ' - envoye ' . $sentChars . ' car.'
             . (!empty($headList) ? ' [' . implode(' | ', $headList) . ']' : '');
+        $debug_text = 'shortlist=' . count($sections) . '/' . count($allSections)
+            . ' | ' . $debug_text;
+
+        // Faux trou : termes distinctifs absents du contexte
+        // → une seule relance sur TOUTES les sections (+ expand possible).
+        if (!$widen && memory_context_misses_distinctive($ctx, $primaryTerms, $allSections)) {
+            return build_memory_context_for_topic($topicText, true, $priorUserTurn);
+        }
 
         return [
             'context' => $ctx,
@@ -1723,14 +1982,154 @@
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     }
 
-    function extract_instructions_outline(): array {
-        if (!is_file(SOURCE_FILE) || !is_readable(SOURCE_FILE)) return [];
+    /**
+     * Index sections ## de instructions.md (esprit consultation/data.php).
+     * Cache fichier invalide des que mtime/size change (SFTP / save VS Code).
+     * Pas de deadline calendaire.
+     */
+    function instructions_sections_cache_path(): string {
+        return __DIR__ . '/cache/instructions_sections_index.json';
+    }
+
+    function get_instructions_sections_index(): array {
+        static $mem = null;
+        if (is_array($mem)) {
+            return $mem;
+        }
+
+        if (!is_file(SOURCE_FILE) || !is_readable(SOURCE_FILE)) {
+            $mem = ['mtime' => 0, 'size' => 0, 'outline' => [], 'sections' => []];
+            return $mem;
+        }
+
+        $mtime = (int) @filemtime(SOURCE_FILE);
+        $size  = (int) @filesize(SOURCE_FILE);
+        $cachePath = instructions_sections_cache_path();
+
+        if (is_file($cachePath) && is_readable($cachePath)) {
+            $raw = @file_get_contents($cachePath);
+            $data = is_string($raw) ? json_decode($raw, true) : null;
+            if (
+                is_array($data)
+                && (int) ($data['mtime'] ?? 0) === $mtime
+                && (int) ($data['size'] ?? 0) === $size
+                && isset($data['sections']) && is_array($data['sections'])
+                && isset($data['outline']) && is_array($data['outline'])
+            ) {
+                $mem = $data;
+                return $mem;
+            }
+        }
+
         $content = file_get_contents(SOURCE_FILE);
-        if ($content === false) return [];
-        if (!preg_match_all('/^##\s+(.+)$/m', $content, $matches)) {
+        if ($content === false) {
+            $mem = ['mtime' => $mtime, 'size' => $size, 'outline' => [], 'sections' => []];
+            return $mem;
+        }
+
+        $lines = preg_split('/\R/u', $content) ?: [];
+        $sections = [];
+        $currentTitle = '';
+        $currentContent = [];
+        foreach ($lines as $line) {
+            if (preg_match('/^##\s+(.+)$/u', $line, $m)) {
+                if ($currentTitle !== '') {
+                    $sections[$currentTitle] = trim(implode("\n", $currentContent));
+                }
+                $currentTitle = trim($m[1]);
+                $currentContent = [];
+                continue;
+            }
+            if ($currentTitle !== '') {
+                $currentContent[] = $line;
+            }
+        }
+        if ($currentTitle !== '') {
+            $sections[$currentTitle] = trim(implode("\n", $currentContent));
+        }
+
+        $outline = array_keys($sections);
+        $mem = [
+            'mtime'    => $mtime,
+            'size'     => $size,
+            'outline'  => $outline,
+            'sections' => $sections,
+        ];
+
+        $dir = dirname($cachePath);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+        @file_put_contents(
+            $cachePath,
+            json_encode($mem, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            LOCK_EX
+        );
+
+        return $mem;
+    }
+
+    function extract_instructions_outline(): array {
+        return get_instructions_sections_index()['outline'];
+    }
+
+    function extract_instructions_sections(): array {
+        return get_instructions_sections_index()['sections'];
+    }
+
+    /**
+     * Shortlist generique de sections ## (table des matieres d'abord).
+     * Titre pese plus que le corps. Aucun mot-clef metier en dur.
+     */
+    function shortlist_instruction_sections(string $text, array $sections, int $maxSections = 5): array {
+        if (empty($sections)) {
             return [];
         }
-        return array_map('trim', $matches[1]);
+        $terms = extract_keywords($text);
+        if (empty($terms)) {
+            return [];
+        }
+
+        $scores = [];
+        foreach ($sections as $title => $body) {
+            $score = 0;
+            $normTitle = normalize_for_matching((string) $title);
+            $normBody  = normalize_for_matching((string) $body);
+            foreach ($terms as $term) {
+                $term = normalize_for_matching((string) $term);
+                if ($term === '' || mb_strlen($term, 'UTF-8') < 2) {
+                    continue;
+                }
+                if ($normTitle !== '' && mb_strpos($normTitle, $term) !== false) {
+                    $score += 8;
+                }
+                if ($normBody !== '' && mb_strpos($normBody, $term) !== false) {
+                    $score += 2;
+                }
+            }
+            $shape = query_shape($text);
+            if ($shape === 'inventory') {
+                if (block_looks_like_chronicle((string) $body)) {
+                    $score = (int) floor($score * 0.2);
+                } elseif (block_looks_like_list((string) $body)) {
+                    $score += 24;
+                }
+            }
+            if ($score > 0) {
+                $scores[$title] = $score;
+            }
+        }
+
+        if (empty($scores)) {
+            return [];
+        }
+        arsort($scores);
+        $picked = array_slice($scores, 0, max(1, $maxSections), true);
+        $out = [];
+        foreach ($picked as $title => $_s) {
+            $out[$title] = $sections[$title];
+        }
+        return $out;
     }
 
     function load_instructions_excerpt(): string {
@@ -1805,34 +2204,6 @@
             $context .= ' Section probable : ' . $sectionTitle . '. Contenu de la section : ' . $sectionContent;
         }
         return $context;
-    }
-
-    function extract_instructions_sections(): array {
-        if (!is_file(SOURCE_FILE) || !is_readable(SOURCE_FILE)) return [];
-        $content = file_get_contents(SOURCE_FILE);
-        if ($content === false) return [];
-
-        $lines = preg_split('/\R/u', $content);
-        $sections = [];
-        $currentTitle = '';
-        $currentContent = [];
-        foreach ($lines as $line) {
-            if (preg_match('/^##\s+(.+)$/', $line, $matches)) {
-                if ($currentTitle !== '') {
-                    $sections[$currentTitle] = trim(implode("\n", $currentContent));
-                }
-                $currentTitle = trim($matches[1]);
-                $currentContent = [];
-                continue;
-            }
-            if ($currentTitle !== '') {
-                $currentContent[] = $line;
-            }
-        }
-        if ($currentTitle !== '') {
-            $sections[$currentTitle] = trim(implode("\n", $currentContent));
-        }
-        return $sections;
     }
 
     function find_best_instruction_section(string $text, array $sections): array {
@@ -2169,7 +2540,38 @@
      * termes courts (ex. "gan" ne doit PAS matcher "organisateur").
      * Termes >= 5 lettres : sous-chaine autorisee (racines).
      */
+
+    /** Variantes de recherche generiques (pluriel FR leger : chats→chat). Pas de lexique metier. */
+    function term_search_variants(string $term): array {
+        $term = normalize_for_matching($term);
+        if ($term === '') {
+            return [];
+        }
+        $out = [$term];
+        $len = mb_strlen($term, 'UTF-8');
+        if ($len >= 4) {
+            $last = mb_substr($term, -1, 1, 'UTF-8');
+            if ($last === 's' || $last === 'x') {
+                $stem = mb_substr($term, 0, $len - 1, 'UTF-8');
+                if (mb_strlen($stem, 'UTF-8') >= 3) {
+                    $out[] = $stem;
+                }
+            }
+        }
+        return array_values(array_unique($out));
+    }
+
     function term_matches_in_text(string $normText, string $term): int {
+        if ($normText === '') {
+            return 0;
+        }
+        $best = 0;
+        foreach (term_search_variants($term) as $v) {
+            $best = max($best, term_matches_in_text_single($normText, $v));
+        }
+        return $best;
+    }
+    function term_matches_in_text_single(string $normText, string $term): int {
         $term = normalize_for_matching($term);
         if ($term === '' || $normText === '') {
             return 0;
@@ -3107,7 +3509,10 @@
             $rankedPreview = [];
 
             if (function_exists('build_memory_context_for_topic')) {
-                $built = build_memory_context_for_topic($input_text);
+                $priorUser = ''; // derniere question user du fil (hors message courant)
+                // ex. si tu as $history = [..., ['role'=>'user','text'=>'...'], ['role'=>'user','text'=>$input_text]]
+                // $priorUser = texte du user juste avant $input_text
+                $built = build_memory_context_for_topic($input_text, false, $priorUser);
                 $memoryContext = $built['context'] ?? '';
                 $query_debug_mode = memory_debug_text($built['debug'] ?? '');
             }
@@ -3145,7 +3550,7 @@
             $normContext = normalize_for_matching((string) $memoryContext);
             $infoInFile = false;
             foreach ($keywordsFromQuery as $kw) {
-                if ($kw !== '' && mb_strpos($normContext, normalize_for_matching($kw)) !== false) {
+                if ($kw !== '' && term_matches_in_text($normContext, $kw) > 0) {
                     $infoInFile = true;
                     break;
                 }
@@ -3186,7 +3591,10 @@
         if (isset($_POST['merge_smart']) && $input_text !== '') {
             $reformule_original = $input_text;
             log_reformulator_request($input_text, 'MERGE', $selected_engine);
-            $built = build_memory_context_for_topic($input_text);
+            $priorUser = ''; // derniere question user du fil (hors message courant)
+            // ex. si tu as $history = [..., ['role'=>'user','text'=>'...'], ['role'=>'user','text'=>$input_text]]
+            // $priorUser = texte du user juste avant $input_text
+            $built = build_memory_context_for_topic($input_text, false, $priorUser);
             $memoryCtx = $built['context'] ?? '';
             $query_debug = "Mode : Comparer / Fusionner\n";
             $query_debug .= "Contexte memoire : " . memory_debug_text($built['debug'] ?? '') . "\n";

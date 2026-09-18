@@ -40,8 +40,9 @@ const LEGACY_ERROR_LOG_FILE = path.join(__dirname, '..', 'error_log');
 // ==================== LOGGING ====================
 const formatTimestamp = () => {
   const now = new Date();
-  now.setHours(now.getHours() + 2);
-  return now.toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, '');
+  const pad = (n) => String(n).padStart(2, '0');
+  return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+    + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
 };
 const writeLog = (filePath, line) => {
   try {

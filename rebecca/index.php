@@ -191,7 +191,7 @@
             return false;
         }
         return (bool) preg_match(
-            '/\b(qui\s+(est|sont|était|etait|étaient|etaient)|c[\'’ ]?est\s+qui|qui\s+c[\'’ ]?est|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quels?\s+sont|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousins?e?s?|paternel|maternel|cadastre|parcelle|chien|chat|luna|domaine|saint-?antonin|mathieu|charreyre|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire|avait|nommé|nomme)\b/iu',
+            '/\b(qui\s+(est|sont|était|etait|étaient|etaient)|c[\'’ ]?est\s+qui|qui\s+c[\'’ ]?est|quand\s+|o[uù]\s+(est|habite|se\s+trouve)|combien\s+de|quels?\s+sont|quel(le)?s?\s+(age|âge|date|ann[eé]e|pr[eé]nom|nom)|famille|fr[eè]re|soeur|p[eè]re|m[eè]re|tante|oncle|cousins?e?s?|paternel|maternel|cadastre|parcelle|chien|chat|domaine|instructions|dans\s+le\s+fichier|dans\s+la\s+m[eé]moire)\b/iu',
             $m
         );
     }
@@ -338,7 +338,7 @@
                 }
 
                 if ($needsMemory && function_exists('build_memory_context_for_topic')) {
-                    $built = build_memory_context_for_topic($retrievalQuery);
+                    $built = build_memory_context_for_topic($retrievalQuery, false, $lastUserForRetrieval);
                     $memoryContext = $built['context'] ?? '';
                     $debugData = $built['debug'] ?? [];
                     if (is_array($debugData)) {
@@ -362,8 +362,10 @@
                 }
 
                 $questionForLLM = $message;
-                if ($historyText !== '' && $chatAddon !== '') {
-                    $questionForLLM = str_replace('{{CHAT_HISTORY}}', $historyText, $chatAddon) . "\n\nQuestion actuelle : " . $message;
+                if ($chatAddon !== '') {
+                    $hist = $historyText !== '' ? $historyText : '(aucun)';
+                    $questionForLLM = str_replace('{{CHAT_HISTORY}}', $hist, $chatAddon)
+                        . "\n\nQuestion actuelle : " . $message;
                 }
 
                 // Log d'origine
@@ -400,7 +402,6 @@
                 if ($needsMemory && $finalReply !== ''
                     && function_exists('is_negative_query_answer')
                     && is_negative_query_answer($finalReply)
-                    && preg_match('/PREUVES DIRECTES/u', $memoryContext)
                     && function_exists('finalize_query_response_via_node')) {
                     $retry = trim((string) finalize_query_response_via_node($message, '', $memoryContext, 'query'));
                     if ($retry !== '' && !is_negative_query_answer($retry)) {
