@@ -29,6 +29,11 @@ Options -Indexes
 
 # Réécriture transparente : instructions.md -> tracker.php (envoie un email + sert le fichier)
 RewriteEngine On
+RewriteBase /r3M3M83r/
+
+# Redirection de sécurité /s (erreur de saisie) vers la FAQ
+RewriteRule ^s$ faq [R=301,L]
+
 # Tracker de consultation
 RewriteRule ^instructions\.md$ tracker.php [L,QSA]
 

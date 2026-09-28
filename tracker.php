@@ -73,7 +73,8 @@ if (function_exists('ini_set')) {
 // Exception : include depuis data.php (constante TRACKER_SOURCE définie)
 if (!defined('TRACKER_SOURCE') && basename($_SERVER['SCRIPT_NAME'] ?? '') === 'tracker.php') {
     http_response_code(403);
-    exit('Accès direct interdit.');
+    header('Content-Type: text/html; charset=UTF-8');
+    exit('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="background:#111; margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; text-align:center;"><div style="font-family:monospace; color:#ccc; padding:1.5rem; line-height:1.6; font-size:1rem; box-sizing:border-box;">Accès direct interdit.<br><br><br>Rendez-vous sur<br><a href="https://mathieu.charreyre.net/r3M3M83r/" title="Les journaux de Mathieu CHARREYRE" style="color:#ffe566; text-decoration:none; font-weight:bold;">Les journaux de Mathieu CHARREYRE</a></div></body></html>');
 }
 
 // Contexte d'appel :
