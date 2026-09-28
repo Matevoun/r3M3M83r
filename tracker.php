@@ -69,11 +69,11 @@ if (function_exists('ini_set')) {
 }
 
 
-// Bloquer l'acces direct a tracker.php (URL tapee dans le navigateur)
-// Exception : include depuis data.php (constante TRACKER_SOURCE definie)
-if (!defined('TRACKER_SOURCE') && strpos($_SERVER['REQUEST_URI'] ?? '', 'tracker.php') !== false) {
+// Bloquer l'accès direct à tracker.php (URL tapée dans le navigateur)
+// Exception : include depuis data.php (constante TRACKER_SOURCE définie)
+if (!defined('TRACKER_SOURCE') && basename($_SERVER['SCRIPT_NAME'] ?? '') === 'tracker.php') {
     http_response_code(403);
-    exit;
+    exit('Accès direct interdit.');
 }
 
 // Contexte d'appel :

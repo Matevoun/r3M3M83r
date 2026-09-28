@@ -76,7 +76,11 @@ define('SOURCE_FILE', __DIR__ . '/../instructions.md');
 // Note : le mode ?s=list peut remplacer Content-Type par text/html si le client
 // envoie Accept: text/html (navigateur). Les autres modes restent en text/plain.
 header('Content-Type: text/plain; charset=UTF-8');
-header('X-Robots-Tag: noindex, nofollow');  // pas d'indexation Google/Bing
+// On bloque l'indexation publique (Google/Bing) mais on autorise la lecture par les LLMs
+header('X-Robots-Tag: googlebot: noindex, nofollow, bingbot: noindex, nofollow');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 header('Cache-Control: no-store');           // pas de cache intermédiaire
 
 $section = trim($_GET['s'] ?? 'all');
