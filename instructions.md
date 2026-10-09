@@ -165,7 +165,7 @@ Cette chronologie révèle alternance création/résistance. Voir sections spéc
 - **1878 (12 décembre)** : Premier bail agricole documenté sur le Domaine Saint-Antonin, signé avec Joseph DECANIS (marinier) et son épouse (notaire Me THUS Jean-Baptiste). Exploitation agricole à Saint-Julien.
 - **1881 (11 juin)** : Naissance à Paris de Marie Victorine ROBIN. Future arrière-grand-mère paternelle de Mathieu CHARREYRE.
 - **1882 (5 avril)** : Naissance à Saint-Remy de Provence de Marie, Louise, Alphonsine SICARD. Future arrière-grande-tante maternelle de Mathieu, future Soeur de Claire SICARD et future demie-soeur d'Emile SICARD.
-- **1883 (3 juin)** : Naissance à Saint-Remy de Provence de Claire, Joséphine, Honorine SICARD. Future arrière-grande-tante maternelle de Mathieu, Soeur de Claire SICARD et future demie-soeur d'Emile SICARD.
+- **1883 (3 juin)** : Naissance à Saint-Remy de Provence de Claire, Joséphine, Honorine SICARD. Future arrière-grande-tante maternelle de Mathieu, Soeur de Marie Louise SICARD et future demie-soeur d'Emile SICARD.
 - **1885** : Marius Amédée Louis BAUDOIN-THUS hérite officiellement du Domaine après sa majorité (futur 10e propriétaire du Domaine Saint-Antonin). Il fera officialiser le double patronyme BAUDOIN-THUS par décret (validé 1894) et construire le Château du "Paradou" (aujourd'hui "Val Réal") sur les rives du Réal (~1890-1910).
 - **1885 (4 mai)** Naissance à Nimes d'Emile Eugéne Joseph MONTJOL.
 Future arrière-grand-père maternel de Mathieu CHARREYRE.
@@ -199,7 +199,7 @@ Futur oncle et Parrain de Mathieu CHARREYRE. Futur mari d'Elisabeth CHARREYRE.
 - **1937 (25 avril)** : Naissance à Paris d'Elisabeth Marthe Marie CHARREYRE.
 Future soeur de Jean CHARREYRE et d'Henri CHARREYRE.
 Future tante paternelle de Mathieu CHARREYRE.
-- **1941 (3 octobre)** : Décès à Saint-Remy de Provence de Claire, Joséphine, Honorine SICARD. Future arrière-grande-tante maternelle de Mathieu, Soeur de Claire SICARD et demie-soeur d'Emile SICARD.
+- **1941 (3 octobre)** : Décès à Saint-Remy de Provence de Claire, Joséphine, Honorine SICARD. Future arrière-grande-tante maternelle de Mathieu, Soeur de Marie Louise SICARD et demie-soeur d'Emile SICARD.
 - **1942 (4 avril)** : Naissance à Paris de Jean Eugène CHARREYRE.
 Futur oncle mort à 14 mois de Mathieu CHARREYRE.
 Frère d'Elisabeth CHARREYRE et par la suite d'Henri CHARREYRE.
