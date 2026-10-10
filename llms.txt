@@ -18,7 +18,7 @@ Document vivant, mis a jour regulierement.
 
 ## Fichier complet
 
-- [instructions.md](https://mathieu.charreyre.net/r3M3M83r/): Portrait complet et memoire vivante de Mathieu CHARREYRE (plus de 3700 lignes). Lire en entier si la fenetre de contexte le permet.
+- [profil](https://mathieu.charreyre.net/r3M3M83r/profil): Portrait complet, text/plain (~610 Ko, 4004 lignes). Lire en entier si la fenetre de contexte le permet.
 - [instructions.md GitHub](https://raw.githubusercontent.com/Matevoun/r3M3M83r/refs/heads/main/instructions.md): Meme fichier, miroir GitHub public.
 
 ## Index des sections (chargement cible si fichier tronque)
