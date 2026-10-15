@@ -30,6 +30,7 @@
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
     <script src="../moteurs/loading_steps.js"></script> <!-- Script d'attente -->
+    <script src="../moteurs/health_check.js"></script> <!-- Script de vérification de santé des LLMs -->
     <style>
         *{box-sizing:border-box}
         body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#1d1d1d}
@@ -151,6 +152,7 @@
         ?></strong></p>
         <button type="button" id="open-test-modal" class="mini-button" title="Tester le moteur LLM">Tester</button>
       </div>
+      <div id="llm-status-bar" style="margin-top:.5rem; font-size:.9rem;"></div>
     </div>
   </div>
 
@@ -379,7 +381,7 @@
 <div class="loading-overlay" id="loading-overlay" aria-hidden="true">
   <div class="loading-box">
     <div class="loading-spinner" aria-hidden="true"></div>
-    <div class="loading-text">Traitement en cours… Merci de patienter.</div>
+    <div class="loading-text">Interrogation de instructions.md ...</div>
   </div>
 </div>
 <script>
@@ -530,7 +532,8 @@ if (form) {
         if (instructionsContextInput && stored) {
             instructionsContextInput.value = stored;
         }
-        saisieLoader.start();
+        saisieLoader.start(0);
+        // Pas de setTimeout : la page se recharge quand PHP a fini
     });
 }
 

@@ -7,6 +7,15 @@ Les commentaires "REGLES D'OR" dans `moteurs/functions.php`, `moteurs/server.js`
 et `rebecca/Chat-Prompts.js` restent des rappels locaux. En cas de conflit,
 CE fichier gagne.
 
+## Prompts
+
+- moteurs/prompts.js = UNIQUEMENT des blocs generiques (STYLE_RULES, FACTUALITY_RULES, prompts de base par purpose).
+  Aucune persona, aucun "Tu es Rebecca", aucun ton d'interface.
+- rebecca/Chat-Prompts.js = persona Rebecca + historique (CHAT_ADDON). Injecte cote PHP.
+- reformulator/Reformulator-Prompts.js = emplacement pour specialisation future de saisie.php.
+- Un purpose Node (query, query-chat, rewrite...) pointe vers une constante generique.
+  La specialisation se fait par injection PHP (addon) ou par fichier d'interface, pas dans moteurs/.
+
 ---
 
 ## 0. Ce que c'est
@@ -26,15 +35,19 @@ d'extraits deja selectionnes en local.
 1. **Aucun nom propre dans le code.** Ni prenom, ni lieu, ni parcelle, ni animal.
    Le parseur doit repondre a n'importe quelle question future sans retoucher
    le PHP. Si demain un etre cher disparait, on ne retape pas le moteur.
-2. **Aucun `if (la question contient X)` metier.** Les formes detectees sont
+2. **Aucun mot-cle metier en dur dans le parseur.**
+   Interdit de figer des listes comme `['cousin', 'pauly', 'villiers']` ou tout terme spécifique à une question.
+   Seuls les termes extraits dynamiquement de la question utilisateur (`extract_keywords`) sont autorisés.
+   Le parseur doit fonctionner pour n'importe quelle question future sans modification du code.
+3. **Aucun `if (la question contient X)` metier.** Les formes detectees sont
    des TYPES (qui-est, inventaire, liste, civil), jamais des sujets.
-3. **Aucun scotch cas par cas.** Un correctif qui ne marche que pour une
+4. **Aucun scotch cas par cas.** Un correctif qui ne marche que pour une
    question precise est refuse. On corrige la REGLE, pas la reponse.
-4. **Aucun moteur payant.** Groq, Cerebras, OpenRouter :free, Gemini free,
+5. **Aucun moteur payant.** Groq, Cerebras, OpenRouter :free, Gemini free,
    Mistral free. Pas d'OpenAI, pas d'Anthropic, pas de credit.
-5. **N'invente rien.** Chaque fait de la reponse doit figurer dans le contexte
+6. **N'invente rien.** Chaque fait de la reponse doit figurer dans le contexte
    envoye. Sinon : "non mentionne dans le fichier".
-6. **Pas de liste de synonymes metier en dur.** L'elargissement d'intention
+7. **Pas de liste de synonymes metier en dur.** L'elargissement d'intention
    (QUERY_EXPAND) est un appel LLM, reserve aux questions FLOUES. Un prenom
    ou un toponyme clair se parse en local.
 

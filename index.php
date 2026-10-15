@@ -147,7 +147,7 @@
             </div>
         </div>
         <footer>
-            <span class="disclaimer">Verifier les faits importants dans le <a href="sections" target="_blank" rel="noopener noreferrer" title="Recherche dans le fichier mémoriel">fichier source</a>.</span>
+            <span class="disclaimer">Verifier les faits importants dans le <a href="profil" target="_blank" rel="noopener noreferrer" title="Recherche dans le fichier mémoriel">fichier source</a>.</span>
             Projet <a href="https://mathieu.charreyre.net/r3M3M83r" title="r3M3M83r">r3M3M83r</a>
         </footer>
     </body>

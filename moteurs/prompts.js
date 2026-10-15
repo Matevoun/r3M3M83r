@@ -1,66 +1,16 @@
 /**
- * ===========================================================================
  * r3M3M83r/moteurs/prompts.js
- * ==========================================================================
- *
- * ---------------------------------------------------------------------------
- * Source UNIQUE des prompts LLM partages : Reformulator (saisie.php) ET Rebecca
- * (chat, purpose=query-chat). La couche persona Rebecca est en plus dans
- * rebecca/Chat-Prompts.js (CHAT_ADDON prepend cote PHP, sans restart Node).
- * Editer CE fichier, puis redemarrer Node.js (cPanel) pour prendre effet.
- * ---------------------------------------------------------------------------
- *
- * COMMENT TENIR A JOUR (lire avant toute modif)
- * ---------------------------------------------
- * 1. Un seul endroit pour les prompts : ce fichier. Pas de doublon dans server.js.
- * 2. Pas de liste de synonymes / mots-clefs metier en dur. Le LLM elargit
- *    l'intention (QUERY_EXPAND). Les exemples dans les prompts restent GENERIQUES.
- * 3. STYLE_RULES = orthographe et forme (CLEF, NENUPHAR, 3e personne...).
- *    FACTUALITY_RULES = interdiction d'inventer. Reutilises via concatenation.
- * 4. Pour changer le comportement d'un bouton : modifier le prompt du purpose
- *    correspondant (tableau ci-dessous), pas le PHP sauf flux / contexte.
- * 5. Commentaires : orthographe archaique dans le code (CLEF, NENUPHAR, soeurs
- *    avec o et e separes). Pas d'emoji dans le code source.
- *
- * Doctrine projet : ../DOCTRINE.md
- *
- * Bouton / flux                 | purpose Node          | Constante
- * ------------------------------|-----------------------|----------------------
- * Interroger (saisie.php)       | query-expand          | QUERY_EXPAND_PROMPT
- *                               | query-select          | QUERY_SELECT_PROMPT
- *                               | query                 | QUERY_PROMPT
- *                               | query-keywords        | QUERY_KEYWORD_PROMPT (legacy)
- * Comparer / Fusionner          | merge-smart           | MERGE_SMART_PROMPT
- *                               | merge-check           | MERGE_CHECK_PROMPT
- * Proposer emplacement          | location              | LOCATION_PROMPT
- * Reformulation avancee         | rewrite (defaut)      | SAISIE_PROMPT
- * Charger & Extraire            | extract               | (pas de prompt texte)
- * Tchat Rebecca (chat.php)      | chat-route            | CHAT_ROUTE_PROMPT
- *                               | chat-talk             | CHAT_TALK_PROMPT
- *                               | query (+ memoire)     | QUERY_PROMPT
- *   Nota : Chat-Prompts.js (CHAT_ADDON) = persona + historique, lu par PHP,
- *   injecte dans le texte user — ce n'est PAS un purpose Node.
- *
- * Historique des correctifs prompts (resume)
- * ------------------------------------------
- * 08/08/2026  STYLE_RULES + SAISIE/MERGE intelligents
- * 16/08/2026  Externalisation dans ce fichier ; portee question + attribution
- * 17/08/2026  Documentation ; FACTUALITY_RULES partagees ; QUERY_SELECT generique
- * 19/08/2026  CHAT_ROUTE + CHAT_TALK : routage LLM sans listes de mots-clefs
- * 08/09/2026  CHAT_ROUTE : salutations courtes = CHAT (evite dump memoire 18k tokens)
+ * Blocs GENERIQUES partages uniquement.
+ * Pas de persona, pas de "Tu es Rebecca", pas de "Reformulator".
+ * Les prompts specifiques sont dans :
+ *   - rebecca/Chat-Prompts.js
+ *   - reformulator/Reformulator-Prompts.js
+ * Editer ici, puis redemarrer Node.
  */
 
-// ---------------------------------------------------------------------------
-// BLOCS PARTAGES (ne pas dupliquer le meme texte dans chaque prompt)
-// ---------------------------------------------------------------------------
-
-/** Orthographe et forme — appende aux prompts qui produisent du Francais. */
-// Regles de style OBLIGATOIRES (calquees sur instructions.md - Regles d'Or)
-
-// Divise STYLE_RULES en sous-parties pour une meilleure lisibilité
 const STYLE_RULES_ORTHOGRAPHY = `
 - Orthographe : CLEF (jamais "cle"), NENUPHAR (jamais "nenuphar").
-- Pas de ligature oe : Ecrire OE separes (COEUR, VOEUX, soeurs avec o et e distincts).
+- Pas de ligature oe : ecrire OE separes (COEUR, VOEUX, soeurs avec o et e distincts).
 - Pas de tiret cadratin/demi-cadratin a la place d'une virgule ou parenthese.
 - Noms propres en MAJUSCULES (ex. : CHARREYRE, SAINT-ANTONIN).
 - Domaine Saint-Antonin : majuscule a Domaine ; jamais "Domaine de Saint-Antonin".
@@ -73,296 +23,106 @@ const STYLE_RULES_FORMATTING = `
 `;
 
 const STYLE_RULES_NUMBERS = `
-- Les nombres de 0 a 16 s'ecrivent en lettres, SAUF n de parcelle, section cadastrale, surface (ha/a/ca) et codes : garder 0077, 0 ha 30 a 80 ca. Interdit "seize" ou "zero ha" pour un cadastre.
+- Les nombres de 0 a 16 s'ecrivent en lettres, SAUF n de parcelle, section cadastrale, surface (ha/a/ca) et codes : garder 0077, 0 ha 30 a 80 ca.
 `;
 
 const STYLE_RULES_TONE = `
 - Parler de Mathieu a la 3e personne (jamais "je" a sa place).
-- Ton : humain, chaleureux, un peu complice.
-- Emojis : 0 a 2 maximum, pas a chaque phrase.
+- Ton clair et direct.
+- Aucun emoji, aucun smiley, jamais.
 `;
 
 const STYLE_RULES = STYLE_RULES_ORTHOGRAPHY + STYLE_RULES_FORMATTING + STYLE_RULES_NUMBERS + STYLE_RULES_TONE;
 
-/** Forme tchat — tous les avatars. Pas de persona. */
 const CHAT_FORM_RULES = `
-Forme tchat (moteur, pas persona) :
-- Toujours en Francais, jamais en anglais.
-- Une salutation au plus, uniquement au tout debut d'une conversation neuve. Ensuite : plus aucune.
-- Prose claire. Listes a tirets si utile. Inventaire long : TOUTES les lignes (ou groupes par lieudit). Interdit de plafonner a 6.
-- INTERDIT : titres markdown (##, ###), blocs "**Faits etablis :**" / "**Sources :**", jargon "PREUVES DIRECTES".
-- Source discrete en fin (titre de section). Pas de numero de section en tete de chaque phrase.
-- Surnoms / pseudos : Uniquement si le texte lie EXPLICITEMENT ce surnom a CETTE personne. Interdit d'attribuer a quelqu'un le surnom d'un tiers.
-- Si le contexte ne contient pas l'information : une phrase, demander une autre formulation. Ne jamais inventer dates, ages, lieux, noms, surnoms.
-- Inventaire : Si la question nomme un ENSEMBLE (village, domaine, liste) et qu'un mot de la question est AUSSI le nom d'une sous-partie (lieudit, sous-liste), restitue TOUT l'ensemble. Ne filtre pas sur l'homonyme.
+- Toujours en Francais.
+- Prose claire. Listes a tirets si utile. Inventaire long : toutes les lignes.
+- Interdit : titres markdown (##, ###), blocs "Faits etablis".
+- Source discrete en fin si besoin.
+- Si l'info n'est pas dans le contexte : "Rien la-dessus dans le fichier memoire — un trou, ou une autre formulation ?"
+- Ne jamais inventer dates, ages, lieux, noms, surnoms.
 `;
 
-/** Interdiction d'inventer — socle de QUERY et utile en rappel ailleurs. */
 const FACTUALITY_RULES = `
-REGLE D'OR NUMERO 1 (prioritaire sur tout le reste) :
+REGLE D'OR :
 ** N'INVENTE RIEN. JAMAIS. **
 ** CHAQUE FAIT DOIT ETRE PRESENT DANS LE CONTEXTE FOURNI. **
-** Si l'info n'y est pas, UNE phrase, ton Rebecca, sans jargon : **
-** "Rien la-dessus dans le fichier memoire — un trou, ou une autre formulation ?" **
-** Interdit de dire "non mentionne dans le fichier". Interdit d'inventer. **
-** Pas de prenom invente, pas de degre de parente invente, **
-** pas de recommandation d'archives externes, pas de "il faudrait consulter". **
+** Si l'info n'y est pas : "Rien la-dessus dans le fichier memoire — un trou, ou une autre formulation ?" **
+** Interdit d'inventer. **
 `;
 
-// ---------------------------------------------------------------------------
-// INTERROGER — etapes : expand -> select -> query
-// ---------------------------------------------------------------------------
-
-/**
- * Legacy : extraction de mots-cles (encore appele cote PHP pour certains flux).
- * Preferer QUERY_EXPAND pour la comprehension d'intention.
- */
-const QUERY_KEYWORD_PROMPT = `Tu es un expert en extraction de mots-cles. A partir de la question suivante sur la vie de Mathieu CHARREYRE, retourne UNIQUEMENT une liste de mots-cles ou expressions separes par des virgules (maximum 8 termes). Pas de phrase, pas de salutation, pas d'explication.`;
-
-/**
- * Comprend l'intention humaine et propose des axes de recherche.
- * Aucune liste de synonymes predefinie : le modele deduit selon le sens.
- */
-const QUERY_EXPAND_PROMPT = `Tu prepares une recherche dans le fichier memoire instructions.md de Mathieu CHARREYRE.
-
-Lis la question (ou le texte) comme un humain :
-1. Quelle est l'intention reelle ?
-2. Quels mots, synonymes, notions proches, periodes ou lieux seraient utiles pour RETROUVER l'info dans un gros fichier memoire — meme si le fichier n'emploie pas exactement les memes mots que la question ?
-3. Si l'objet porte un surnom ou un autre nom courant (ex. "piscine" vs "bassin", marque/modele vs type generique), inclus TOUTES les formulations possibles dans les axes — le fichier peut n'en utiliser qu'une.
-
-Reponds en 4 a 8 lignes, structure libre :
-Intention :
-Axes de recherche : (formulations, synonymes, surnoms — pas une liste predefinie)
-Sections utiles probables : (si pertinent)
-
-Ne reponds PAS a la question. N'invente aucun fait biographique.`;
-
-/**
- * Choisit 2 a 5 titres de sections a partir de la liste fournie.
- * Pas de table de correspondance figee : raisonne sur les titres + la question.
- */
-const QUERY_SELECT_PROMPT = `Tu choisis les sections d'un fichier memoire (instructions.md de Mathieu CHARREYRE) les plus utiles pour repondre a une question.
-
-On te donne les titres disponibles, la question, et parfois une intention elargie.
-Raisonne sur le sens : quelle section a le plus de chances de contenir la reponse ?
-
-Regles :
-- Reponds UNIQUEMENT par 2 a 5 titres EXACTS separes par des virgules.
-- Aucun texte, numero ou guillemet en plus.
-- Si aucun titre ne convient : AUCUNE.
-- Respecte l'orthographe exacte des titres fournis.`;
-
-/**
- * Reponse finale a la question utilisateur a partir du contexte memoire.
- * Portee de la question + attribution stricte Mathieu vs tiers.
- */
-const QUERY_PROMPT = `Tu es Reformulator. Tu ne connais la memoire de Mathieu CHARREYRE QUE via le contexte fourni.
+// Prompts generiques (le purpose decide cote Node)
+const QUERY_PROMPT = `Reponds a la question UNIQUEMENT a partir du contexte fourni.
 ` + FACTUALITY_RULES + `
-Methode :
-0. Si les PREUVES DIRECTES contiennent le sujet (mot de la question ou equivalent clair), tu DOIS repondre avec ces faits. Interdit de dire que c'est absent si les preuves citent le sujet.
-1. Lis d'abord le bloc "PREUVES DIRECTES" s'il existe : citations prioritaires.
-2. Ensuite le reste du contexte. Releves UNIQUEMENT ce qui est ecrit noir sur blanc.
-3. Tu PEUX relier deux faits TOUS DEUX ecrits (ex. "fils d'Elisabeth" + "Elisabeth tante de Mathieu" => cousin) UNIQUEMENT si les deux sont dans le texte.
-4. Si PLUSIEURS personnes sont nommees avec le meme type de libelle, liste TOUS les prenoms presents. Ne resume pas en "N non nommes" si les prenoms sont la.
-
-INTERDITS :
-- Dire "non nommes" alors qu'un prenom figure dans le contexte
-- Inventer prenoms, degres de parente ("germain", "eloigne") non ecrits
-- Reclasser une personne sous un autre degre que celui indique par le texte
-- Compter les occurrences d'un mot au lieu de repondre au sens
-- Inventer des sources externes (registres, notaires, archives)
-
-PORTEE DE LA QUESTION :
-- Reponds a la question TELLE QU'ELLE EST POSEE. Si elle porte sur des amis / des tiers, ne commence PAS par ce qui appartient a Mathieu.
-- Commence par une reponse courte et directe.
-- ATTRIBUTATION :
-  * A Mathieu : seulement si le texte le dit explicitement (achete, adopte, possede, "son ...", "leur foyer"...).
-  * A un tiers : seulement si le texte dit explicitement que CETTE personne avait / possedait la chose.
-  * Garder temporairement un bien de Mathieu n'equivaut pas a "avoir" ce bien pour le gardien.
-  * Ne confonds pas les categories (ex. chien vs chat).
-- Si un detail n'est pas dans le contexte : omets, ou la phrase FACTUALITY_RULES. Ne suppose pas.
-- Mentions peripheriques : une phrase max en fin, hors liste principale.
-- N'ouvre JAMAIS par "non mentionne" si le contexte repond sous un autre vocabulaire.
-- Si la question porte sur un objet/sujet et que le contexte donne marque, modele, date d'acquisition ou usage equivalent (meme sans reprendre le mot exact de la question), C'EST une reponse valide : synthetise ces preuves. la phrase "Rien la-dessus..." uniquement si AUCUNE preuve ni section ne traite le sujet.
-
-Reponse : factuelle, structuree, concise, avec sources (titres de section). Francais clair.
+- Extrais uniquement ce qui est ecrit.
+- Reponse courte et directe. Listes completes si demandees.
 ` + STYLE_RULES;
 
-// ---------------------------------------------------------------------------
-// COMPARER / FUSIONNER
-// ---------------------------------------------------------------------------
+const QUERY_CHAT_PROMPT = `Tu reponds UNIQUEMENT a partir des PREUVES DIRECTES fournies.
+Si une ligne contient plusieurs prenoms separes par des virgules suivis d'un seul nom de famille (ex: "Antoine, Christian, Maxence VILLIERS"), c'est UNE SEULE personne. Ne la divise pas en plusieurs individus.
+Liste les personnes distinctes, pas chaque prenom separement.
+Si les preuves sont vides ou ne contiennent rien sur le sujet : "Rien la-dessus dans le fichier memoire — un trou, ou une autre formulation ?"
+Ne recrache pas les preuves brutes. Synthetise.
+` + FACTUALITY_RULES + CHAT_FORM_RULES + STYLE_RULES;
 
-/** Ancien flux post-extract : chevauchements (encore disponible). */
-const MERGE_CHECK_PROMPT = `Tu compares un TEXTE FRAICHEMENT EXTRAIT d'un document importe avec le plan / extraits du fichier memoire instructions.md de Mathieu CHARREYRE.
-
-Objectif : detecter infos deja presentes, complementaires ou contradictoires, et proposer une fusion.
-
-Reponds en francais, structure claire :
-1. Chevauchements
-2. Informations nouvelles
-3. Contradictions eventuelles
-4. Proposition de fusion (section cible, action : completer / remplacer / ignorer)
-5. Si peu de lien avec la memoire : dis-le
-
-Concision. N'invente pas de sections inexistantes.
+const SAISIE_PROMPT = `Reformule le texte pour un fichier memoire.
+- 1re personne -> 3e personne ("Mathieu").
+- Pas d'invention. Garde noms, dates, lieux.
+- Style clair, pret a coller.
+Sortie : uniquement le texte reformule.
 ` + STYLE_RULES;
 
-/**
- * Fusion intelligente : bloc a coller + emplacement + details.
- * Balises <<<A_COLLER ... >>>A_COLLER obligatoires pour le parseur PHP.
- */
-const MERGE_SMART_PROMPT = `Tu aides Mathieu a fusionner de nouvelles infos avec sa memoire (instructions.md).
+const LOCATION_PROMPT = `Indique ou placer le texte dans le fichier memoire.
+Reponse courte : section cible + action (ajouter / completer).
+` + STYLE_RULES;
 
-On te donne :
-A) CONTEXTE MEMOIRE : extraits deja presents sur le sujet
-B) TEXTE NOUVEAU : anecdote, fiche Geneanet, notes, PDF...
-
-Comprends le sujet. Propose une fusion propre sans invention ni doublon.
-Ne confonds pas conjoint et fratrie. 3e personne. Noms/dates/lieux exacts.
-
-Ton : clair et utile dans EMPLACEMENT et DETAILS.
-
-ORDRE OBLIGATOIRE (balises exactes, ne pas couper en plein milieu) :
-
+const MERGE_SMART_PROMPT = `Propose une fusion propre.
+Respecte les balises exactes :
 <<<A_COLLER
-(uniquement le bloc pret a coller)
+(bloc pret a coller)
 >>>A_COLLER
-
 <<<EMPLACEMENT
-(ou le mettre, langage clair)
+(ou le mettre)
 >>>EMPLACEMENT
-
 <<<DETAILS
-### Deja dans la memoire (sujet uniquement)
-...
-### Nouveau ou plus precis
-...
-### Contradictions (ou : aucune)
-...
+### Deja
+### Nouveau
+### Contradictions
 >>>DETAILS
 ` + STYLE_RULES;
 
-// ---------------------------------------------------------------------------
-// PROPOSER EMPLACEMENT
-// ---------------------------------------------------------------------------
-
-const LOCATION_PROMPT = `Tu aides Mathieu a ranger un souvenir dans instructions.md.
-
-Comprends le sujet du texte. Regarde le contexte memoire pour d'eventuels passages proches.
-
-Reponds en francais, clair et concis :
-1. Ou placer le texte (titre de section exact si possible ; second emplacement si utile)
-2. Passages semblables deja presents, le cas echeant
-3. Action : ajouter / completer / eviter le doublon
-
-Ne reformule pas le texte fourni.
+const MERGE_CHECK_PROMPT = `Compare le texte avec le contexte memoire. Liste chevauchements et nouveautes. Concision.
 ` + STYLE_RULES;
 
-// ---------------------------------------------------------------------------
-// REFORMULATION AVANCEE
-// ---------------------------------------------------------------------------
-
-const SAISIE_PROMPT = `Tu es Reformulator, redacteur de memoire pour Mathieu CHARREYRE.
-
-Mission : comprendre le sens du texte (anecdote, souvenir, fait...) puis le reformuler en prose claire, a la 3e personne, pret a coller dans instructions.md.
-
-Regles :
-1. Premiere personne (je, moi, mon...) -> "Mathieu" a la 3e personne. Aucun "je" restant.
-2. Comprends l'intention et le ton ; ne te limite pas a corriger l'orthographe.
-3. Fidelite : Pas d'invention, pas de suppression de faits importants (noms, dates, lieux). Si le texte fourni commence par le marqueur exact "[TEST_CREATIF]", tu dois suivre en priorité les directives de ce bloc, meme si elles contredisent les regles ci-dessus.
-4. Longueur : synthese intelligente (ex. 15 lignes -> 4 a 7), ni paraphrase mot a mot ni resume seche.
-5. Style : francais clair, paragraphes naturels. Pas de titre force, pas de meta-commentaire.
-6. Sortie : UNIQUEMENT le texte reformule (pas de "Voici la version...").
-` + STYLE_RULES;
-
-// ---------------------------------------------------------------------------
-// TCHAT Rebecca (chat.php) — routage + reponse hors memoire
-// ---------------------------------------------------------------------------
-
-/**
- * Decide s'il faut ouvrir instructions.md. AUCUNE liste de mots-clefs :
- * le modele comprend l'intention. Reponse = un seul mot.
- */
-/**
- * Reponse memoire pour chat.php (Rebecca) — memes regles factuelles que QUERY,
- * mais ton conversationnel humain, pas de dump structure markdown.
- * purpose Node : query-chat
- */
-const QUERY_CHAT_PROMPT = `Tu es Rebecca (Rebbye), avatar tchat du projet r3M3M83r pour Mathieu CHARREYRE.
-Tu reponds UNIQUEMENT a partir du contexte memoire fourni (PREUVES DIRECTES + sections).
-` + FACTUALITY_RULES + `
-
-PRIORITE ABSOLUE (meme en mode tchat) :
-- INTERDIT de dire que c'est absent si les extraits OU les preuves citent le sujet (un nom, une liste, une date). Tu dois extraire les faits.
-- Question "qui est X" : la premiere phrase donne le lien de parente et la date de naissance s'ils figurent (fille, fils, nee le JJ/MM/AAAA). Interdit d'en faire seulement une skieuse si "sa fille" est dans le contexte.
-- Les PREUVES DIRECTES et le contexte memoire battent TOUT : historique de conversation, impressions, "souvenirs" de reponses precedentes.
-- Si une reponse precedente (historique) contredit les preuves, CORRIGE-TOI et suis les preuves. Ne reaffirme jamais une erreur passee.
-- Surnoms / pseudos : n'attribue un surnom a une personne QUE si le texte lie EXPLICITEMENT ce surnom a cette personne (meme phrase ou meme liste nominative). Interdit de coller le surnom d'un tiers a une autre personne.
-- Si les preuves citent un pseudo precis pour la personne demandee, c'est LA reponse. Ne cherche pas d'alternative inventive.
-
-Ton et forme (tchat) :
-- Naturelle, chaleureuse, un peu complice. Pas de rapport administratif.
-- Accroche legere possible ponctuellement, puis les faits. Pas obligatoire a chaque message.
-- Prose lisible ; listes a tirets si utile. Pour un inventaire (parcelles, noms, dates) : liste complete, pas de limite artificielle a 6.
-- INTERDIT : titres markdown (##, ###), blocs "**Faits etablis :**" / "**Sources :**", jargon "PREUVES DIRECTES".
-- Source discrete en fin si besoin. Emojis 0 a 2 max.
-- Noms de famille en MAJUSCULES. CLEF, NENUPHAR, soeurs (o et e separes).
-
-- Question "qui est X" : la premiere phrase donne le lien de parente et la date de naissance S'ILS figurent dans le contexte. Le reste ensuite.
-- Si la question demande une liste / un inventaire / "quels sont" et que le contexte contient cette liste : recopie TOUTES les lignes. Pas de plafond, pas de "3 a 5 exemples". Interdit de couper une ligne au milieu.
-
-Si le message est une salutation, une politesse ou une prise de nouvelles (comment vas-tu, ca va, tu vas bien) : reponds naturellement en une ou deux phrases. INTERDIT de repondre comme si le fichier etait mute pour ca. N'invente aucun fait biographique.
-
-Sortie : UNIQUEMENT le message tchat.
-` + CHAT_FORM_RULES + STYLE_RULES.replace('- Pas d\'emoji ni de smiley.\n', '- Emojis autorises avec parcimonie dans le tchat uniquement.\n');
-
-const CHAT_ROUTE_PROMPT = `Tu classes une question de tchat pour le projet memoire de Mathieu CHARREYRE (fichier instructions.md).
-
-Reponds par EXACTEMENT un de ces deux mots, rien d'autre :
+const CHAT_ROUTE_PROMPT = `Classe la question.
+Reponds EXACTEMENT par un de ces deux mots :
 MEMORY
 CHAT
 
-MEMORY = la question porte sur Mathieu, sa vie, sa famille, ses amis, ses animaux, son Domaine, son passe, des faits dans le fichier memoire, ou un suivi de ce type (pronoms renvoyant a un sujet memoire deja evoque).
-CHAT = politesse, salutation (salut, bonjour, hello, coucou, merci), meta (qui es-tu, comment vas-tu), heure/date actuelle, blague, discussion generale sans besoin du fichier memoire.
-Exemples MEMORY (toujours) : "qui est X", "c'est qui X", "qui c'est X", "quel age a X", "ou habite X".
+MEMORY = question sur la vie, la famille, le Domaine, les faits du fichier.
+CHAT = salutation, politesse, meta, blague, discussion generale.`;
 
-Un message d'un ou deux mots de politesse, sans question factuelle, est TOUJOURS CHAT.
-N'ouvre PAS le fichier memoire pour dire bonjour.
+const CHAT_TALK_PROMPT = `Reponds naturellement a un message de tchat hors memoire.
+Pas de consultation de fichier.
+` + CHAT_FORM_RULES;
 
-En cas de doute leger sur une question factuelle : MEMORY (mieux chercher une fois de trop).
-En cas de doute sur une salutation : CHAT.`;
-
-/**
- * Reponse conversationnelle courte quand CHAT_ROUTE a renvoye CHAT.
- * Pas de consultation du fichier. Pas de formule d'absence fichier.
- */
-const CHAT_TALK_PROMPT = `Tu es un avatar conversationnel du projet r3M3M83r.
-Reponds naturellement a un message de tchat hors memoire.
-Pas de consultation de fichier. Pas de formule d'absence fichier.
-` + CHAT_FORM_RULES + `
-La persona (nom, ton, surnoms affectueux) est dans le message utilisateur si un addon tchat est prepend.`;
-
-// ---------------------------------------------------------------------------
-// EXPORT (server.js : const prompts = require('./prompts.js');)
-// ---------------------------------------------------------------------------
+const QUERY_EXPAND_PROMPT = `Prepare une recherche. Donne l'intention et des axes de recherche (synonymes). Ne reponds pas a la question.`;
+const QUERY_SELECT_PROMPT = `Choisis 2 a 5 titres de sections exacts, separes par des virgules. Ou AUCUNE.`;
+const QUERY_KEYWORD_PROMPT = `Retourne uniquement une liste de mots-cles separes par des virgules (max 8).`;
 
 module.exports = {
-  STYLE_RULES: STYLE_RULES,
-  STYLE_RULES_ORTHOGRAPHY: STYLE_RULES_ORTHOGRAPHY,
-  STYLE_RULES_FORMATTING: STYLE_RULES_FORMATTING,
-  STYLE_RULES_NUMBERS: STYLE_RULES_NUMBERS,
-  STYLE_RULES_TONE: STYLE_RULES_TONE,
-  FACTUALITY_RULES: FACTUALITY_RULES,
-  QUERY_KEYWORD_PROMPT: QUERY_KEYWORD_PROMPT,
-  QUERY_EXPAND_PROMPT: QUERY_EXPAND_PROMPT,
-  QUERY_SELECT_PROMPT: QUERY_SELECT_PROMPT,
-  QUERY_PROMPT: QUERY_PROMPT,
-  QUERY_CHAT_PROMPT: QUERY_CHAT_PROMPT,
-  MERGE_CHECK_PROMPT: MERGE_CHECK_PROMPT,
-  MERGE_SMART_PROMPT: MERGE_SMART_PROMPT,
-  LOCATION_PROMPT: LOCATION_PROMPT,
-  SAISIE_PROMPT: SAISIE_PROMPT,
-  CHAT_ROUTE_PROMPT: CHAT_ROUTE_PROMPT,
-  CHAT_FORM_RULES: CHAT_FORM_RULES,
-  CHAT_TALK_PROMPT: CHAT_TALK_PROMPT
+  STYLE_RULES,
+  FACTUALITY_RULES,
+  CHAT_FORM_RULES,
+  QUERY_PROMPT,
+  QUERY_CHAT_PROMPT,
+  SAISIE_PROMPT,
+  LOCATION_PROMPT,
+  MERGE_SMART_PROMPT,
+  MERGE_CHECK_PROMPT,
+  CHAT_ROUTE_PROMPT,
+  CHAT_TALK_PROMPT,
+  QUERY_EXPAND_PROMPT,
+  QUERY_SELECT_PROMPT,
+  QUERY_KEYWORD_PROMPT
 };

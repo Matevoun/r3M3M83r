@@ -187,7 +187,7 @@ const DEFAULT_LLM_ENGINE = 'groq';
 const LLM_ENGINE = (process.env.LLM_ENGINE || DEFAULT_LLM_ENGINE).toLowerCase();
 // Ordre : verts d'abord (Groq, Cerebras, OpenRouter), puis Gemini, Mistral.
 // Peut etre surchargee par LLM_FALLBACK_ORDER dans l'env cPanel.
-const DEFAULT_FALLBACK_ORDER = 'groq,cerebras,openrouter,gemini,mistral';
+const DEFAULT_FALLBACK_ORDER = 'groq,openrouter,sambanova,nvidia,gemini,mistral';
 const LLM_FALLBACK_ORDER = (process.env.LLM_FALLBACK_ORDER || DEFAULT_FALLBACK_ORDER)
   .split(',')
   .map(function(item) { return item.trim().toLowerCase(); })
@@ -239,11 +239,11 @@ const createOpenAICompatiblePayload = (text, model, context, purpose) => {
   const temperature = (purpose === 'rewrite' || purpose === 'location' || purpose === 'query-select' || purpose === 'query-expand' || purpose === 'merge-check' || purpose === 'merge-smart' || purpose === 'chat-route' || purpose === 'chat-talk') ? 0.2
     : purpose === 'query-keywords' ? 0.0 : 0.4;
   // merge-smart : reponses longues (deja + nouveau + texte fusionne + emplacement)
-  const maxTokens = (purpose === 'merge-smart') ? 4000
+  const maxTokens = (purpose === 'merge-smart') ? 3000
     : (purpose === 'chat-route') ? 400
     : (purpose === 'chat-talk') ? 400
-    : (purpose === 'query' || purpose === 'query-chat') ? 6000
-    : 1500;
+    : (purpose === 'query' || purpose === 'query-chat') ? 2500
+    : 800;
   return { model: model, messages: messages, temperature: temperature, max_tokens: maxTokens };
 };
 
@@ -259,7 +259,9 @@ const engineRuntimeStatus = {
   groq: { status: 'unknown', code: null, cooldownUntil: 0 },
   openrouter: { status: 'unknown', code: null, cooldownUntil: 0 },
   mistral: { status: 'unknown', code: null, cooldownUntil: 0 },
-  cerebras: { status: 'unknown', code: null, cooldownUntil: 0 }
+  // cerebras: { status: 'unknown', code: null, cooldownUntil: 0 },
+  sambanova: { status: 'unknown', code: null, cooldownUntil: 0 },
+  nvidia: { status: 'unknown', code: null, cooldownUntil: 0 }
 };
 const ENGINE_COOLDOWN_MS = {
   402: 6 * 60 * 60 * 1000,   // 6h : credit epuise, inutile de re-tenter toutes les 30 min
@@ -276,8 +278,8 @@ const LLM_ENGINES = {
     modelEnv: 'GEMINI_MODEL',
     apiBase: process.env.GEMINI_API_BASE || 'https://generativelanguage.googleapis.com/v1beta/openai',
     engineUrl: 'https://aistudio.google.com/app/apikey',
-    defaultModel: 'gemini-2.5-flash',
-    models: ['gemini-2.5-flash', 'gemini-2.5-flash-lite'],
+    defaultModel: 'gemini-2.5-flash-lite',
+    models: ['gemini-2.5-flash-lite', 'gemini-2.5-flash'],
     createPayload: createOpenAICompatiblePayload,
   },
   // Groq
@@ -318,14 +320,39 @@ const LLM_ENGINES = {
     createPayload: createOpenAICompatiblePayload,
   },
   // Cerebras
-  cerebras: {
-    name: 'Cerebras',
-    apiKeyEnv: 'CEREBRAS_API_KEY',
-    modelEnv: 'CEREBRAS_MODEL',
-    apiBase: process.env.CEREBRAS_API_BASE || 'https://api.cerebras.ai/v1',
-    engineUrl: 'https://cloud.cerebras.ai',
-    defaultModel: 'gpt-oss-120b',
-    models: ['gpt-oss-120b'],
+  //cerebras: {
+  //  name: 'Cerebras',
+  //  apiKeyEnv: 'CEREBRAS_API_KEY',
+  //  modelEnv: 'CEREBRAS_MODEL',
+  //  apiBase: process.env.CEREBRAS_API_BASE || 'https://api.cerebras.ai/v1',
+  //  engineUrl: 'https://cloud.cerebras.ai',
+  //  defaultModel: 'gpt-oss-120b',
+  //  models: ['gpt-oss-120b'],
+  //  createPayload: createOpenAICompatiblePayload,
+  //},
+
+  // SambaNova — free tier durable (200k tokens/jour, 20 RPM)
+  // Clef API : durée max 1 an (à renouveler manuellement)
+  sambanova: {
+    name: 'SambaNova',
+    apiKeyEnv: 'SAMBANOVA_API_KEY',
+    modelEnv: 'SAMBANOVA_MODEL',
+    apiBase: process.env.SAMBANOVA_API_BASE || 'https://api.sambanova.ai/v1',
+    engineUrl: 'https://cloud.sambanova.ai',
+    defaultModel: 'Meta-Llama-3.3-70B-Instruct',
+    models: ['Meta-Llama-3.3-70B-Instruct', 'gpt-oss-120b', 'DeepSeek-V3.1'],
+    createPayload: createOpenAICompatiblePayload,
+  },
+
+  // NVIDIA NIM — free endpoints (clef expire le 15/04/2027)
+  nvidia: {
+    name: 'NVIDIA',
+    apiKeyEnv: 'NVIDIA_API_KEY',
+    modelEnv: 'NVIDIA_MODEL',
+    apiBase: process.env.NVIDIA_API_BASE || 'https://integrate.api.nvidia.com/v1',
+    engineUrl: 'https://build.nvidia.com',
+    defaultModel: 'openai/gpt-oss-20b',
+    models: ['openai/gpt-oss-20b', 'nvidia/nemotron-3-super-120b-a12b', 'google/gemma-4-31b-it'],
     createPayload: createOpenAICompatiblePayload,
   },
 };
@@ -501,11 +528,8 @@ const reformulate = async function(text, context, purpose, preferredEngine) {
       continue;
     }
 
-    if (isEngineCooling(engineName)) {
-      var remain = Math.ceil(((engineRuntimeStatus[engineName].cooldownUntil || 0) - Date.now()) / 1000);
-      attempts.push({ engine: engineName, model: null, status: 'skipped', error: 'cooldown ' + remain + 's' });
-      continue;
-    }
+    // Pour une vraie requête, on ignore les cooldowns et on tente quand même
+    // (les cooldowns ne servent qu'au probe de santé)
 
     var workingContext = truncateContext(context, maxContextCharsForEngine(engineName, purpose));
     var modelCandidates = modelsToTryForEngine(engineName);

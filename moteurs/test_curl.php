@@ -79,11 +79,12 @@ function get_llm_info(): array {
     if ($r !== false) {
         $d = json_decode($r, true);
         if (is_array($d) && !empty($d['engineName'])) return [
-            'engineName'       => strtoupper($d['engineName'] ?? 'INCONNU'),
-            'selectedModel'    => $d['selectedModel'] ?? 'inconnu',
-            'engineUrl'        => $d['engineUrl'] ?? '',
-            'fallbackOrder'    => $d['fallbackOrder'] ?? [],
-            'availableEngines' => $d['availableEngines'] ?? [],
+            'engineName'           => strtoupper($d['engineName'] ?? 'INCONNU'),
+            'selectedModel'        => $d['selectedModel'] ?? 'inconnu',
+            'engineUrl'            => $d['engineUrl'] ?? '',
+            'fallbackOrder'        => $d['fallbackOrder'] ?? [],
+            'availableEngines'     => $d['availableEngines'] ?? [],
+            'enginesRuntimeStatus' => $d['enginesRuntimeStatus'] ?? [],
         ];
     }
     return parse_llm_info_from_server_file();
@@ -147,6 +148,19 @@ echo "Endpoint        : $endpoint\n";
 echo "Moteur DEMANDÉ  : " . ($testEngineLabel ?? "AUTO — $llmEngine") . "\n";
 echo "Fallback order  : " . implode(' → ', $llmInfo['fallbackOrder'] ?? []) . "\n";
 echo "Moteurs dispo   : " . implode(', ', $llmInfo['availableEngines'] ?? []) . "\n";
+// Statut runtime des moteurs (depuis /llm-info)
+$runtime = $llmInfo['enginesRuntimeStatus'] ?? [];
+if (!empty($runtime)) {
+    echo "$sub\nSTATUT RUNTIME DES MOTEURS\n$sub\n";
+    foreach ($runtime as $name => $st) {
+        $status = $st['status'] ?? '?';
+        $code   = $st['code'] ?? '';
+        $cool   = !empty($st['cooldownUntil']) ? ' (cooldown jusqu\'à ' . date('H:i:s', (int)($st['cooldownUntil']/1000)) . ')' : '';
+        $icon   = ($status === 'success') ? '✓' : '✗';
+        echo "  $icon " . strtoupper($name) . " → $status" . ($code ? " (HTTP $code)" : '') . $cool . "\n";
+    }
+    echo "\n";
+}
 echo "$sep\n\n";
 
 echo "=== PROMPT ENVOYÉ ===\n";

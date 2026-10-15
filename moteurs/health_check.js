@@ -22,7 +22,12 @@ async function r3CheckProvidersHealth(statusBarId = 'llm-status-bar', forceProbe
         function renderStatus() {
             const apiKeys = data.apiKeysStatus || {};
             const runtimes = data.enginesRuntimeStatus || {};
-            const engines = Object.keys(apiKeys);
+            // Ordre du fallback (DEFAULT_FALLBACK_ORDER côté serveur)
+            const fallbackOrder = Array.isArray(data.fallbackOrder) ? data.fallbackOrder : [];
+            const engines = fallbackOrder.length
+                ? fallbackOrder.filter(e => apiKeys.hasOwnProperty(e))
+                : Object.keys(apiKeys);
+
             let currentlyCooling = false;
 
             if (engines.length === 0) {
@@ -30,19 +35,20 @@ async function r3CheckProvidersHealth(statusBarId = 'llm-status-bar', forceProbe
                 return;
             }
 
-            // Génération de la structure HTML UNE SEULE FOIS pour ne pas casser le hover de la souris
+            // Génération une seule fois
             if (statusBar.children.length !== engines.length) {
                 let html = '';
                 engines.forEach(eng => {
                     html += `<span id="llm-badge-${eng}" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 12px; cursor: help;">
                                 <span class="llm-dot" style="height: 8px; width: 8px; border-radius: 50%; display: inline-block;"></span>
                                 <span class="llm-name" style="color: #333;">${eng.charAt(0).toUpperCase() + eng.slice(1)}</span>
-                             </span>`;
+                            </span>`;
                 });
                 statusBar.innerHTML = html;
             }
 
-            // Mise à jour douce des propriétés (couleur, tooltip, texte)
+            // Mise à jour
+            const primary = (data.defaultEngine || engines[0] || '').toLowerCase();
             engines.forEach(eng => {
                 const badge = document.getElementById(`llm-badge-${eng}`);
                 if (!badge) return;
@@ -52,7 +58,7 @@ async function r3CheckProvidersHealth(statusBarId = 'llm-status-bar', forceProbe
 
                 const hasKey = apiKeys[eng] === 'present';
                 const rt = runtimes[eng] || { status: 'unknown', code: null, cooldownUntil: 0 };
-                const isActiveEngine = data.engineName && eng.toLowerCase() === data.engineName.toLowerCase();
+                const isPrimary = eng.toLowerCase() === primary;
 
                 let color = '#e74c3c';
                 let keyStatus = 'Injoignable / Down';
@@ -66,7 +72,6 @@ async function r3CheckProvidersHealth(statusBarId = 'llm-status-bar', forceProbe
                 } else if (rt.status === 'error') {
                     color = '#e74c3c';
                     keyStatus = `En erreur (HTTP ${rt.code})`;
-
                     if (rt.cooldownUntil && rt.cooldownUntil > Date.now()) {
                         const secondsLeft = Math.ceil((rt.cooldownUntil - Date.now()) / 1000);
                         keyStatus += ` - Cooldown : ${secondsLeft}s`;
@@ -74,14 +79,13 @@ async function r3CheckProvidersHealth(statusBarId = 'llm-status-bar', forceProbe
                     }
                 }
 
-                if (isActiveEngine) {
-                    keyStatus += ` (Actif : ${data.selectedModel || 'Modèle par défaut'})`;
+                if (isPrimary) {
+                    keyStatus += ` (Principal : ${data.selectedModel || 'défaut'})`;
                 }
 
-                // Application des mises à jour sur l'élément existant
                 badge.title = `${eng.toUpperCase()} : ${keyStatus}`;
                 dot.style.backgroundColor = color;
-                nameLabel.style.fontWeight = isActiveEngine ? 'bold' : '500';
+                nameLabel.style.fontWeight = isPrimary ? 'bold' : '500';
             });
 
             if (window.r3CooldownTimer) clearTimeout(window.r3CooldownTimer);

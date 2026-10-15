@@ -65,8 +65,8 @@
     include_once __DIR__ . '/../moteurs/functions.php'; // Pipeline memoire + Node
     include_once __DIR__ . '/../moteurs/llm.php';      // Selection moteur partagee
 
-    @set_time_limit(120);
-    @ini_set('max_execution_time', '120');
+    @set_time_limit(180);
+    @ini_set('max_execution_time', '180');
 
     // ==================== CONSTANTES ====================
     // CORRECTIF 19/08/2026 : CHAT_PROMPT_JS pointait vers un nom de fichier
@@ -454,11 +454,12 @@
 
                 if ($finalReply === '') {
                     chat_log_error('Erreur critique : reponse LLM finale vide pour le message : ' . $message);
+                    $primary = ($usedEngine !== '' && $usedEngine !== 'auto') ? $usedEngine : 'GROQ';
                     echo json_encode([
-                        'reply' => "Les moteurs gratuits sont saturés pour le moment (quota). Reessaie dans une minute, sans relancer Node.",
+                        'reply' => llm_all_engines_failed_message($primary),
                         'engine' => $usedEngine,
                         'model' => $usedModel,
-                        'debug' => trim($debugInfo . ' · quota LLM (pas une panne Node)'),
+                        'debug' => trim($debugInfo . ' · tous moteurs tentés'),
                         'memoryContext' => $memoryContext
                     ], JSON_UNESCAPED_UNICODE);
                     exit;
@@ -842,8 +843,8 @@
                 <!-- Ligne des boutons RAZ et Vider (qui passeront en dessous en responsive) -->
                 <div class="engine-actions-row">
                     <button class="secondary" id="testCurlBtn" onclick="openTestCurlModal()" title="Lancer le diagnostic cURL du LLM">Test</button>
-                    <button class="secondary" id="resetEngineBtn" title="Vide cache Node + recharge">RAZ</button>
                     <button class="secondary" id="clearChatBtn" title="Vide historique de discussion">Vider</button>
+                    <button class="secondary" id="resetEngineBtn" title="Vide cache Node + recharge">RAZ</button>
                 </div>
 
                 <!-- Ligne des statuts / pastilles -->
@@ -1055,20 +1056,14 @@
 
             function extractExcerptsBlock(ctx) {
                 if (!ctx) return '';
-                // Forme exacte produite par build_memory_context_for_topic()
+                // Si le contexte ne contient que PREUVES DIRECTES, on ne cherche pas d'extraits
+                if (!/Extraits|--- Section/i.test(ctx)) {
+                    return '(Aucun extrait séparé — les preuves directes sont ci-dessus)';
+                }
                 let m = ctx.match(/Extraits courts des sections[\s\S]*$/i);
                 if (m && m[0].trim().length > 40) return m[0].trim();
-
-                // Fallback : tous les blocs --- Section
                 const parts = ctx.split(/(?=---\s*Section\s*:)/i).filter(p => /---\s*Section/i.test(p));
                 if (parts.length) return parts.join('\n\n').trim();
-
-                // Dernier recours : tout ce qui suit PREUVES
-                m = ctx.match(/PREUVES DIRECTES[\s\S]*$/i);
-                if (m) {
-                    const after = m[0].replace(/^PREUVES DIRECTES[\s\S]*?(?=\n---|\n\n[A-Z]|$)/i, '').trim();
-                    if (after.length > 40) return after;
-                }
                 return '';
             }
 
@@ -1157,8 +1152,8 @@
                             if (proofCount > 0) {
                                 linkParts.push(`<a href="#" class="debug-link" data-type="proofs" style="color:#0a3d62;text-decoration:underline;">${proofCount} preuve(s)</a>`);
                             }
-                            if (excerptCount > 0) {
-                                linkParts.push(`<a href="#" class="debug-link" data-type="extraits" style="color:#0a3d62;text-decoration:underline;">${excerptCount} extrait(s)</a>`);
+                            if (excerptCount > 0 && m.memoryContext && /Extraits|--- Section/i.test(m.memoryContext)) {
+                                linkParts.push(`<a href="#" class="debug-link" data-type="extraits" ...>${excerptCount} extrait(s)</a>`);
                             }
                             if (hasIntention && m.memoryContext) {
                                 linkParts.push(`<a href="#" class="debug-link" data-type="intention" style="color:#0a3d62;text-decoration:underline;">Intention</a>`);
@@ -1246,11 +1241,15 @@
                     // --- 3. ETAPE : Appel final IA ---
                     rebeccaLoader.setStep(2); // "Le service IA est contacté"
 
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 180000);
                     const resFinal = await fetch('', {
                         method:'POST',
                         headers:{'Content-Type':'application/json'},
-                        body: JSON.stringify({ step: 'final', message: text, history: history.slice(0,-1), engine: engine, needs_memory: dataRoute.needs_memory })
+                        body: JSON.stringify({ step: 'final', message: text, history: history.slice(0,-1), engine: engine, needs_memory: dataRoute.needs_memory }),
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
 
                     if (!resFinal.ok) throw new Error("Erreur Serveur HTTP " + resFinal.status);
 
@@ -1274,7 +1273,11 @@
                     statusEl.textContent = 'Moteur : '+(dataFinal.engine||engine||'auto').toUpperCase()+(dataFinal.debug&&/route=CHAT|mode=chat/i.test(String(dataFinal.debug))?' · conversation':' · memoire');
 
                 }catch(e){
-                    history.push({role:'assistant', content:'Erreur : '+e.message+' (Vérifiez les logs !)', engine:'error'});
+                    if (e.name === 'AbortError') {
+                        history.push({role:'assistant', content:'Délai dépassé (3 min). Réessaie avec une question plus courte.', engine:'error'});
+                    } else {
+                        history.push({role:'assistant', content:'Erreur : '+e.message+' (Vérifiez les logs !)', engine:'error'});
+                    }
                     render(); scrollToBottom(false); statusEl.textContent='Erreur';
                 }finally{
                     rebeccaLoader.stop(); // On ferme la modale quoi qu'il arrive
@@ -1348,6 +1351,8 @@
                 <a href="../moteurs/log_proxy.php?name=requests_log" target="_blank" rel="noopener noreferrer" title="Voir les requetes effectuees">Voir les requetes</a>
                 &bull;
                 <a href="../moteurs/log_proxy.php?name=error_log" target="_blank" rel="noopener noreferrer" title="Voir les retours d erreurs">Voir les erreurs</a>
+                &bull;
+                <a href="#" onclick="openTestCurlModal(); return false;" title="Diagnostic des moteurs LLM">Diagnostic moteurs</a>
             </p>
         </footer>
 
