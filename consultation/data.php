@@ -351,7 +351,7 @@ function md_to_html(string $md): string {
 function html_footer(bool $show_back = true): string {
     $back = $show_back ? '<p><a class="back" href="sections">← Retour à la liste des sections</a></p>' : '';
     $github_raw = 'https://raw.githubusercontent.com/Matevoun/r3M3M83r/refs/heads/main/instructions.md';
-    $local_md   = 'https://mathieu.charreyre.net/r3M3M83r/instructions.md';
+    $local_md   = 'https://mathieu.charreyre.net/r3M3M83r/profil';
     // Logs reformulator (memes liens que saisie.php / chat.php)
     $logs = '<p style="margin:.6rem 0 .2rem;font-size:.8rem;color:#666;">'
           . '<a href="moteurs/log_proxy.php?name=error_log" style="color:#7cf;" title="Voir les erreurs" target="_blank" rel="noopener noreferrer">Voir les erreurs</a>'
@@ -479,7 +479,7 @@ if ($section === 'list') {
         $file_size_ko = round(filesize(SOURCE_FILE) / 1024);
 
         // ── En-tête ──────────────────────────────────────────────────────────
-        echo '<h1>Sections disponibles dans <a href="https://mathieu.charreyre.net/r3M3M83r/instructions.md" target="_blank" rel="noopener noreferrer"><em>instructions.md</em></a> (' . $line_count . ' lignes - ' . $file_size_ko . ' Ko)</h1>';
+        echo '<h1>Sections disponibles dans <a href="https://mathieu.charreyre.net/r3M3M83r/profil" target="_blank" rel="noopener noreferrer"><em>instructions.md</em></a> (' . $line_count . ' lignes - ' . $file_size_ko . ' Ko)</h1>';
         echo '<p class="file-meta">'
            . '<span class="lbl lbl-lg">Derni&egrave;re modification&nbsp;:</span>'
            . '<span class="lbl lbl-sm">MaJ&nbsp;:</span> '
@@ -503,7 +503,7 @@ if ($section === 'list') {
         }
         echo '</div>';
         echo '</form>';
-        echo '<p class="search-hint">Entrée → recherche plein texte &nbsp;&middot;&nbsp; filtrage instantané sur les titres ci-dessous</p>';
+        echo '<p class="search-hint">Une seule chaîne, dans l\'ordre (ex. Association WDA, ou Ambre). Deux mots séparés ne sont pas cherchés à part. Entrée ou Chercher → le texte du fichier.</p>';
         echo '</div>';
 
         // JS : animation typewriter sur le placeholder (pause au focus, reprise au blur)
@@ -659,51 +659,54 @@ if ($section === 'list') {
 
         } else {
             // ── Tableau normal + filtre JS instantané sur les titres ──────────
-            echo '<p id="filter-info"></p>';
             echo '<table id="sections-table">';
             foreach ($rows as $r) {
                 $ko    = round($r['taille'] / 1024, 1);
                 $titre = htmlspecialchars($r['titre'], ENT_QUOTES, 'UTF-8');
                 $url   = htmlspecialchars($r['url'],   ENT_QUOTES, 'UTF-8');
-                echo "<tr data-titre=\"{$titre}\"><td><a href=\"{$url}\">{$url}</a></td><td class=\"td-titre\">{$titre}</td><td class=\"td-ko\">{$ko} Ko</td></tr>\n";
+                echo "<tr><td><a href=\"{$url}\">{$url}</a></td><td class=\"td-titre\">{$titre}</td><td class=\"td-ko\">{$ko} Ko</td></tr>\n";
             }
             echo '</table>';
-            // ── JS : filtre instantané sur les titres du tableau ──────────
-            // Écoute l'événement 'input' sur #q (champ de recherche déjà présent
-            // dans le formulaire). Normalise les accents côté JS (NFD + strip \u0300-\u036f)
-            // pour matcher sans se soucier des diacritiques. Met à jour #filter-info
-            // avec le nombre de lignes visibles. Aucun appel serveur : entièrement client.
-            echo '<script>(function(){' .
-                 'var i=document.getElementById(\'q\'),' .
-                 't=document.getElementById(\'sections-table\'),' .
-                 'n=document.getElementById(\'filter-info\');' .
-                 'if(!i||!t)return;' .
-                 'function da(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"");}' .
-                 'i.addEventListener(\'input\',function(){' .
-                 'var v=da(this.value.toLowerCase().trim()),' .
-                 'rows=t.querySelectorAll(\'tr\'),c=0;' .
-                 'rows.forEach(function(tr){' .
-                 'var s=da((tr.getAttribute(\'data-titre\')||\'\')' . '.toLowerCase()),' .
-                 'ok=v===\'\'||s.indexOf(v)!==-1;' .
-                 'tr.style.display=ok?\'\':\'none\';' .
-                 'if(ok)c++;' .
-                 '});' .
-                 'n.textContent=v===\'\'?\'\':c+\' section(s) affich\u00e9e(s)\';' .
-                 '});' .
-                 '}());</script>';
         }
 
         echo html_footer(false); // page /sections : pas de lien "retour" vers elle-même
     } else {
-        // ── Rendu texte aligné pour IAs / curl ──────────────────────────────
         $line_count = substr_count($content, "\n") + 1;
-        echo "Sections disponibles dans instructions.md ({$line_count} lignes) :\n";
-        echo "(Fetcher l'URL indiquee pour charger une section)\n\n";
-        foreach ($rows as $r) {
-            $ko        = str_pad(round($r['taille'] / 1024, 1), 5, ' ', STR_PAD_LEFT);
-            $url_pad   = str_repeat(' ', 55 - mb_strlen($r['url']));
-            $titre_pad = str_repeat(' ', ($max_titre + 6) - mb_strlen($r['titre']));
-            echo "  " . $r['url'] . $url_pad . "  →  " . $r['titre'] . $titre_pad . "  (" . $ko . " Ko)\n";
+        $q = trim($_GET['q'] ?? '');
+        if ($q !== '' && mb_strlen($q) >= 2) {
+            $q_stripped = strip_accents($q);
+            echo "Recherche, chaine exacte, mots dans cet ordre : {$q}\n";
+            echo "Pas de ET / OU. Deux mots ne marchent que s'ils se suivent.\n\n";
+            $n = 0;
+            foreach ($rows as $r) {
+                $body = $sections[$r['titre']] ?? '';
+                if ($body === '' || mb_stripos(strip_accents($body), $q_stripped) === false) {
+                    continue;
+                }
+                $n++;
+                $count = preg_match_all('/' . accent_insensitive_pattern($q) . '/iu', $body, $m) ?: 0;
+                echo $r['url'] . "\n  " . $r['titre'] . " (" . $count . ")\n";
+                foreach (preg_split('/\R/u', $body) as $ln) {
+                    $ln = trim($ln);
+                    if ($ln !== '' && mb_stripos(strip_accents($ln), $q_stripped) !== false) {
+                        echo "  " . mb_substr($ln, 0, 240) . "\n";
+                        break;
+                    }
+                }
+                echo "\n";
+            }
+            if ($n === 0) {
+                echo "Aucun resultat pour : {$q}\n";
+            }
+        } else {
+            echo "Sections disponibles dans instructions.md ({$line_count} lignes) :\n";
+            echo "(Fetcher l'URL indiquee pour charger une section)\n\n";
+            foreach ($rows as $r) {
+                $ko        = str_pad(round($r['taille'] / 1024, 1), 5, ' ', STR_PAD_LEFT);
+                $url_pad   = str_repeat(' ', 55 - mb_strlen($r['url']));
+                $titre_pad = str_repeat(' ', ($max_titre + 6) - mb_strlen($r['titre']));
+                echo "  " . $r['url'] . $url_pad . "  →  " . $r['titre'] . $titre_pad . "  (" . $ko . " Ko)\n";
+            }
         }
     }
     exit;
