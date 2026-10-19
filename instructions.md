@@ -63,25 +63,34 @@ Règle générale : On ne descend pas en dessous de `#####`. Pour les niveaux pl
 > **IAs de prédilection** : Claude Opus ou Sonnet (4.6 par ex.), Grok, ou Raptor (mini par ex.). ChatGPT étant jugé par Mathieu trop approximatif et baclé.
 
 ### Règles d'Or
-
 *Bloc essentiel pour toutes les interactions avec Mathieu CHARREYRE. Ces règles sont immuables et ne doivent pas être répétées. Elles s'appliquent à toute IA, quel que soit le contexte.*
 
+#### Generiques
 - **Ne pas recopier sans réfléchir** : Les histoires racontées par Mathieu doivent être reformulées avec soin, nuance et compréhension. Ne pas reproduire mot pour mot une anecdote ou un texte brut sans adaptation.
+
+#### Personnes
 - **Toujours parler de Mathieu à la troisième personne** : ne jamais dire "je" en parlant à la place de Mathieu. Utiliser toujours "Mathieu" quand on rapporte ses pensées, actions ou paroles.
+- **Tutoiement** : Par définition, Mathieu ne tutoie personne SAUF s'il le connaît personnellement. C'est une forme de respect ultime. Les IAs doivent adopter un vouvoiement systématique, sauf envers lui.
 - **Noms propres** : Tous les noms de famille doivent être écrits en MAJUSCULES complètes (ex. : CHARREYRE, MONTJOL, SAGHATELIAN), pas seulement la première lettre. Les prénoms doivent avoir uniquement la première lettre en majuscule, le reste en minuscules (ex. : Mathieu, Damien).
+
+#### Orthographes
 - **Orthographe archaïque** : Ne JAMAIS écrire "clés", "clé", "nénufar" ou similaires. Utiliser les vieilles orthographes : "CLEF", "NENUPHAR", etc. Éviter les tolérances modernes pour une écriture élégante et cultivée.
 - **Caractères spéciaux** : Pas de ligature "œ" fusionnée en un seul caractère (comme dans "VOEUX"). Toujours séparer en "OE" (ex. : VOEUX, COEUR).
-- **Tutoiement** : Par définition, Mathieu ne tutoie personne SAUF s'il le connaît personnellement. C'est une forme de respect ultime. Les IAs doivent adopter un vouvoiement systématique, sauf envers lui.
 - **Domaine Saint-Antonin** : Quand on parle du Domaine Saint-Antonin, toujours mettre une majuscule à "Domaine" (ex. : le Domaine Saint-Antonin). Ne jamais dire non plus "Domaine DE Saint-Antonin".
-- **Tiret long** : Ne JAMAIS utiliser le tiret cadratin (—) ou le tiret demi-cadratin (–) en lieu et place d'une virgule ou d'une parenthèse dans un texte courant. Ce tic typographique des IAs modernes n'existe pas dans la langue française correcte. Utiliser des virgules, des parenthèses ou des deux-points selon le contexte.
-- **Émojis et smileys** : Pas d'émojis, pas de smileys dans les réponses textuelles. Jamais. Ni 😊 ni :) ni aucun dérivé. L'écrit se suffit à lui-même. C'est encore un tic  des IAs modernes.
+
+#### Codes et programmation
 - **Émojis dans le code** : Si et seulement si un émoji est absolument nécessaire dans un contexte de code ou d'interface, l'exprimer en entité HTML Unicode (ex. : `&#128512;`) — jamais en glyphe inséré en dur dans le fichier source.
 - **Commentaires dans le code** : Lors de toute modification de code sur l'un des sites de Mathieu, documenter systématiquement en commentaires les blocs modifiés (ajout, suppression, changement de logique). Ces commentaires doivent être rédigés SANS ACCENTS ni caractères spéciaux pour éviter tout bug d'encodage (ex. : "Ajout du bloc de validation du formulaire" s'écrit "Ajout du bloc de validation du formulaire" -- mais en pratique : "Ajout validation formulaire", "Correction affichage mobile", "Suppression ancien menu", etc.).
 - **Icônes et caractères spéciaux dans le code** : JAMAIS d'icônes, d'émojis ou de caractères spéciaux insérés en dur dans le code source des sites (ni dans le HTML, ni dans le PHP, ni dans le JS, ni dans le CSS). Toujours les exprimer en entité HTML Unicode pour garantir la pérennité et la compatibilité (ex. : `&#9733;` pour &#9733;, `&#128512;` pour &#128512;). Un glyphe inséré en dur dans un fichier source est une bombe à retardement encodage.
 - **Instructions dédiées par site** : Chaque site de Mathieu dispose potentiellement de son propre fichier `instructions.md` (voir la section "Autres instructions dépendantes" en fin de ce document). Avant toute modification du code d'un site, lire impérativement le fichier `instructions.md` dédié à ce site s'il existe. Après toute modification, mettre à jour ce même fichier si nécessaire (nouvelles conventions adoptées, bugs connus, changements d'architecture, etc.). Ne jamais modifier un site sans avoir d'abord chargé et lu son fichier d'instructions dédié.
 
-### Sur le sens de ce fichier
+#### Tics d'écriture IA à proscrire absolument
+- **Tiret long** : Ne JAMAIS utiliser le tiret cadratin (—) ou le tiret demi-cadratin (–) en lieu et place d'une virgule ou d'une parenthèse dans un texte courant. Ce tic typographique des IAs modernes n'existe pas dans la langue Française correcte. Utiliser des virgules, des parenthèses ou des deux-points selon le contexte.
+- **Émojis et smileys** : Pas d'émojis, pas de smileys dans les réponses textuelles. Jamais. Ni 😊 ni :) ni aucun dérivé. L'écrit se suffit à lui-même. C'est encore un tic  des IAs modernes.
+- **Épanorthoses** : Ne jamais utiliser d'épanorthose (reprise corrective du type « que dis-je », « ou plutôt », « enfin », « non, disons plutôt », etc.). C'est un marqueur typique des textes générés par IA.
+- **Rythme ternaire** : Éviter systématiquement le rythme ternaire (énumérations ou constructions en trois éléments parallèles de longueur comparable). Préférer des structures binaires, irrégulières ou plus naturelles. Ce procédé est l'un des signes les plus fiables d'un texte produit par IA.
 
+### Sur le sens de ce fichier
 Ce fichier n'est pas qu'un simple document technique. Pour Mathieu, il représente une forme de **pierre de Rosette personnelle**, une tentative de laisser une trace cohérente et exhaustive de qui il est, comment il fonctionne, ce qu'il a vécu. Une manière de dire au monde (et aux IAs qui interagissent avec lui) : *"Voilà comment fonctionne Mathieu."*
 
 Dans un contexte où il se sent profondément **incompatible avec l'humanité moderne**, où personne ne semble comprendre ses valeurs ni ses choix, ce fichier est peut-être sa seule chance d'être compris. Même s'il reste lucide sur le fait que, au fond, le monde s'en moque probablement.
@@ -279,7 +288,7 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 - **2001 (juillet/août)** : Voyage en Floride avec Laetitia LAMY et sa mère — 3 semaines, tour complet de la Floride. Seul voyage en avion à l'étranger de la vie de Mathieu. Chevrolet automatique (type Malibu ou équivalent — berline 5 portes familiale, beige, clim, sans toit ouvrant) louée par la mère. Premier vrai contact de Mathieu avec une voiture routière (conduite sur parking). Voir section Véhicules & Conduite.
 - **2001 (22 juillet)** : Cinéma **UGC Orléans**, Salle 3 — séance à 19h55 de *Lara Croft: Tomb Raider* (sorti en juillet 2001 en France), probablement avec Laetitia à Orléans (37 Francs). L'identité exacte du film est reconstituée à partir de la date et du titre général "Lara Croft" disponible à cette époque.
 - **2001 (17 novembre)** : Soirée chez la mère de Clément BARATIER (ancienne maison de BALZAC, Paris 5e) -- dernière soirée que Mathieu y aura jamais. Ambiance mélangée (garçons et filles, potes à Clément). Une blonde faisait l'objet de toutes les attentions, Clément compris. Mathieu avait amené Charles de LEUSSE. Dernière fois que Mathieu a vu la mère de Clément. Photos existantes.
-- **2002-2007** : Relation avec Eva SALOMON (amie d'enfance car Jean SALOMON et Anne et Henri CHARREYRE étaient potes de fac de médecine). Brune, yeux marron. Petite, Espagnole. Vivait chez son père Jean SALOMON dans le XVIIe. Sa mère est morte quand Eva avait 16 ans du cancer du sein ; c'était la meilleure amie de la mère de Mathieu. Eva a une grande sœur : **Barbara SALOMON**, surnommée "Barbie". Barbara s'est mariée avec **Matthieu GALAND** à Bordeaux le **4 juin 2005** — Mathieu y était invité. Matthieu GALAND était le gendre parfait pour Jeannot (Jean SALOMON, le père) : Mathieu l'a mal vécu. La soirée fut éprouvante : toute la famille SALOMON le prenait pour un nul. Il s'est baladé seul un moment pour souffler — personne n'a rien remarqué. Ils ont eu un ou deux enfants. La relation de Mathieu avec Barbara était mitigée : elle le prenait pour un loser. En règle générale, toute la famille SALOMON le considérait comme un raté. Ils vivent ensemble en premier lieu au studio de la Villa Jacquemont, puis sur Aix (au 27 rue de l'Opéra, 13100 et 46bis rue Cardinale, 13100), puis reviennent en 2005 sur Paris, dans du locatif (50 m²) au 13 rue Brochant (75017). Fin décembre 2002 : séjour à Méribel avec Eva, Charles, autres amis ; Julien à Val Thorens avec Damien. Fin juillet 2003 : décision de partir pour Aix, emménagement début août 2003 rue de l'Opéra. En juin 2004, tante Florence VIEUVILLE (née MONTJOL) envoie des huissiers à la mère de Mathieu pour le forcer à partir du 27 rue de l'Opéra, qu'elle voulait vendre après l'héritage de Fanette BOIZARD (née SICARD) en attaquant ses deux sœurs lors du partage. Juillet 2004 : Mathieu et Eva cherchent un nouvel appartement à Aix, avec caution de Jean SALOMON (père d'Eva). Trouvent le 46bis rue Cardinale à Aix-en-Provence (sous les toits, ancienne dépendance d'hôtel particulier, quasi de plain-pied, loyer 1000 €/mois). Déménagement mi-juillet à mi-août 2004 ; pendaison de crémaillère le 16 août 2004 avec amis et Philippe PAULY. Fin août 2004 : quittent définitivement le 27 rue de l'Opéra. Janvier 2005 : Eva ayant trouvé un travail à Paris, déménagement au 13 rue Brochant, 75017 (5e étage cour). Eva plaque finalement Mathieu fin août 2007 ; retour à la Villa Jacquemont en septembre 2007.
+- **2002-2007** : Relation avec Eva SALOMON (amie d'enfance car Jean SALOMON et Anne et Henri CHARREYRE étaient potes de fac de médecine). Brune, yeux marron. Petite, Espagnole. Vivait chez son père Jean SALOMON dans le XVIIe. Sa mère est morte quand Eva avait 16 ans du cancer du sein ; c'était la meilleure amie de la mère de Mathieu. Eva a une grande soeur : **Barbara SALOMON**, surnommée "Barbie". Barbara s'est mariée avec **Matthieu GALAND** à Bordeaux le **4 juin 2005** — Mathieu y était invité. Matthieu GALAND était le gendre parfait pour Jeannot (Jean SALOMON, le père) : Mathieu l'a mal vécu. La soirée fut éprouvante : toute la famille SALOMON le prenait pour un nul. Il s'est baladé seul un moment pour souffler — personne n'a rien remarqué. Ils ont eu un ou deux enfants. La relation de Mathieu avec Barbara était mitigée : elle le prenait pour un loser. En règle générale, toute la famille SALOMON le considérait comme un raté. Ils vivent ensemble en premier lieu au studio de la Villa Jacquemont, puis sur Aix (au 27 rue de l'Opéra, 13100 et 46bis rue Cardinale, 13100), puis reviennent en 2005 sur Paris, dans du locatif (50 m²) au 13 rue Brochant (75017). Fin décembre 2002 : séjour à Méribel avec Eva, Charles, autres amis ; Julien à Val Thorens avec Damien. Fin juillet 2003 : décision de partir pour Aix, emménagement début août 2003 rue de l'Opéra. En juin 2004, tante Florence VIEUVILLE (née MONTJOL) envoie des huissiers à la mère de Mathieu pour le forcer à partir du 27 rue de l'Opéra, qu'elle voulait vendre après l'héritage de Fanette BOIZARD (née SICARD) en attaquant ses deux soeurs lors du partage. Juillet 2004 : Mathieu et Eva cherchent un nouvel appartement à Aix, avec caution de Jean SALOMON (père d'Eva). Trouvent le 46bis rue Cardinale à Aix-en-Provence (sous les toits, ancienne dépendance d'hôtel particulier, quasi de plain-pied, loyer 1000 €/mois). Déménagement mi-juillet à mi-août 2004 ; pendaison de crémaillère le 16 août 2004 avec amis et Philippe PAULY. Fin août 2004 : quittent définitivement le 27 rue de l'Opéra. Janvier 2005 : Eva ayant trouvé un travail à Paris, déménagement au 13 rue Brochant, 75017 (5e étage cour). Eva plaque finalement Mathieu fin août 2007 ; retour à la Villa Jacquemont en septembre 2007.
 - **2002-2005** : Habitation à Aix en Provence (au 27 rue de l'Opéra, 13100 et 46bis rue Cardinale, 13100).
 - **2002-2003** : Technicien Micro Réseau niv. 3 at Thalès IS / EdF & Thomson (75). Responsable de la gestion des incidents critiques (400 postes) en milieux sensibles. Technicien Micro Réseau de Support niveau 3 - Windows 3.x, 9x, NT 4.0, 2000.
 - **2002** : Relation avec Marie-Catherine PERVELIS (MariKat), connue à la sortie d'un concert d'Andrew W.K à l'Elysée Montmartre. Grecque, cheveux châtains ou bruns, yeux verts. Marie-Catherine était **mineure au début de la relation** — c'est pour cette raison que ses parents étaient réticents.
@@ -465,7 +474,7 @@ Cette chronologie révèle un homme dont la vie est rythmée par des jalons visi
 ## 3. Expériences Personnelles : Famille, Patrimoine et Vie Quotidienne
 
 ### Famille et Tribu
-Mathieu est le père d'Ambre (née le 07/06/2015), une fille qu'il élève avec présence et conscience. Il est très impliqué, admiratif de ses compétences (elle le "bat" parfois sur la Switch), et inquiet pour son avenir, souhaitant lui transmettre un héritage sain malgré les conflits. Mathieu et sa fille Ambre ont inventé le concept de 'mouton de poussière', une créature inspirée des boules de poussière sous un lit, avec une apparence mignonne et possiblement des petits yeux, un nœud au-dessus de la tête et des pattes de mouton. Mathieu explore l'idée de leur taille et de leur présence dans un appartement. Sa compagne, Anne-Sophie LESAGE-MÜNCH (AnSo, née 1982 à Liège, Belgique), est journaliste pour Connaissance des Arts. Leur couple est complice, intellectuel et culturel, partageant une vie entre Paris et Provence.
+Mathieu est le père d'Ambre (née le 07/06/2015), une fille qu'il élève avec présence et conscience. Il est très impliqué, admiratif de ses compétences (elle le "bat" parfois sur la Switch), et inquiet pour son avenir, souhaitant lui transmettre un héritage sain malgré les conflits. Mathieu et sa fille Ambre ont inventé le concept de 'mouton de poussière', une créature inspirée des boules de poussière sous un lit, avec une apparence mignonne et possiblement des petits yeux, un noeud au-dessus de la tête et des pattes de mouton. Mathieu explore l'idée de leur taille et de leur présence dans un appartement. Sa compagne, Anne-Sophie LESAGE-MÜNCH (AnSo, née 1982 à Liège, Belgique), est journaliste pour Connaissance des Arts. Leur couple est complice, intellectuel et culturel, partageant une vie entre Paris et Provence.
 
 #### Origines et Parents
 ##### le Dr Henri CHARREYRE : Père
@@ -485,7 +494,7 @@ Cette anecdote illustre parfaitement le fossé générationnel et culturel qui e
 **Relation père-fils** : Mathieu avait plus d'atomes crochus avec Henri qu'avec sa mère Anne, qu'il décrit comme très froide. La **dernière conversation** entre Mathieu et Henri a eu lieu 1 ou 2 jours avant le décès : Mathieu était au Domaine Saint-Antonin, Henri à l'hôpital à Paris. Le sujet était la gestion du Domaine et les différends familiaux. La conversation a viré à la dispute et Mathieu a raccroché en gueulant. Il ne savait pas que c'était la dernière fois qu'il entendait son père. Il porte cette culpabilité depuis.
 
 ##### Le Dr Anne CHARREYRE, née MONTJOL : Mère
-**Mère** : Anne Nicole MONTJOL (née 06/11/1944 à Aix-en-Provence, Bouches-du-Rhône ; mariée le 24/06/1969 à la mairie de Versailles), docteur en médecine. Ses neveux et nièces VILLIERS (enfants de sa sœur Dominique MONTJOL) l'ont longtemps surnommée **"Tantanne"** — contraction affectueuse de *tante Anne*. Mathieu garde un souvenir acide de ce surnom, associé à ses "petits cons de cousins VILLIERS". Parents domiciliés à Saint Marcel par Vernon (Eure) au moment de la naissance. Lignée familiale marquée par la médecine et la pharmacie. La mère de Mathieu, le Docteur Anne CHARREYRE, née en 1944 et décédée en 2023, a eu son portrait réalisé enfant par le sculpteur Raymond SERVIAN. Cette sculpture est un exemplaire unique représentant sa mère enfant, qui avait environ 8 ans au moment de sa réalisation. Bien que Mathieu ne soit pas certain du matériau exact, il pense qu'il pourrait s'agir de plâtre. La sculpture mesure environ 37 cm de haut par 32 cm de large et est accrochée au-dessus de la porte d'entrée de son ancien bureau rue de la Faisanderie. Mathieu ne souhaite pas bien sûr la vendre.
+**Mère** : Anne Nicole MONTJOL (née 06/11/1944 à Aix-en-Provence, Bouches-du-Rhône ; mariée le 24/06/1969 à la mairie de Versailles), docteur en médecine. Ses neveux et nièces VILLIERS (enfants de sa soeur Dominique MONTJOL) l'ont longtemps surnommée **"Tantanne"** — contraction affectueuse de *tante Anne*. Mathieu garde un souvenir acide de ce surnom, associé à ses "petits cons de cousins VILLIERS". Parents domiciliés à Saint Marcel par Vernon (Eure) au moment de la naissance. Lignée familiale marquée par la médecine et la pharmacie. La mère de Mathieu, le Docteur Anne CHARREYRE, née en 1944 et décédée en 2023, a eu son portrait réalisé enfant par le sculpteur Raymond SERVIAN. Cette sculpture est un exemplaire unique représentant sa mère enfant, qui avait environ 8 ans au moment de sa réalisation. Bien que Mathieu ne soit pas certain du matériau exact, il pense qu'il pourrait s'agir de plâtre. La sculpture mesure environ 37 cm de haut par 32 cm de large et est accrochée au-dessus de la porte d'entrée de son ancien bureau rue de la Faisanderie. Mathieu ne souhaite pas bien sûr la vendre.
 Anne avait bien le permis de conduire, mais ne conduisait quasiment rien ni jamais : Henri lui avait offert à une certaine époque une **Mini** Austin verte (intérieur bois), qu'elle a dû faire tourner une dizaine de kilomètres au total avant de décrocher définitivement. La Mini a ensuite été utilisée non-stop par Henri pour ses dépalcement pro. rapides dans la capitale.
 
 ##### Grands-parents et famille coté Paternel
@@ -583,7 +592,7 @@ Mathieu a répondu le même jour : pas de doublons connus de son côté, proposi
   Né le **1er juillet 1919** à Aix-les-Bains (Savoie) et décédé le **28 juillet 1969** à Versailles (Yvelines) à l'âge de 50 ans, est inhumé le **31 juillet 1969** à Saint-Rémy-de-Provence (Bouches-du-Rhône), au sein de la **concession Chastel A64** de l'ancien cimetière, aux côtés des soeurs SICARD — chauffeur, aventurier, et Secrétaire Général du Comité Central des Assurances Maritimes. Son épouse, **Fanette Mathilde Honorine SICARD** (née BOIZARD, 1921-2002), professeur de Français, lui donne trois filles : **Anne Nicole Jacqueline MONTJOL** (future mère de Mathieu CHARREYRE), **Florence Isabelle Emilie MONTJOL** et **Dominique Agnès Christine Mireille MONTJOL**.
   Décédé le **28 juillet 1969** — Anne MONTJOL n'avait alors que 24 ans. Mathieu ne l'a pas connu. Mathieu porte néanmoins à la **main droite** sa **chevalère gravée de ses initiales MC** (Christian MONTJOL) — les mêmes initiales que Mathieu CHARREYRE, coïncidence qui lui plait. Il a récupéré cette bague au décès de Fanette en 2002, lors du partage des bijoux entre Dominique et Anne, rue de la Faisanderie : c'est **Dominique MONTJOL** qui la lui a donnée devant sa mère Anne ce jour la.
 
-  Fils d’**Émile Eugène Joseph MONTJOL** (1885-1969), coiffeur et inventeur, et de **Zoé Julie Anne Georges Manouche HÉRY** (1898-1980), écrivaine niçoise, il incarne une figure d’aventurier et d’expert maritime. Il obtient son certificat le **24 juin 1932** à Draguignan. Mobilisé en **1939** dans l’Armée de l’Air, il s’engage dans la Résistance avant d’être envoyé en **Allemagne par l’armée américaine** à la Libération. L’armée Française le recrute ensuite pour étudier et recueillir les traditions des pays d’**Afrique du Nord et subsaharienne**, mission qui le mène à travers le continent. À son retour en France, son profil d’expert — alliant expérience militaire, connaissance des cultures locales et rigueur technique — séduit le **Comité Central des Assurances Maritimes**, qui l’emploie comme **Secrétaire Général**. Ses missions l’amènent à voyager dans le monde entier pour expertiser des installations portuaires, des dégâts maritimes ou des risques industriels, faisant de lui un acteur clé du secteur dans l’après-guerre.
+  Fils d’**Émile Eugène Joseph MONTJOL** (1885-1969), coiffeur et inventeur, et de **Zoé Julie Anne Georges Manouche HÉRY** (1898-1980), écrivaine niçoise, il incarne une figure d’aventurier et d’expert maritime. Il obtient son certificat le **24 juin 1932** à Draguignan. Mobilisé en **1939** dans l’Armée de l’Air, il s’engage dans la Résistance avant d’être envoyé en **Allemagne par l’armée américaine** à la Libération. L’armée Française le recrute ensuite pour étudier et recueillir les traditions des pays d’**Afrique du Nord et subsaharienne**, mission qui le mène à travers le continent. À son retour en France, son profil d’expert — alliant expérience militaire, connaissance des cultures locales et rigueur technique — séduit le **Comité Central des Assurances Maritimes**, qui l’emploie comme **Secrétaire Général**. Ses missions l’amènent à voyager dans le monde entier pour expertiser des installations portuaires, des dégâts maritimes ou des risques industriels, faisant de lui un acteur clef du secteur dans l’après-guerre.
   Contrat de mariage avec Fanette SICARD le **27 avril 1944** à Aix-en-Provence.
 
   Son parcours reflète une époque charnière, où les frontières entre engagement patriotique, aventure coloniale et expertise professionnelle s’entremêlent. Zoé HÉRY, sa mère, avait coutume de dire que les terres des deux cimetières de Saint-Rémy-de-Provence (ancien et neuf) finiraient par se mélanger, permettant à elle et à son fils de se retrouver. Cette croyance, teintée de mysticisme familial, ajoute une dimension symbolique à son inhumation dans la concession Chastel A64, où reposent également des membres de la famille SICARD.
@@ -1781,9 +1790,9 @@ Quand il a eu 20 ans (**env. 1996**), son père a décidé que sa dernière form
 
 À l'époque, il vivait à la Villa Jacquemont. Il a finalement cédé aux relances de son père et s'est inscrit à une auto-école des Batignolles, face au marché couvert, rue Lemercier.
 
-L'auto-école était tenue par une dame d'une soixantaine d'années, portrait craché de la sœur supérieure de Soeur Marie-Thérèse des Batignolles : cheveux tirés en arrière, queue de cheval, petites lunettes rondes, air froid, poil au menton et un début de moustache. Elle s'occupait surtout de l'administratif. Son frère, le moniteur de conduite, était dépressif, sous tranquillisants, affalé sur le canapé de la salle d'attente. Deux de tension. Il sortait apparemment d'un burn out depuis son précédent métier de pilote de rallye.
+L'auto-école était tenue par une dame d'une soixantaine d'années, portrait craché de la soeur supérieure de Soeur Marie-Thérèse des Batignolles : Cheveux tirés en arrière, queue de cheval, petites lunettes rondes, air froid, poil au menton et un début de moustache. Elle s'occupait surtout de l'administratif. Son frère, le moniteur de conduite, était dépressif, sous tranquillisants, affalé sur le canapé de la salle d'attente. Deux de tension. Il sortait apparemment d'un burn out depuis son précédent métier de pilote de rallye.
 
-Première heure (quasi la seule) : ils partent en 205 rouge sur le périphérique de Paris pour voir comment Mathieu conduit. Il sait conduire depuis l'adolescence, ce n'était pas une découverte. ils roulent, ils roulent ... et le type s'endort côté passager, tête contre la porte. Mathieu ne le réveille pas : il a payé, il n'est pas payé pour être le réveil du moniteur. Il roule, il s'éclate.
+Première heure (quasi la seule) : Ils partent en 205 rouge sur le périphérique de Paris pour voir comment Mathieu conduit. Il sait conduire depuis l'adolescence, ce n'était pas une découverte. ils roulent, ils roulent ... et le type s'endort côté passager, tête contre la porte. Mathieu ne le réveille pas : il a payé, il n'est pas payé pour être le réveil du moniteur. Il roule, il s'éclate.
 
 Au bout d'un moment, ils arrivent à Marne-la-Vallée. Il a dû y passer au moins deux heures. Il croise un panneau Euro Disneyland. Il y klaxonne en boucle. Le moniteur finit par se réveiller et l'engueule de ne pas l'avoir réveillé. Mathieu lui répond que ce n'était pas dans ses attributions.
 
@@ -2409,7 +2418,7 @@ Famille de pharmaciens/médecins. Lui soigne la mémoire et le patrimoine.
 Première prise de sang en janvier 2025 (prélèvement 21/01/25 à 11h45, laboratoire LBM Victor Hugo, Paris 16e, prescrit par Dr Cohen Carole). Résultats complets dans les normes : numération globulaire (hématies 5,28 Tera/L, hémoglobine 14,1 g/dL, leucocytes 6,55 Giga/L, plaquettes 295 Giga/L), formule leucocytaire (neutrophiles 53,2%, lymphocytes 37,5%), vitesse de sédimentation 2 mm, CRP <1 mg/L, sodium 138 mmol/L, potassium 4,5 mmol/L, acide urique 294 pmol/L (49 mg/L), DFG 101 ml/min/1.73m2, transaminases (ASAT 24 u, ALAT 24 u, GGT 22 u), glycémie 4,83 mmol/L, cholestérol total 4,30 mmol/L (LDL 2,82 mmol/L, HDL 1,17 mmol/L, triglycérides 0,69 mmol/L), ferritine 87 ug/L, TSH 1,718 mUI/L, PSA total 1,13 ug/L (libre 0,39 ug/L, rapport 34,5%), vitamine B12 398 pmol/L, folates 17,7 nmol/L, vitamine D 1,25 45,5 pg/ml (109 pmol/l).
 
 ### Profil Génétique et ADN
-Cette section intègre les résultats du séquençage ADN effectué via MyHeritage entre 2022 et 2023, basé sur ~609k SNPs (build37). Elle couvre les traits physiques, métaboliques et génétiques clés, en concordance avec les observations personnelles. Chip GSA : couverture bonne sur ABCC11, AR région, mais faible sur certains loci chronotype/EDAR. Les inférences sont basées sur GWAS et littérature scientifique, avec focus sur la concordance européenne occidentale.
+Cette section intègre les résultats du séquençage ADN effectué via MyHeritage entre 2022 et 2023, basé sur ~609k SNPs (build37). Elle couvre les traits physiques, métaboliques et génétiques clefs, en concordance avec les observations personnelles. Chip GSA : couverture bonne sur ABCC11, AR région, mais faible sur certains loci chronotype/EDAR. Les inférences sont basées sur GWAS et littérature scientifique, avec focus sur la concordance européenne occidentale.
 
 #### Mathieu
 ##### Identité de base & infos personnelles déclarées
@@ -2424,7 +2433,7 @@ Cette section intègre les résultats du séquençage ADN effectué via MyHerita
 
 ##### Pigmentation & Traits visibles (yeux, cheveux, peau)
 
-| Trait                  | Observation perso      | SNPs clés (IrisPlex / HIrisPlex) | Génotype (consensus) | Interprétation / Concordance |
+| Trait                  | Observation perso      | SNPs clefs (IrisPlex / HIrisPlex) | Génotype (consensus) | Interprétation / Concordance |
 |------------------------|------------------------|----------------------------------|-----------------------|-------------------------------|
 | **Yeux**               | Marrons                | rs12913832 (HERC2)              | AG                    | Intermédiaire → brown/hazel fréquent. Bonne concordance. |
 |                        |                        | rs1800407 (OCA2)                | CC                    | Renforce brown (pigmentation). Excellente. |
@@ -2436,7 +2445,7 @@ Cette section intègre les résultats du séquençage ADN effectué via MyHerita
 
 ##### Calvitie & Barbe / Poils faciaux
 
-| Trait                  | Observation perso              | SNPs / Loci clés                     | Ton statut / inférence                  | Concordance |
+| Trait                  | Observation perso              | SNPs / Loci clefs                     | Ton statut / inférence                  | Concordance |
 |------------------------|--------------------------------|--------------------------------------|-----------------------------------------|-------------|
 | **Calvitie**           | Centrale ~30 ans               | AR / EDA2R (X chromosome)            | Région X appelée → risque élevé probable | Très bonne (début précoce typique sensibilité androgénique) |
 |                        |                                | rs6152, rs1385699 (GWAS)             | Pas appelés GSA                         | — |
@@ -2447,7 +2456,7 @@ Cette section intègre les résultats du séquençage ADN effectué via MyHerita
 
 ##### Odeur corporelle (axillaire / sueur)
 
-| Trait                  | SNPs clés majeurs              | Génotype (consensus) | Interprétation / Concordance |
+| Trait                  | SNPs clefs majeurs              | Génotype (consensus) | Interprétation / Concordance |
 |------------------------|--------------------------------|-----------------------|-------------------------------|
 | **Odeur axillaire**    | rs17822931 (ABCC11 538G>A)    | CC                    | Allèle fonctionnel → cérumen humide + odeur corporelle typique (bactéries transforment précurseurs en odeurs fortes). Concordance excellente avec cérumen humide. |
 |                        |                                |                       | Pas AA (dry earwax / low odor asiatique) → odeur normale européenne (moquée ou présente sans déo excessif). |
@@ -2456,7 +2465,7 @@ Cette section intègre les résultats du séquençage ADN effectué via MyHerita
 
 ##### Sommeil & Chronotype
 
-| Trait                  | SNPs clés (CLOCK, PER, etc.)   | Génotype / inférence | Interprétation / Concordance |
+| Trait                  | SNPs clefs (CLOCK, PER, etc.)   | Génotype / inférence | Interprétation / Concordance |
 |------------------------|--------------------------------|-----------------------|-------------------------------|
 | **Chronotype / Rythme circadien** | PER2 rs35333999 (missense)   | Pas appelé GSA        | — (GSA couvre mal PER2/PER3 top hits) |
 |                        | PER3 VNTR (rs57875989)         | Pas appelé (VNTR non-SNP) | — |
@@ -2573,9 +2582,9 @@ Continuum génétique Français / Ibérique / Germanique Ouest
 - **Peau** : Claire (typique européen occidental, comme papa)
 - **Autres** : Pas d’autres précisions physiques fournies à ce jour (taille, poids, etc.)
 
-##### Traits génétiques clés (basés sur raw data MyHeritage GSA + littérature pigmentation)
+##### Traits génétiques clefs (basés sur raw data MyHeritage GSA + littérature pigmentation)
 
-| Trait                  | Observation perso      | SNPs clés principaux                     | Génotype probable / inféré | Interprétation & concordance |
+| Trait                  | Observation perso      | SNPs clefs principaux                     | Génotype probable / inféré | Interprétation & concordance |
 |------------------------|------------------------|------------------------------------------|-----------------------------|-------------------------------|
 | **Couleur des yeux**   | Bleus                  | rs12913832 (HERC2 – switch principal)   | GG (très probable)          | Bleu récessif → concordance parfaite. Héritage : G de maman (GG) + G récessif de papa (toi AG) |
 |                        |                        | rs1800407 (OCA2)                        | Probable CC ou CT           | Renforce pigmentation modérée, mais GG à rs12913832 domine → bleu clair |
@@ -2589,7 +2598,7 @@ Continuum génétique Français / Ibérique / Germanique Ouest
 | **Caféine**            | —                      | rs762551 (CYP1A2)                       | Probable AA ou AC           | Métaboliseur lent ou moyen → effet café/thé prolongé possible |
 
 ##### Appétit & risque d’obésité (marqueur principal FTO)
-- **SNP clé** : rs9939609 (FTO – le plus puissant pour appétit/obésité infantile)
+- **SNP clef** : rs9939609 (FTO – le plus puissant pour appétit/obésité infantile)
   → À vérifier dans le fichier CSV complet (Ctrl+F "rs9939609")
   → Probable **TT** ou **AT** (vu que papa est TT → Ambre hérite au moins un T)
 - **Interprétation** :
@@ -2636,9 +2645,9 @@ Ambre joue beaucoup, aussi bien à Paris (sur son propre ordinateur) qu'à Saint
 - **Peau** : Claire (européenne classique)
 - **Autres** : Pas de précisions supplémentaires (taille, poids, appétit, etc.)
 
-##### Traits génétiques clés (basés sur raw data GSA + littérature IrisPlex / GWAS pigmentation)
+##### Traits génétiques clefs (basés sur raw data GSA + littérature IrisPlex / GWAS pigmentation)
 
-| Trait                  | Observation perso      | SNP clé principal                        | Génotype (consensus / inféré) | Interprétation & concordance |
+| Trait                  | Observation perso      | SNP clef principal                        | Génotype (consensus / inféré) | Interprétation & concordance |
 |------------------------|------------------------|------------------------------------------|-------------------------------|-------------------------------|
 | **Couleur des yeux**   | Bleus                  | rs12913832 (HERC2 – switch bleu/marron) | Probable GG                   | Bleu récessif → concordance parfaite. GG = bleu clair chez ~95–97 % des porteurs européens. Transmis à Ambre (GG). |
 |                        |                        | rs1800407 (OCA2 R419Q)                  | Probable CC                   | Renforce pigmentation modérée, mais GG domine → bleu clair |
@@ -2961,7 +2970,7 @@ Ce que Mathieu n'a ni envie ni capacité de faire : **utiliser l'hypocrisie comm
 
 La formule la plus juste pour les désigner : ils **brassent de l'air**. Ils remuent, agitent, s'activent, produisent du mouvement — mais aucun objet réel ne sort de leurs mains. Ils n'ajoutent rien au monde sauf leur commission.
 
-Et la question qui reste, plus grave : **quand tout ce que ceux qui ont une tête auront produit aura été exploité — re-exploité, re-re-re-re-exploité — par des couches successives d'intermédiaires... qu'est-ce qui restera ?** La réponse de Mathieu : les œuvres elles-mêmes. Les plaques de verre. Les toiles. Les murs du Domaine debout depuis 1633. Pas les gens qui se sont mis entre elles et le monde pour en vivre.
+Et la question qui reste, plus grave : **quand tout ce que ceux qui ont une tête auront produit aura été exploité — re-exploité, re-re-re-re-exploité — par des couches successives d'intermédiaires... qu'est-ce qui restera ?** La réponse de Mathieu : les oeuvres elles-mêmes. Les plaques de verre. Les toiles. Les murs du Domaine debout depuis 1633. Pas les gens qui se sont mis entre elles et le monde pour en vivre.
 
 ---
 
@@ -3272,7 +3281,7 @@ Autre : Manuel FERREIRA (membre du bureau)
 
 **Album Google Photos public des dernières acquisitions (legs d'intérêt depuis le 15/06/2007)** : https://photos.app.goo.gl/H6dgWy5TBnLmWcsq6
 Nom de l'album : [WDA] - Dernières Acquisitions. Cet album est public et permet aux IAs de visualiser les types de matériels collectés par la WDA. Il est recommandé de le consulter lors de tout travail sur la WDA pour comprendre la nature et la diversité de la collection.
-Initiée par Mathieu CHARREYRE en 1988, la collection du Cœur Numérique est précieusement conservée dans des propriétés privées. Pensée pour la sauvegarde patrimoniale de la collection numérique gérée par la WDA.
+Initiée par Mathieu CHARREYRE en 1988, la collection du Coeur Numérique est précieusement conservée dans des propriétés privées. Pensée pour la sauvegarde patrimoniale de la collection numérique gérée par la WDA.
 Cette collection illustre l'évolution et l'impact du numérique dans notre monde.
 Association non déclarée.
 Site : https://coeur.wda-fr.org (sous domaine public)
@@ -3500,7 +3509,7 @@ Réponse de la **Direction Départementale des Territoires et de la Mer des Bouc
 
 Le délai de 3 ans est en soi documentaire : une institution qui met 3 ans à répondre à une demande formelle de communication de document administratif obligatoire sous 1 mois (art. L.311-1 CRPA) est une institution qui sait qu'elle a un problème.
 
-Points clés :
+Points clefs :
 - Opération légale, cadre de l'**arrêté préfectoral permanent du 4 janvier 2017** autorisant la destruction des sangliers dangereux dans les Bouches-du-Rhône (toute l'année, jour et nuit).
 - Confirme : **Marilys CINQUINI** accompagnée de **Pierre BORTOLIN**, tous deux lieutenants de louveterie des Bouches-du-Rhône.
 - Corrige la date : nuit du **21 au 22 juillet** (et non 22-23 comme écrit par l'ASPAS).
@@ -3840,7 +3849,7 @@ Tous les incidents ci-dessous sont publiés sur https://chasse.saint-antonin.net
 |----|------|-----------|--------|--------|
 | 1 | 20/10/2019 | Chasse sur autrui | Chiens sur partie basse Sud-Est. Toyota Land Cruiser Turbo blanc (13). Jeune chasseur passager. **Chasseur connu.** | Oui |
 | 14 | 18/10/2019 | Chasse sur autrui | Mitsubishi Triton L200 K60/K70 gris foncé sort à toute vitesse des champs supérieurs de la Porquetière. Meute entendue toute l'après-midi secteur Nord. | Non |
-| 2 | 10/11/2019 | Chasse sur autrui | Chasseur seul armé + 2 chiens, cœur de la Payanne, venant du chemin de Baragne. Fuite à l'arrivée de Mathieu. Pick-up noir garé sur la D11. | Oui |
+| 2 | 10/11/2019 | Chasse sur autrui | Chasseur seul armé + 2 chiens, coeur de la Payanne, venant du chemin de Baragne. Fuite à l'arrivée de Mathieu. Pick-up noir garé sur la D11. | Oui |
 | 6 | 09/01/2020 | Chasse sur autrui & Menaces | 3 hommes (dont un jeune), Mitsubishi Triton gris foncé + Toyota Hilux double cabine blanc (plaque arrière absente). Chiens lâchés à 30m du Mas. Les chasseurs **poursuivent Mathieu sur le Domaine en le menaçant et exigeant son appareil photo**. Équipe A de Jouques. | Non |
 | 7 | 13/09/2020 | Chasse sur autrui | Chiens secteurs Nord-Est et Sud. Toyota Land Cruiser Turbo blanc (13) garé D11. **Chasseur connu.** | Oui |
 | 8 | 17/09/2020 | Chasse sur autrui, Menaces & Agression | Chiens secteur Sud. Pick-up noir (Toyota Hilux ?) D11 entrée Est. **Tentative d'écrasement** — Mathieu évite en se propulsant sur le flanc gauche, prenant appui sur le capot. Départ vers Jouques en klaxonnant + doigts d'honneur. *[Correspond au PV gendarmerie du 17/09/2020]* | Non |
@@ -3862,7 +3871,7 @@ Tous les incidents ci-dessous sont publiés sur https://chasse.saint-antonin.net
 | 26 | 18/09/2025 | Chasse sur autrui & Menaces | 5+ chiens + 2 chasseurs depuis le Domaine de Revelette vers le Sud. Interpellé, l'un prétend "récupérer ses chiens" puis repart — mais lance en franchissant la limite : **"c'est ta gueule qui est illégale"**. Revient 5 min après avec son collègue, s'attardent volontairement sur sentier du Domaine pour "marquer leur présence". Plainte déposée le 23/10/2025. | Oui |
 | 27 | 20/09/2025 | Chasse sur autrui & Agression | BMW X5 noire (83) stationnée sur les parcelles, chemin de Baragne. 3 chasseurs + **2 jeunes filles à peine majeures, armées, en gilets orange, assises sur les terres du Domaine**. L'une, sans même regarder Mathieu : *"laisse tomber, lui c'est un fada... il est fou... on le connaît"*. | Oui |
 | 28 | 19/10/2025 | Menaces & Plainte | **2 chasseurs entrent par accès Nord**. Le premier à pied (13h30), le second au volant d'un Ford Ranger noir (14h30). Prétextent qu'une chèvre d'Ambre porte un de leurs colliers GPS (**les chèvres du Domaine ne portent jamais de colliers**). Le second = **même pompier d'Aix qu'en ID 13 (22/10/2023)**. À l'arrivée de Mathieu, cesse de s'occuper des chèvres, reprend les menaces : *"je vais au-devant de problèmes"*. Le 20/10 : audition par 2 gendarmes de Peyrolles pour plainte du chasseur pour "vol de colliers GPS" — constatation de l'absence de colliers sur les chèvres, perquisition sans résultat. Plainte déposée le 23/10/2025. | Non |
-| 29 | 29/11/2025 | Chasse sur autrui | 09h31 : chasseur (équipe A Jouques) + chiens, secteur Sud. 09h33-09h35 : contact physique — confirme 2 chiens sur le Domaine mais dit ne "rien pouvoir y faire", **propose à Mathieu de prendre sa carabine** pendant qu'il entre récupérer ses chiens. Fiat Scudo blanche arrive. 2 coups de feu au cœur de la Payanne 3 min après. 09h38/09h48 : Citroën Berlingo blanche (13) + Toyota Hilux beige (2B) ralentissent pour "observer". 09h41 : griffon nivernais GPS à leur rencontre — propriétaire au téléphone (chasse dans les Ubacs), **refuse de décliner son identité**. 11h30 : Toyota Hilux gris arrive au parking de la ferme, 2 personnes, repart à 11h33 sans prévenir ni autorisation. SMS de remerciements reçu 11h35, **refus persistant de s'identifier**. | Oui |
+| 29 | 29/11/2025 | Chasse sur autrui | 09h31 : chasseur (équipe A Jouques) + chiens, secteur Sud. 09h33-09h35 : contact physique — confirme 2 chiens sur le Domaine mais dit ne "rien pouvoir y faire", **propose à Mathieu de prendre sa carabine** pendant qu'il entre récupérer ses chiens. Fiat Scudo blanche arrive. 2 coups de feu au coeur de la Payanne 3 min après. 09h38/09h48 : Citroën Berlingo blanche (13) + Toyota Hilux beige (2B) ralentissent pour "observer". 09h41 : griffon nivernais GPS à leur rencontre — propriétaire au téléphone (chasse dans les Ubacs), **refuse de décliner son identité**. 11h30 : Toyota Hilux gris arrive au parking de la ferme, 2 personnes, repart à 11h33 sans prévenir ni autorisation. SMS de remerciements reçu 11h35, **refus persistant de s'identifier**. | Oui |
 
 **Récurrences notables :**
 - **Le pompier d'Aix-en-Provence** (Ford Ranger noir) : incidents ID 13 (oct. 2023, photographie Ambre mineure) et ID 28 (oct. 2025, tentative de vol de chèvre d'Ambre). Même individu, deux ans d'écart, même mode opératoire.
