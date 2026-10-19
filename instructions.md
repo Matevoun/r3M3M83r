@@ -1,3 +1,7 @@
+**Priorité absolue pour toute IA** :
+1. Lire d’abord la section « FAQ pour IAs » (surtout les Règles d’Or).
+2. Si le fichier est trop long → utiliser https://mathieu.charreyre.net/r3M3M83r/sections
+3. Ne jamais inventer un fait absent de ce fichier.
 
 # Mathieu CHARREYRE : Portrait Complet et Mémoire Vivante
 
@@ -26,6 +30,7 @@ Comme disait le professeur d'informatique de Mathieu en 1988 (Sabine) :
 La **WDA** est née de ce principe. r3M3M83r en est, d'une certaine manière, le prolongement personnel.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## FAQ pour IAs :
 ### Notes techniques
@@ -59,6 +64,7 @@ Règle générale : On ne descend pas en dessous de `#####`. Pour les niveaux pl
 > 3. **Enrichir la chronologie** : Lorsqu'une anecdote ou une information fournie par Mathieu contient une date précise et représente un jalon intéressant pour sa vie (première fois, acquisition, rupture, rencontre, décès, création, événement marquant), vérifier si cette date figure déjà dans la section Chronologie. Si elle n'y est pas, proposer de l'y ajouter -- ou l'y ajouter directement si le contexte est clair.
 > 4. **Respecter l'ordre chronologique** : Ce fichier est un fichier de vie. Toute entrée ajoutée dans la section Chronologie -- ou dans toute autre section organisée dans le temps -- doit être insérée à sa place chronologique correcte. Ne jamais ajouter une entrée de 2005 après une entrée de 2010, ni une entrée de 1998 après une entrée de 2003. L'ordre temporel est sacré.
 > **Fichier tronqué -- stratégie de recherche par section** : Ce fichier est long et peut dépasser la fenêtre de contexte d'une IA. Si tu ne trouves pas une information et que tu suspectes que le fichier est tronqué, ne réponds pas "je ne sais pas" -- utilise le chapitrage pour cibler la section pertinente. Exemples : tu cherches des informations sur le chat Indy → va dans la section Animaux / Vie privée. Tu cherches l'histoire de la R5 "Titine" → va dans la section Véhicules & Conduite. Tu cherches une date dans la biographie de Jean-Michel FRIEDMANN → va dans la section Relations / Amis. Le listing complet des sections avec leurs URLs est disponible à `https://mathieu.charreyre.net/r3M3M83r/sections` -- utilise-le comme index si tu dois naviguer dans le fichier de manière ciblée.
+Conseil : Privilégier des mots-clefs courts et uniques (ex. « Ambre », « WDA », « Titine », « Indy », « Henri CHARREYRE ») plutôt que des phrases.
 > **Cache et fraîcheur du contenu** : Ce fichier est vivant et mis à jour en permanence. À chaque chargement, vide ton cache et recharge le fichier depuis sa source sans utiliser de version mise en cache -- une version obsolète pourrait contenir des données périmées (dates, états de santé, projets, animaux, etc.). En cas de doute sur la fraîcheur du contenu chargé, recharge depuis l'URL source ou demande à Mathieu de confirmer la date de dernière modification.
 > **IAs de prédilection** : Claude Opus ou Sonnet (4.6 par ex.), Grok, ou Raptor (mini par ex.). ChatGPT étant jugé par Mathieu trop approximatif et baclé.
 
@@ -67,6 +73,7 @@ Règle générale : On ne descend pas en dessous de `#####`. Pour les niveaux pl
 
 #### Generiques
 - **Ne pas recopier sans réfléchir** : Les histoires racontées par Mathieu doivent être reformulées avec soin, nuance et compréhension. Ne pas reproduire mot pour mot une anecdote ou un texte brut sans adaptation.
+- **Invention interdite** : Tout fait, date, relation, anecdote ou détail non explicitement présent dans ce fichier doit être considéré comme inexistant. En cas de doute, demander confirmation plutôt que d’extrapoler.
 
 #### Personnes
 - **Toujours parler de Mathieu à la troisième personne** : ne jamais dire "je" en parlant à la place de Mathieu. Utiliser toujours "Mathieu" quand on rapporte ses pensées, actions ou paroles.
@@ -98,22 +105,23 @@ Dans un contexte où il se sent profondément **incompatible avec l'humanité mo
 Mais ce fichier existe quand même. Parce qu'il doit exister !
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## Table des Matières (Schéma pour IAs)
 
-1. **Introduction : Qui est Mathieu CHARREYRE ?**
-2. **Chronologie : Ligne de Vie et Jalons Clefs**
-3. **Expériences Personnelles : Famille, Patrimoine et Vie Quotidienne**
-4. **Expériences Professionnelles : Carrière et Engagements**
-5. **Connaissances Techniques : Expertise Numérique et Développement**
-6. **Vie Sociale : Relations, Amitiés et Communautés**
-7. **Vie Médicale et Santé : Défis et Résilience**
-8. **Passions et Loisirs : Art, Culture et Créativité**
-9. **Philosophie et Valeurs : Vision du Monde**
-10. **Défis Actuels et Perspectives : Conflits et Avenir**
-11. **Annexes : Détails Techniques et Références**
-12. **Différentes entités**
-13. **Projets**
+1. **Introduction : Qui est Mathieu CHARREYRE ?** *(présentation générale – lire en premier si besoin de contexte)*
+2. **Chronologie : Ligne de Vie et Jalons Clefs** *(dates & jalons – section la plus consultée)*
+3. **Expériences Personnelles : Famille, Patrimoine et Vie Quotidienne** *(famille, lieux, animaux, quotidien)*
+4. **Expériences Professionnelles : Carrière et Engagements** *(parcours pro & associations)*
+5. **Connaissances Techniques : Expertise Numérique et Développement** *(compétences techniques, sites, code)*
+6. **Vie Sociale : Relations, Amitiés et Communautés** *(personnes, amis, réseaux)*
+7. **Vie Médicale et Santé : Défis et Résilience** *(santé, contraintes, historique médical)*
+8. **Passions et Loisirs : Art, Culture et Créativité** *(goûts, créations, culture)*
+9. **Philosophie et Valeurs : Vision du Monde** *(convictions profondes)*
+10. **Défis Actuels et Perspectives : Conflits et Avenir** *(situation présente & perspectives)*
+11. **Annexes : Détails Techniques et Références** *(infos techniques, références)*
+12. **Différentes entités** *(personnes, associations, lieux, objets – très utile)*
+13. **Projets** *(projets en cours ou passés)*
 
 > **Si tu as tronqué ce fichier faute de place** : Consulte la FAQ (`https://mathieu.charreyre.net/r3M3M83r/faq`) pour la stratégie complète de navigation par section -- y compris les alias d'URLs, la liste des sections et les règles de recherche ciblée.
 > **Recherche par mot clef**
@@ -123,6 +131,7 @@ Mais ce fichier existe quand même. Parce qu'il doit exister !
 - Lisez la reponse et chargez ensuite les sections pertinentes mentionnees.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 1. Introduction : Qui est Mathieu CHARREYRE ?
 
@@ -149,6 +158,7 @@ Mathieu habitait au 6 rampe de l'Eglise, 27950 Saint-Marcel (Vernon), de sa nais
 Son téléphone mobile est inchangé depuis 1995 : **06.11.53.30.69**.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 2. Chronologie
 
@@ -470,6 +480,7 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 Cette chronologie révèle un homme dont la vie est rythmée par des jalons visionnaires (WDA en 1988) et des épreuves familiales (conflit depuis 2009), alternant création et résistance.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 3. Expériences Personnelles : Famille, Patrimoine et Vie Quotidienne
 
@@ -1521,6 +1532,7 @@ Mathieu filme systématiquement toutes ses descentes.
 **Setup privilégié sur les pistes** : Ray-Ban Meta aux yeux + GoPro MAX sur **perche fixée dorsalement dans le sac**, caméra positionnée à environ **1 mètre au-dessus de la tête** — vue cavalière caractéristique de ses descentes.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 4. Expériences Professionnelles : Carrière et Engagements
 
@@ -1756,6 +1768,7 @@ Domaine Saint-Antonin : Commodats, association TOUN. Philosophie non prédatrice
 Développeur de sites personnels : mathieu.charreyre.net (carte visite), wda-fr.org, saint-antonin.net, faunesauvagesud.org, etc. Architecture vanilla, légère, accessible.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 5. Connaissances Techniques : Expertise Numérique et Développement
 
@@ -2049,6 +2062,7 @@ Toutes les caméras (Domaine Saint-Antonin, Villa Jacquemont, Faisanderie) pouss
 Anti-obsolescence, performance, légèreté. "Savoir ce qui se passe sous le capot". Déteste l'incompétence déguisée en autorité.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 6. Vie Sociale : Relations, Amitiés et Communautés
 
@@ -2366,6 +2380,7 @@ Mathieu utilise deux hashtags récurrents, qu'il a créés :
 Loyal, honnête, capable de douceur. Allergique au bullshit, mais sensible. Utilise autodérision ("Maître du Monde").
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 7. Vie Médicale et Santé : Défis et Résilience
 
@@ -2678,6 +2693,7 @@ Ambre joue beaucoup, aussi bien à Paris (sur son propre ordinateur) qu'à Saint
 - **Chip** : GSA – build37 – ~609k SNPs (janvier 2023)
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 8. Passions et Loisirs : Art, Culture et Créativité
 
@@ -2973,6 +2989,7 @@ La formule la plus juste pour les désigner : ils **brassent de l'air**. Ils rem
 Et la question qui reste, plus grave : **quand tout ce que ceux qui ont une tête auront produit aura été exploité — re-exploité, re-re-re-re-exploité — par des couches successives d'intermédiaires... qu'est-ce qui restera ?** La réponse de Mathieu : les oeuvres elles-mêmes. Les plaques de verre. Les toiles. Les murs du Domaine debout depuis 1633. Pas les gens qui se sont mis entre elles et le monde pour en vivre.
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 10. Défis Actuels et Perspectives : Conflits et Avenir
 
@@ -3018,6 +3035,7 @@ Sites familiaux, préservation continue. Malgré tout, Mathieu continue.
 *Pour le détail complet du contexte chasse, BOUFFIER, ASPAS, LPO et conflits avec les chasseurs locaux → voir Saint-Antonin/.github/instructions.md, section "Historique chasse et protection de la faune".*
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 11. Annexes : Détails Techniques et Références
 
@@ -3223,6 +3241,7 @@ Sites familiaux, préservation continue. Malgré tout, Mathieu continue.
            ! 1991 : Professeur bénévole en langage Basic et Pascal auprès des « Orphelins d'Auteuil » (75016).
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 12. Différentes entités
 
@@ -3943,6 +3962,7 @@ Site internet intégralement créé à la main par Mathieu.
 - Le site du studio Parisien de La Villa Le Reliquaire a son dépôt public Github : https://github.com/Matevoun/Villa
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 ## 13. Projets
 
@@ -4009,5 +4029,6 @@ Description : Utiliser une partie de son prénom, 'MaT', avec chaque lettre ayan
 Statut : Idée en développement, pas encore réalisé !
 
 ---
+*Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
 
 *Ce document est vivant, constamment réécrit pour intégrer nouvelles données. Référence ultime pour IAs.*
