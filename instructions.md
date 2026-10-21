@@ -141,7 +141,7 @@ Pionnier du web Français — présent sur Internet bien avant son ouverture au 
 
 **Fondateur de la WDA (Winter Development Association)** Début de collection en 1988, à 12 ans, par conviction pour la sauvegarde du patrimoine numérique : la WDA est aujourd'hui la 3e ou 4e plus grande collection du patrimoine numérique en France (6e en Europe), 480 m³ de matériel répartis sur 4 antennes nationales, en collaboration avec le CNAM, la BNF, le CNRS et la Cité des Sciences. L'association doit son nom au pseudo de programmation BASIC "David WINTER" qu'il utilisait depuis l'enfance.
 
-**Héritier et gardien** du Domaine Saint-Antonin (route de Vauvenargues, Jouques, 13490) — 89 ha 28 a 24 ca, acquis le 26 septembre 1636 par Annibal THUS et transmis de génération en génération jusqu'à lui (14e propriétaire) — il gère ce patrimoine bénévolement via l'Association TOUN (loi 1901, JO 24/06/2017). Sanctuaire animalier (refuge ASPAS/LPO depuis 2019), zone Natura 2000 et ZSC, hospitalité aux ruches d'apiculteurs depuis 2017, commodats d'exploitation : Vision résolument non prédatrice et écologique. L'autre moitié du Domaine est en indivision conflictuelle depuis 2009 avec ses cousins VILLIERS (héritiers de sa tante maternelle Dominique MONTJOL, ex-épouse VILLIERS, décédée le 25 mars 2009).
+**Héritier et gardien** du Domaine Saint-Antonin (2860 route de Vauvenargues, Jouques, 13490) — 89 ha 28 a 24 ca, acquis le 26 septembre 1636 par Annibal THUS et transmis de génération en génération jusqu'à lui (14e propriétaire) — il gère ce patrimoine bénévolement via l'Association TOUN (loi 1901, JO 24/06/2017). Sanctuaire animalier (refuge ASPAS/LPO depuis 2019), zone Natura 2000 et ZSC, hospitalité aux ruches d'apiculteurs depuis 2017, commodats d'exploitation : Vision résolument non prédatrice et écologique. L'autre moitié du Domaine est en indivision conflictuelle depuis 2009 avec ses cousins VILLIERS (héritiers de sa tante maternelle Dominique MONTJOL, ex-épouse VILLIERS, décédée le 25 mars 2009).
 
 Sa compagne est **Anne-Sophie LESAGE-MÜNCH** (née le 10/02/1982 à Liège, journaliste pour Connaissance des Arts, surnommée AnSo).
 Sa fille **Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 07/06/2015, dans le même hôpital que son père, Pitié-Salpêtrière) s'est vue léguer le studio de la Villa Jacquemont (3 villa Jacquemont, 75017 Paris), entièrement rénové entre mars et juillet 2025 (> 25 000 €) et loué en AirBnB sous l'enseigne "La Villa Le Reliquaire" ( https://villa.lereliquaire.fr ) depuis septembre 2025, Mathieu en conservant l'usufruit. Leur foyer Parisien accueille des chats (Ankou, Spotty, Elvira) et un chien Luna (née 01/08/2018, adoptée en 2024 après la tragédie de Jonathan RABINO, ancien chevrier du Domaine Saint-Antonin). Sabbath est décédée le 27 mars 2026 à la clinique Les Vétos Parisiens (145 rue de la Pompe, 75116 Paris), d'une insuffisance rénale, et Morticia le 23 Juillet 2026 dés suite de son cancer, au Domaine Saint-Antonin.
@@ -476,6 +476,7 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 -- **2026 (23 août)** — Après-midi : Mathieu commence le développement de **PixelGod**, un god game isométrique de type Populous destiné à Android, en Godot Engine.
 -- **2026 (22 septembre)** : À 16h54, Florence VIEUVILLE (tante maternelle de Mathieu CHARREYRE, née MONTJOL) lui envoie un texto dans lequel elle explique qu’elle précise que le refus de la maison de ses ancêtres l’a profondément dévastée, mais qu’elle l’a fait pour permettre à Mathieu et aux siens de conserver le Domaine sans droits de succession trop lourds. Elle ajoute que, lorsqu’elle souffre, elle coupe net et n’en parle plus pour ne plus en souffrir. Elle déclare que son seul retour à Saint-Antonin sera sous forme de cendres jetées autour de la chapelle. Elle termine en affirmant faire confiance à Mathieu et l’aimer beaucoup.
 -- **2026 (27 septembre)** : Tournage d’un court métrage d’Hind R. BOUKLI, femme de Fabien REMBLIER (rôle de Mathieu : un « bug dandy » récurrent vu par un ado trop addict aux jeux vidéo). Lieu : Villa de la Faisanderie (75116). Première prise à 19h44, dernière (prise son) à 20h20. Montage en cours, durée prévue ~10 min, pas encore de titre.
+-- **2026 (21 octobre)** : Mathieu commence le développement de **Fioles d'Ambre**, un jeu de tri de mélasses dans des fioles, pour faire plaisir à Ambre qui aime beaucoup ce genre de jeux. Jouable dans le navigateur, sans publicité ni paiement.
 
 Cette chronologie révèle un homme dont la vie est rythmée par des jalons visionnaires (WDA en 1988) et des épreuves familiales (conflit depuis 2009), alternant création et résistance.
 
@@ -1144,7 +1145,7 @@ Les commodats sont gérés par l'**Association TOUN** (créée en 2017), structu
 
 ###### **Commodats Modernes (2019-2025)**
 
-Depuis 2017, tous les commodats sont gérés par l'Association TOUN. La durée standard est de 9 ans renouvelables tacitement, sauf mention contraire.
+Depuis 2017, tous les commodats sont gérés par l'Association TOUN. La durée standard est de 3, 6 ou 9 ans renouvelables tacitement, sauf mention contraire.
 
 **2019**
 
@@ -3325,9 +3326,20 @@ Saint-Antonin : Lien potentiel avec le village de Saint-Antonin, à 15kms du Dom
 
 Le Domaine Saint-Antonin appartient aujourd'hui encore aux descendants d'Annibal THUS, chanoine de l'église de Fréjus, curé de Saint-Barthélémy à Paris, prieur de la maison des Ursulines de Moulins-Engilbert, et de la Chapelle Saint-Sébastien de Jouques, ainsi que recteur de Decize. Né en juillet 1579 à Jouques, il l'a acquis le 26 septembre 1636 auprès de Sieur (Jean-Baptiste ?) des MARTINS, Seigneur de Puyloubier, Viguier de Marseille. Décédé entre le 20 février 1644 et le 28 avril 1645. À sa mort, la propriété fut léguée à son frère cadet Sébastian THUS (né le 24 juillet 1585, calendrier julien), vraisemblablement bourgeois rural de Jouques.
 
+Site : https://saint-antonin.net
+Site internet intégralement créé à la main par Mathieu.
+Adresse postale : Domaine Saint-Antonin, 13490 Jouques (de 1930 à maintenant)
+Autre dénomination postale : Domaine Saint-Antonin, 2860 Route de Vauvenargues, 13490 Jouques (de 2018 à maintenant)
+Autre dénomination postale : Domaine Saint-Antonin, Route de Vauvenargues, 13490 Jouques (de 1990 à 2018)
+Autre dénomination postale : Domaine Saint-Antonin, Chemin Departemental 11 (D11), 13490 Jouques (de 1930 à 1990)
+Autre dénomination postale : Campagne Saint-Antonin, Route des contrebandiers, Jouques (de 19xx à 1930)
+Chronologie propriétaires du Domaine : https://saint-antonin.net/histoire-de-famille-du-domaine-saint-antonin
+Page refuge : https://saint-antonin.net/refuge-de-vie-sauvage
+Sous-domaine chasse : https://chasse.saint-antonin.net/
+
+#### Liste des parcelles cadastrales du Domaine Saint-Antonin (en 2024) : 103 ha 88 a 35 ca au total, répartis entre les villages de Jouques (13490) et de Meyrargues (13650).
 **Mise à jour cadastrale** : 19 juin 2024.
 
-**Liste des parcelles cadastrales du Domaine Saint-Antonin (en 2024)** : 103 ha 88 a 35 ca au total, répartis entre les villages de Jouques (13490) et de Meyrargues (13650).
   - **Village de Meyrargues** — 6 parcelles, 14 ha 60 a 11 ca
     - Section E n°0239, Lieudit Saint Claude, 1 ha 32 a 40 ca, nature Taillis
     - Section E n°0443, Lieudit Le Lauvas, 0 ha 11 a 64 ca, nature Terre
@@ -3392,8 +3404,7 @@ Le Domaine Saint-Antonin appartient aujourd'hui encore aux descendants d'Annibal
     - Section D n°0818, Lieudit Saint-Antonin, 27 ha 42 a 46 ca, nature Bois
     - Section D n°0820, Lieudit La Payanne, 1 ha 64 a 46 ca, nature Eaux
 
-**Lignée des 15 propriétaires successifs :**
-
+#### Lignée des 15 propriétaires successifs :
 1. **Annibal THUS** (juil. 1579 – entre 20 fév. 1644 et 28 avr. 1645) — Chanoine de Fréjus, Recteur de Decize. Jouques. Acquiert le Domaine le 26 sept. 1636 par legs de Sieur (Jean-Baptiste ?) des MARTINS, Seigneur de Puyloubier, Viguier de Marseille.
 2. **Sébastian THUS** (24 juil. 1585 – après 1644) — Vraisemblablement bourgeois rural. Jouques. Hérite après la mort de son frère Annibal. Transmission à son fils Nicolas.
 3. **Nicolas THUS** (dates inconnues) — Profession inconnue. Jouques. Hérite vers 1650. Transmission à son fils Antoine.
@@ -3410,20 +3421,11 @@ Le Domaine Saint-Antonin appartient aujourd'hui encore aux descendants d'Annibal
 14. **Mathieu Christian Jean CHARREYRE** (né le 3 sept. 1976) — Informaticien, photographe, conservateur du patrimoine numérique. Hérite le 3 février 2023. Gère le Domaine bénévolement via l'Association TOUN.
 15. **Ambre Alfreda Anne CHARREYRE-LESAGE** (née le 7 juin 2015) — Copropriétaire depuis le 19 juin 2024 par transmission partagée avec son père. 15e génération familiale. Mathieu en conserve l'usufruit.
 
-Site : https://saint-antonin.net
-Site internet intégralement créé à la main par Mathieu.
-Adresse postale : Domaine Saint-Antonin, 13490 Jouques (de 1930 à maintenant)
-Autre dénomination postale : Domaine Saint-Antonin, 2860 Route de Vauvenargues, 13490 Jouques (de 2018 à maintenant)
-Autre dénomination postale : Domaine Saint-Antonin, Route de Vauvenargues, 13490 Jouques (de 1990 à 2018)
-Autre dénomination postale : Domaine Saint-Antonin, Chemin Departemental 11 (D11), 13490 Jouques (de 1930 à 1990)
-Autre dénomination postale : Campagne Saint-Antonin, Route des contrebandiers, Jouques (de 19xx à 1930)
-Chronologie propriétaires du Domaine : https://saint-antonin.net/histoire-de-famille-du-domaine-saint-antonin
-
 #### Gestion du Domaine — Chasse, ASPAS, LPO et conflits locaux
 
 Le père de Mathieu CHARREYRE, Henri CHARREYRE, avait son permis de chasser, était adhérent à l'ACCA de Jouques et entretenait une relation cordiale avec son Président. Stratégie simple et efficace. Mathieu, lui, s'est trouvé face à un contexte radicalement différent dès son arrivée en tant que gestionnaire bénévole du Domaine.
 
-**Bernard BOUFFIER — le faux "garde-chasse"**
+##### Bernard BOUFFIER — le faux "garde-chasse"
 
 Les parents de Mathieu avaient trouvé un homme nommé **Bernard BOUFFIER**, présenté comme le "garde-chasse privé" du Domaine. En réalité, Bernard avait créé sa propre société de chasse, distincte de l'ACCA de Jouques — domiciliée au Domaine de Marine, propriété de **Mme THIEBLIN** et son mari (voisins en amont sur la route de Vauvenargues), déclarée en préfecture selon ses dires. Le nom même de cette structure est révélateur : lorsque Mathieu a rédigé les autorisations officielles à la demande de BOUFFIER en septembre 2019, celui-ci lui a demandé par deux fois de refaire la lettre en changeant le nom. Ces deux versions coexistent dans les archives :
 - Version 1 : **"Société de Chasse de Marine"**
@@ -3436,7 +3438,7 @@ L'ACCA de Jouques a très mal vécu la situation : les Parisiens étaient allés
 Ce qu'ils ignoraient totalement : les Jouquards considèrent Saint-Antonin comme une "cuvette" exceptionnellement riche en faune, qu'ils utilisent pour acculer le gibier avant de l'abattre plus facilement. BOUFFIER connaissait les dates de passage de la famille (essentiellement l'été), et l'hiver — seule vraie saison de chasse — c'était Beyrouth sur le Domaine : pas moins de **10 à 15 chasseurs** de sa propre société. Les parents de Mathieu croyaient sincèrement que "Bernard il est gentil, on l'autorise à venir se balader, il ne chasse presque rien". Ils étaient à 3 000 lieues de la vérité.
 BOUFFIER venait de temps en temps faire le dos rond, boire une bière avec le médecin Parisien, histoire de ne pas se faire déloger. Il connaît les frontières du Domaine **au centimètre près**. BOUFFIER : ~75 ans (en 2026), vit avec sa femme à **21 Boulevard de la Gare, 13490 Jouques** — à l'entrée Sud du village face à la place du marché. Rend des services au Domaine de Marine (en contrepartie de la domiciliation de son association de chasse) et au Domaine de Puybernier. Roule TOUJOURS à exactement 50 km/h sur la départementale, passe plusieurs fois par jour toute l'année devant le Domaine.
 
-**La vision des Jouquards**
+##### La vision des Jouquards
 
 À Jouques, il existe un adage fondamental : *"Tu es de Jouques si tu y es né."* Mathieu, né à Paris 13e, peut faire ce qu'il veut — il ne sera jamais de Jouques, même si son sang y est enraciné depuis plus de 400 ans.
 
@@ -3462,7 +3464,7 @@ Les potes chasseurs de BOUFFIER ont commencé à venir exprès passer devant la 
 
 Mathieu pensait naïvement qu'il suffisait de dire "STOP, merci de ne plus venir chasser chez nous" en qualité de gérant pour être respecté. Il a vite compris que pour eux, quelqu'un qui "n'est pas né ici" n'a rien à leur dire.
 
-**Incident de la nuit du 21 juillet 2020 — La lieutenant de louveterie Marilys CINQUINI**
+##### Incident de la nuit du 21 juillet 2020 — La lieutenant de louveterie Marilys CINQUINI
 
 Nuit du 21 au 22 juillet 2020. Des scouts sont campés dans la forêt du Domaine. Jean-Michel FRIEDMANN est présent sur le Domaine en qualité de garde forestier.
 
@@ -3505,13 +3507,13 @@ Mathieu regarde l'adjudant. Réponse : *"Je sais, Monsieur CHARREYRE, on ne peut
 
 Il s'est avéré que **Marilys CINQUINI** était une lieutenant de louveterie mandatée par la préfecture, à la demande de **Mme THIEBLIN**, propriétaire du **Domaine de Marine** (route de Vauvenargues, 13490 Jouques), qui déclarait subir des destructions de culture massives par les sangliers. Mme THIEBLIN et son mari (un couple la cinquantaine à l'époque) sont venus le lendemain gueuler sur Mathieu en lui demandant de quoi il se mêlait.
 
-Dixit Esther MERCIER, amie du Domaine, oral du 29/05/2026 : Marilys CINQUINI serait gérante et/ou propriétaire du **Domaine de la Sicarde** à Jouques. Sur société.com, elle apparaît comme MADAME MARILYS CINQUINI – 13490, siège social depuis le 2 avril 2017, SIRET **824 701 460 00019**, activité **0111Z** (Culture de céréales, à l'exception du riz, de légumineuses et de graines oléagineuses), adresse **CHE DEPARTEMENTAL 11 DOMAINE LA SICARDE, 13490 JOUQUES**.
+Dixit **Esther MERCIER**, amie du Domaine, oral du 29/05/2026 : **Marilys CINQUINI** serait gérante et/ou propriétaire du **Domaine de la Sicarde** à Jouques. Sur société.com, elle apparaît comme MADAME MARILYS CINQUINI – 13490, siège social depuis le 2 avril 2017, SIRET **824 701 460 00019**, activité **0111Z** (Culture de céréales, à l'exception du riz, de légumineuses et de graines oléagineuses), adresse **CHE DEPARTEMENTAL 11 DOMAINE LA SICARDE, 13490 JOUQUES**.
 
 **Points juridiques notables :**
-- Tirs de nuit depuis la voie publique (D11) sur une propriété privée classée refuge : illégal même dans le cadre de la louveterie sans autorisation préfectorale notifiée au propriétaire.
-- **Refus de poser son arme devant la gendarmerie** : comportement à caractériser.
-- **Menace de mort proférée devant 4 gendarmes, 1 civil garde forestier et 1 chef scout** : la menace *"je viendrai tirer contre vos volets"*, prononcée par une personne armée refusant d'obtempérer aux forces de l'ordre, constitue une menace de mort avec arme caractérisée, aggravée par la qualité de l'auteur (dépositaire d'une mission préfectorale).
-- Le post Facebook avec la plaque d'immatriculation était **légal** : acte citoyen de signalement d'un danger imminent, contexte établi (scouts à 200m, coups de feu de nuit).
+- Tirs de nuit depuis la voie publique (D11) sur une propriété privée classée refuge : Illégal même dans le cadre de la louveterie sans autorisation préfectorale notifiée au propriétaire.
+- **Refus de poser son arme devant la gendarmerie** : Comportement à caractériser.
+- **Menace de mort proférée devant 4 gendarmes, 1 civil garde forestier et 1 chef scout** : La menace *"je viendrai tirer contre vos volets"*, prononcée par une personne armée refusant d'obtempérer aux forces de l'ordre, constitue une menace de mort avec arme caractérisée, aggravée par la qualité de l'auteur (dépositaire d'une mission préfectorale).
+- Le post Facebook avec la plaque d'immatriculation était **légal** : Acte citoyen de signalement d'un danger imminent, contexte établi (scouts à 200m, coups de feu de nuit).
 - Les papiers afférents à cet incident sont conservés par Mathieu et versés au dossier (courriers ASPAS au Préfet et réponse préfectorale documentés ci-dessous).
 
 **Courriers ASPAS au Préfet des Bouches-du-Rhône — 5 août 2020 et 27 août 2020**
@@ -3540,7 +3542,7 @@ Points clefs :
 
 Quelques jours après l'incident, plusieurs chasseurs du village — y compris certains avec qui Mathieu avait eu des différends par le passé — sont venus le mettre en garde :
 
-> « Faites gaffe avec elle, même nous on ne s'en approche pas... Elle a tous les droits. Elle vient même dans nos battues, sans demander, et s'accapare notre gibier. Faites très attention, elle est dangereuse ! »
+> *« Faites gaffe avec elle, même nous on ne s'en approche pas... Elle a tous les droits. Elle vient même dans nos battues, sans demander, et s'accapare notre gibier. Faites très attention, elle est dangereuse ! »*
 
 Ce témoignage local confirme la réputation de Marilys CINQUINI comme personne redoutée, y compris par les chasseurs locaux eux-mêmes.
 
@@ -3654,17 +3656,16 @@ Ce courrier confirme que l'ASPAS avait notifié GIRAUD-CLAUDE (président de la 
 
 C'est un incident survenu avant l'arrivée de Jean-Michel FRIEDMANN sur le Domaine (donc avant 2020, probablement un début de printemps entre 2014 et 2018) qui a directement poussé Mathieu à rejoindre l'ASPAS.
 
-**L'incident du chasseur devant Yvette — et le gendarme chasseur**
-
+##### L'incident du chasseur devant Yvette — et le gendarme chasseur
 **Yvette AUBRÉE** (veuve de **Jean-Jacques DANGLARD**, gardienne du Domaine, habitant la ferme) était alors sur place. Mathieu débroussaille au-dessus de la ferme. Yvette voit passer un chasseur avec ses chiens dans le fond des champs Ouest, face à la ferme. Elle interpelle le chasseur (Marseillaise oblige), ce qui force Mathieu à couper la débroussailleuse.
 
 Le chasseur arrive tranquillement, **fusil à la main, non cassé**, chiens qui foutent le bordel partout. Il se colle devant Yvette avec la carabine entre eux deux — pointant en l'air — et lui dit :
 
-> *"Ho Mamie, tu rentres chez toi, ou il va t'arriver des bricoles..."*
+> *"Ho Mamie, tu rentres chez toi, ou il va t'arriver des bricoles ..."*
 
 Mathieu intervient en gueulant. Le chasseur se retourne :
 
-> *"Oh, toi le Parisien, on t'a rien demandé. Ici je suis chez moi, moi je suis né à Jouques, toi tu n'existes pas et tu n'as rien à me dire..."*
+> *"Oh, toi le Parisien, on t'a rien demandé. Ici je suis chez moi, moi je suis né à Jouques, toi tu n'existes pas et tu n'as rien à me dire ..."*
 
 Et il s'en va doucement.
 
@@ -3692,7 +3693,7 @@ Mathieu était tellement sonné qu'il n'a pas porté plainte. L'expérience de l
 
 Face aux tensions montantes, Mathieu a signé la convention avec l'**ASPAS** (Association pour la Protection des Animaux Sauvages) en **2019** (courrier ASPAS → GIRAUD-CLAUDE du 3 septembre 2019, joint en pièce du courrier BOUFFIER du 31/08/2020). Les droits de chasse de l'ensemble du Domaine ont été cédés notarialement à l'ASPAS, afin d'obtenir une protection juridique réelle. L'ASPAS n'était pas encore connue à Jouques à l'époque — l'essentiel était qu'ils disposent des droits de chasse pour pouvoir intervenir légalement.
 
-**LPO — Les opportunistes**
+##### LPO — Les opportunistes
 
 Depuis **2016**, Mathieu avait sollicité la LPO sans résultat. La réponse de Marion FOUCHARD, alors en charge du secteur LPO : *"Monsieur CHARREYRE, votre Domaine est très beau, mais nous on cherche des terres à acheter, pas des commodats ou partenariats."* Pas un mouvement.
 
@@ -3715,8 +3716,7 @@ De toute façon, la LPO n'a jamais rien fait concrètement pour le Domaine. À l
 
 Néanmoins, les panneaux "Refuge LPO" posés par Mathieu le long de la route (en plus de ceux de l'ASPAS) ont eu un effet inattendu au village : les Jouquards, qui avaient entendu parler de la LPO ("c'est le truc qui sauve les animaux"), ont commencé à prendre peur de représailles.
 
-**Partenariat L'Écho des Terriers — LPO AURA**
-
+##### Partenariat L'Écho des Terriers — LPO AURA
 - **Date de l'échange initial** : 6 février 2026.
 - **Interlocuteur** : Yves VERILHAC — Vice-président LPO AURA (ancien directeur de la LPO). Email : yves.verilhac@lpo.fr.
 - **Contexte** : Mathieu CHARREYRE (Domaine Saint-Antonin) a pris contact pour informer qu'il diffusait la newsletter "L'Écho des Terriers" (tribune hebdomadaire engagée pour la protection de la nature, rédigée par "Meles meles") sur le forum du Domaine. Connu via l'AOC.
@@ -3730,8 +3730,7 @@ Néanmoins, les panneaux "Refuge LPO" posés par Mathieu le long de la route (en
   - Exemple de thread (n°89) : https://saint-antonin.net/Forum/viewtopic.php?t=48
 - **Statut actuel** : partenariat de contenu actif avec Yves VERILHAC / L'Écho des Terriers, diffusion régulière sur le forum via Faune Sauvage Sud (FSS), inclusion de Mathieu dans la liste des destinataires de la newsletter complète.
 
-**AOC — Alliance des Opposants à la Chasse**
-
+##### AOC — Alliance des Opposants à la Chasse
 Suite à ses déboires avec les chasseurs de Jouques, Mathieu a été contacté par l'**AOC** (Alliance des Opposants à la Chasse — https://alliance.opposantschasse.org), qui avait entendu parler de son histoire et la trouvait hallucinante. Il a rejoint leurs rangs en tant qu'administrateur.
 
 - **Nom complet** : Alliance des Opposants à la Chasse.
@@ -3779,7 +3778,7 @@ Deux candidats se proposent pour accueillir le futur siège de l'AOC chez eux : 
 
 Bureau en place au moment de ce CA :
 - Président : **Jean-Louis CHUILON** (FNE AURA)
-- Vice-présidente : **Christine VALUSSO** (ADDA 26)
+- Ancienne Vice-présidente : **Christine VALUSSO** (ADDA 26)
 - Secrétaire (démissionnaire) : Jacques ROSAY
 - Administrateurs : Laurent CLUZEAU (relations associations adhérentes), Julie LASNE (CACH – Campaign Against Cannot Hunting, éthologie faune sauvage pays émergents), Joëlle VIALA (aires de quiétude), Frédéric BARAS
 
@@ -3817,12 +3816,12 @@ Mathieu soupçonne Jean-Louis CHUILON d'utiliser l'AOC principalement pour ses q
 
 Bilan pour Mathieu : Christine était la cheville ouvrière de la visibilité de l'AOC sur les réseaux. Sa démission, combinée à l'alerte comptable non résolue, et au comportement répété de CHUILON envers les femmes du bureau, constitue un signal sérieux sur la gouvernance de l'association. À peser dans l'implication future de Mathieu au sein de l'AOC.
 
-**Le Domaine de Marine**
+L’AOC reste tendue. Deux membres continuent de remettre en question la présidence de Jean-Louis CHUILON. Échanges internes (octobre 2026) entre David GESLAND, François DARLOT et Mathieu CHARREYRE : comportement autoritaire et injurieux de JL, démission de Christine VALUSSO (injures publiques), absence de visios depuis ~6 mois, discussions sur une éventuelle AG, une présidence collégiale/anonyme, ou une évolution vers une fédération d’associations. Philippe GUERLET (FauneSauvage.fr) a rencontré JL sur proposition de Mathieu et a relevé son fort besoin de parler de lui-même. Mathieu reste engagé pour la cause tout en observant la situation.
 
+##### Le Domaine de Marine
 Le domaine voisin est probablement inscrit simplement sous le nom **"Marine"**, route de Vauvenargues, 13490 Jouques — et non "Domaine de Marine". Propriété de **Mme THIEBLIN** et son mari (un couple la cinquantaine en 2020). C'est là que BOUFFIER a vraisemblablement domicilié son association, en échange des services qu'il y rendait — et c'est Mme THIEBLIN qui a commandité l'intervention de louveterie nocturne de Marilys CINQUINI dans la nuit du 21 au 22 juillet 2020.
 
-**Les associations de chasse officiellement déclarées autour de Jouques (RNA, avril 2026)**
-
+##### Les associations de chasse officiellement déclarées autour de Jouques (RNA, avril 2026)
 Recherche effectuée dans le Répertoire National des Associations (Ministère de l'Intérieur, import du 7 avril 2026). Quatre associations de chasse sont déclarées à Jouques (13490) :
 
 1. **SOCIETE DE DEFENSE DE LA PROPRIETE ET DE CHASSE DE JOUQUES** — SIREN 904751047 — Avenue de la Gare, 13490 Jouques — Tél. 06-41-86-66-32 — *Fondée le 26 avril **1956*** — Active. Siège social dans **l'ancienne gare SNCF de Jouques**, reconvertie en local associatif par la Mairie. Son nom évoque une structure "privée", distincte de l'ACCA classique.
@@ -3852,16 +3851,12 @@ Les noms utilisés dans les autorisations officielles rédigées par Mathieu en 
 
 Dans les communes limitrophes : **SOCIETE DE CHASSE MEYRARGUAIS** (13650 Meyrargues, SIREN 750266363) et **SOCIETE DE CHASSE L'AMICALE PUYLOUBIER SAINTE VICTOIRE** (13114 Puyloubier, SIREN 529917213).
 
-**ARMURERIE JMartemis — 48 Boulevard de la République, Jouques**
-
-Autre pièce du puzzle local. Dans ce village de ~4 000 habitants, l'ARMURERIE JMartemis dispose de **deux boutiques de part et d'autre du Boulevard de la République** — ce qui, même pour un village provençal, révèle à quel point la chasse est dans l'ADN de Jouques. La boutique est décrite comme une "armurerie américaine" : fusils de calibres non courants, tenues de chasse professionnelles, à la limite d'un stand de tir. C'est **LA** boutique du village.
+##### ARMURERIE JMartemis — 48 Boulevard de la République, Jouques
+Autre pièce du puzzle local. Dans ce village de ~4 000 habitants, l'ARMURERIE JMartemis dispose de **deux boutiques de part et d'autre du Boulevard de la République** — ce qui, même pour un village provençal, révèle à quel point la chasse est dans l'ADN de Jouques. La boutique est décrite comme une "armurerie américaine" : fusils de calibres non courants, tenues de chasse professionnelles, à la limite d'un stand de tir. C'est **LA** boutique du village. A l'emplacement de l'ancien bar "d'Etienette".
 
 Mathieu a surpris la **gérante** (prénom non mémorisé) en train de chasser sur le Domaine avant 2020 — alors qu'elle n'aurait pas de permis de chasse en règle. Bref : far west.
 
-Page refuge : https://saint-antonin.net/refuge-de-vie-sauvage — Sous-domaine chasse : https://chasse.saint-antonin.net/
-
-**Journal des incidents documentés — site chasse.saint-antonin.net**
-
+##### Journal des incidents documentés — site chasse.saint-antonin.net
 Tous les incidents ci-dessous sont publiés sur https://chasse.saint-antonin.net, avec photos et vidéos. Classés par ID chronologique croissant (ID 1 = premier incident documenté, oct. 2019). Secteurs géographiques récurrents : Payanne (Sud), Basses-terres (Nord-Est et Sud), Baragne (chemin Sud), Porquetière (D11 Nord), Cannet (plateau Ouest), Ubacs (Nord).
 
 | ID | Date | Catégorie | Résumé | Résolu |
@@ -3899,15 +3894,12 @@ Tous les incidents ci-dessous sont publiés sur https://chasse.saint-antonin.net
 - **Refus de plainte systématique par la Gendarmerie de Peyrolles** : confirmé dans les incidents ID 12 et évoqué dans ID 13 ("ils ont un dossier à notre encontre").
 - **Colliers GPS comme preuve à charge** : mentionnés dans ID 9, 11, 15, 16, 19, 24, 26, 28, 29 — conformément à l'argument utilisé par l'ASPAS dans son courrier d'avril 2023, ces colliers prouvent que les chasseurs *savent* où sont leurs chiens en temps réel.
 
-##### Terres Saint-Antonin
-Terres Saint-Antonin est la structure agricole formelle créée par Mathieu CHARREYRE en Micro BA en octobre 2025 pour soutenir durablement la préservation et la valorisation du Domaine Saint-Antonin. Elle vise à incarner une agriculture respectueuse de la biodiversité et à compléter les pratiques de commodats déjà mises en place sur le Domaine depuis 1633. Terres Saint-Antonin est reconnue par la Préfecture des Bouches-du-Rhône comme structure agricole dédiée à 88 hectares 37 ares, et elle est enregistrée à l'INSEE sous le SIRET 519 384 226 00030 depuis le 1er novembre 2025. Site : https://terres.saint-antonin.net.
-Page internet intégralement créée à la main par Mathieu.
-
-### Association TOUN
+##### Association TOUN
 TOUN : Pseudonyme artistique de Marie, Thérèse, Charlotte, Louise BAUDOUIN-THUS (née le 5 septembre 1899 à Aix-en-Provence, décédée le 20 novembre 1991 à Boulogne-Billancourt). Santonnière à Aix. Épouse d'Émile Augustin Alexandre SICARD, dit **"Papoune"**. Mathieu l'appelait **"Moumou"** quand il était petit. Mathieu reprend son pseudonyme pour l'association afin d'imager la gestion du Domaine.
 Parue au Journal Officiel des associations (n° 0025) le 24/06/2017 (Annonce n° 00133).
 Déclarée de Loi 1901, l’association TOUN est l’unique bénéficiaire des recettes générées par le Domaine.
 L’intégralité des fonds récoltés par le biais notamment de la mise à disposition d’espaces, est utilisée pour la restauration du bâti ancien et l’entretien du parc naturel.
+L’Association TOUN finance l’ensemble des cotisations et adhésions liées au Domaine Saint-Antonin (ASPAS, LPO, AOC, RAC, etc.). Les paiements récents sont effectués au nom de l’association.
 Site : https://toun.saint-antonin.net (sous-domaine, URL complète : https://saint-antonin.net/association-toun)
 Siège social : Domaine Saint-Antonin, 13490 Jouques
 SIRET : 83140978400012
@@ -3917,7 +3909,7 @@ Président co-fondateur : Mathieu CHARREYRE
 Trésorier(e) co-fondatrice : Anne-Sophie LESAGE-MÜNCH
 Page internet intégralement créée à la main par Mathieu.
 
-### Association FSS
+##### Association FSS
 Faune Sauvage Sud (FSS)
 Président co-fondateur : Mathieu CHARREYRE
 Trésorier(e) : Anne-Sophie LESAGE-MÜNCH depuis la dissolution du précédent bureau en 2024.
@@ -3931,6 +3923,8 @@ FSS documente une biodiversité remarquable : loups, renards, chevreuils, daims,
 Le site de FSS invite à signaler la chasse illégale, à rejoindre des patrouilles bénévoles, à participer aux inventaires naturalistes, à faire un don pour du matériel de surveillance ou à proposer une aide pour la relance du centre de soins. Site : https://faunesauvagesud.org
 Site internet intégralement créé à la main par Mathieu.
 
+Relancée et sauvée par Mathieu CHARREYRE en 2024 après la dissolution du bureau précédent. En plus de la protection de la faune sauvage (surveillance, inventaires, lutte anti-braconnage), FSS encadre la gestion des animaux du Domaine (chèvres, cochon, etc.). Mascottes documentées : Oscar & Tulipe (chèvres sentinelles), Bernard le cochon-mascotte. Partenariat avec L’Écho des Terriers (fanzine d’Yves VERILHAC) depuis le 06/02/2026.
+
 Informations légales de FSS :
 - Dénomination sociale : Sauvegarder Soigner Sensibiliser Faune Sauvage Sud
 - Nom d'usage : Faune Sauvage Sud (FSS)
@@ -3942,6 +3936,19 @@ Informations légales de FSS :
 - Code APE : 94.99Z
 - Siège social : Domaine Saint-Antonin, Route de Vauvenargues, 13490 Jouques
 - Téléphone : +33 (0)6.95.72.15.69
+
+##### Terres Saint-Antonin
+Terres Saint-Antonin est la structure agricole formelle créée par Mathieu CHARREYRE en Micro BA en octobre 2025 pour soutenir durablement la préservation et la valorisation du Domaine Saint-Antonin. Elle vise à incarner une agriculture respectueuse de la biodiversité et à compléter les pratiques de commodats déjà mises en place sur le Domaine depuis 1633. Terres Saint-Antonin est reconnue par la Préfecture des Bouches-du-Rhône comme structure agricole dédiée à 88 hectares 37 ares, et elle est enregistrée à l'INSEE sous le SIRET 519 384 226 00030 depuis le 1er novembre 2025. Site : https://terres.saint-antonin.net.
+Page internet intégralement créée à la main par Mathieu.
+
+##### Philippe GUERLET (FauneSauvage.fr)
+Philippe GUERLET (co-fondateur du portail FauneSauvage.fr, photographe animalier, auteur et organisateur d’événements autour de la faune) est venu rencontrer Mathieu CHARREYRE au Domaine Saint-Antonin le 10 juillet 2026 à 14 h. Ils ont très rapidement sympathisé.Philippe est décrit comme cool, passionné et auteur de belles photos. Il porte plusieurs projets, dont l’ouverture d’un espace communautaire FauneSauvage.fr et WDA à La Ciotat, encore en cours de mise en place, dans lequel Mathieu est associé. Le rapprochement s’est formalisé en 2026 et est mentionné sur le site du Domaine (page refuge-de-vie-sauvage). Ils échangent beaucoup depuis sur WhatsApp.
+
+##### Association Échos d’âmes
+Le 12 octobre 2026 à 15 h 41, Mathieu CHARREYRE a publié un message dans le groupe Facebook « Groupe d’action pour la protection de la faune sauvage, anti-chasse ». Il y évoquait les 21 menaces de mort reçues (dont 2 avec arme sur la tempe dans le domicile), le statut de sanctuaire et refuge ASPAS/LPO du Domaine Saint-Antonin, ainsi que l’autorisation donnée par le maire de Jouques aux chasseurs malgré l’interdiction.
+Émy CASTEL (association Échos d’âmes, contact : emy.castel@aol.com) a commenté le post pour préciser que les refuges ASPAS et LPO ne sont pas automatiquement retirés de la chasse et qu’une démarche officielle auprès de l’ACCA reste nécessaire. Elle a proposé un contact en message privé. Après échange de demandes d’amis et de numéros de téléphone, Mathieu et Émy poursuivent leurs échanges par WhatsApp. Mathieu l’a intégrée aux groupes WhatsApp Faune du Domaine.
+Le 14 octobre 2026 à 11 h 19, l’Association TOUN a réalisé une adhésion (gratuite) et un soutien de 5 € à Échos d’âmes via HelloAsso (attestation n°195606190, contribution volontaire HelloAsso 1 €, total 6 €). Carte d’adhérent délivrée le même jour au nom de Mathieu CHARREYRE (« Adhésion Gratuite » + « NOUS SOUTENIR »). Siège de l’association : Auzits (12390).
+Échos d’âmes (loi 1901) oeuvre pour la création d’espaces d’observation préservés de la faune sauvage (nichoirs, points d’eau, mares, haies, sentiers pédagogiques, expositions photographiques et animations). Slogan : « Préserver le sauvage ». Le partenariat s’inscrit dans la continuité des engagements du Domaine (refuge ASPAS/LPO, FSS, AOC, RAC).
 
 ### Sardines & Haricots Libres
 Site parodique créé dans la nuit du **12 août 2025** par Mathieu CHARREYRE, d'un seul trait, entre 2h et 3h du matin, depuis son bureau de Saint-Antonin. Insomniaque (trop de sucre, suspect habituel), seul dans l'obscurité alors que tout le monde dormait — AnSo, Ambre, et leurs amis hébergés cette semaine-là : **Grégoire DELOEUVRE** (alias Greg / Caféine), sa femme **Virginie** et leur fils **Arthur**. Mathieu a créé le site en one shot, puis déposé le nom de domaine dans la foulée, avant d'envoyer l'URL à tout le monde via Messenger en pleine nuit. Le lendemain matin, la réaction de ses proches fut unanime : *"Il faut que tu arrêtes le sucre la nuit… Sérieusement !"*. Site humoristique et satirique autour de l'"Association Sardines & Haricots Libres" — un projet décalé militant pour la libération des sardines en conserve et des haricots opprimés. Ton volontairement absurde, manifeste révolutionnaire, témoignages fictifs, pseudo-preuves scientifiques. Le "laboratoire de libération" est présenté comme étant au Domaine Saint-Antonin. Une initiative purement pour rire, dans la lignée de l'humour cynique de Mathieu.
@@ -4017,6 +4024,24 @@ Mécaniques principales déjà en place (version 0.6) :
 
 Statut : en développement actif (version 0.6 au 29 août 2026).
 Objectif principal : version portable Android jouable.
+
+### Fioles d'Ambre
+Projet : jeu de tri de mélasses dans des fioles, jouable dans le navigateur, fait pour Ambre.
+
+Description :
+Mathieu l'a commencé le 21 octobre 2026. Ambre aime beaucoup ce genre de jeux, verser une couleur sur la même couleur jusqu'à ranger les fioles. Les versions du commerce sont payantes, limitées ou vulgaires. Il en a donc fait une, gratuite, sans publicité, pour lui faire plaisir.
+Le prénom du jeu est celui d'Ambre.
+Adresse : https://mathieu.charreyre.net/Fioles/
+Ce n'est pas du Godot. C'est une page web : HTML, CSS et JavaScript.
+Mécaniques en place (version 0.14, 22 octobre 2026) :
+- Une seule règle : verser une mélasse sur la même couleur, ou dans une fiole vide
+- Niveaux de plus en plus durs, puis un bandeau au niveau 40
+- Couches voilées, bouchon quand une fiole est pleine d'une seule couleur
+- Annuler, indice gratuit, partie enregistrée dans le navigateur
+- Aucun paiement. Un don à l'association WDA est possible, jamais obligatoire
+
+Statut : jouable en ligne (version 0.14 au 22 octobre 2026).
+Objectif principal : qu'Ambre puisse y jouer, sans pub et sans payer.
 
 ### Voyage à Londres (AnSo + Ambre)
 Projet : Emmener Anne-Sophie LESAGE-MÜNCH et Ambre à Londres.
