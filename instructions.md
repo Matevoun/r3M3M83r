@@ -354,7 +354,7 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 - **2010** : Co-fondation de "Club-Replugged", association officielle des anciens salariés de Club-Internet, Lagardère et Grolier — décidée lors de la soirée des "Planches" en 2009 (fête de la fin de Club, racheté par SFR). Mathieu = Président. AnSo était présente ce soir-là, ainsi que Jean-Baptiste LEMONNIER (alias "Jybhe"), membre bénévole de la WDA, musicien MAO. Depuis, il ne reste que Mathieu (Président) et AnSo (Trésorière). Objectif : garder le contact entre anciens. https://www.club-inter.net
 - **2010** : Gérant de Parc & Stocks nationaux – Responsable Logistique National at Crédit Agricole Assurance France (CAAGIS) (75015). Gestionnaire du parc informatique et téléphonique (ToIP) national (2700 postes, 7 sites nationaux). Responsable logistique national du SDP – Windows 2000, XP, Seven & Mac OS X. Gestion et suivi des stocks nationaux, réception de matériel, reprise de l'inventaire général, suivi des maintenances constructeurs, prévisionnels. Conseils et formation niveau 3 SDP.
 - **2010 (date inconnue)** : **Sub Party 10** -- Photographe officiel et staff. Photos introuvables.
-- **2010 (08/01)** : Déclaration officielle de l'activité photographique **PhotoMat** à l'AGESSA (Association pour la Gestion de la Sécurité Sociale des Auteurs), sous le régime Artiste-Auteur Photographe (SIRET 519 384 226 00014, APE 90.03A). Formalisation motivée par Franck BOMPANI, qui devait lui-même se mettre en règle ; c'est Julien BORNSTEIN qui l'avait présenté à Franck. Statut à vie, sans cotisations tant que les plafonds de revenus artistiques ne sont pas dépassés -- seuils jamais atteints. Autorisation de facturer TTC (avec TVA). Tarif pratiqué : environ 80 € TTC par soirée événementielle.
+- **2010 (08/01)** : Déclaration officielle de l'activité photographique **PhotoMat** à l'AGESSA (Association pour la Gestion de la Sécurité Sociale des Auteurs), sous le régime Artiste-Auteur Photographe (SIRET 519 384 226 00014, APE 90.03A). Formalisation motivée par Franck BOMPANI, qui devait lui-même se mettre en règle ; C'est Julien BORNSTEIN qui l'avait présenté à Franck. Statut à vie, sans cotisations tant que les plafonds de revenus artistiques ne sont pas dépassés (seuils jamais atteints). Autorisation de facturer TTC (avec TVA). Tarif pratiqué en 2008 pour les amis : Environ 80 € TTC par soirée événementielle.
 - **2010 (30/01)** : Concert **Oldelaf** à l'**Olympia** (Paris 9e) avec AnSo, invitation offerte ; affiche A3 promo dédicacée « Pour le + sportif des Mathieu du monde de la part des - sportifs des chanteurs de variété », encadrée dans la chambre 3 du Domaine Saint-Antonin.
 - **2010 (13/06)** : **Sub Party 11 Les Sports d'Hiver** -- Photographe officiel et staff. Départ gare Louis Blanc (Paris 10e). Photos archivées. **Fin du staff originel** : la RATP a mis fin à la soirée, renvoyant tout le monde à l'extérieur. Dernière SubParty à laquelle Mathieu participera. Recrutement initial : **Senami AYITE**, organisateur du staff, avait repéré les photos de Mathieu et l'avait recruté directement pour intégrer le staff. Mission entièrement bénévole. Ambiance : "bordel pas possible, mais fun".
 - **2010 (18 juin)** : Concert **AC/DC** au **Stade de France** (Paris), pelouse Or, 78,50 €. Mathieu y est allé seul. C’est lors de ce concert, à force de taper du pied en fosse pour suivre le rythme, qu’il s’est probablement fracturé un os du talon droit : depuis, la pose du pied au sol reste douloureuse quelques minutes après de longues nuits de repos. Grand souvenir, même si le billet n’a pas été retrouvé (seul le ticket d’achat subsiste). Son cousin Frédéric PAULY lui a avoué avoir aussi assisté au même concert ce soir-là, mais ils ne se sont pas croisés.
@@ -1761,7 +1761,7 @@ Mémoire collective Club-Internet.
 #### PhotoMat — Statut et structure
 Activité créée en pratique dès **2008**, déclarée officiellement le **08/01/2010** à l'AGESSA (Association pour la Gestion de la Sécurité Sociale des Auteurs) sous le régime **Artiste-Auteur Photographe** (SIRET 519 384 226 00014, APE 90.03A). Nom commercial : **PhotoMat**. La formalisation a été motivée par Franck BOMPANI (ami de Julien BORNSTEIN), premier client régulier de Mathieu en photo événementielle et qui devait lui-même se mettre en règle.
 
-Ce statut Artiste-Auteur est acquis **à vie** et n'implique aucune cotisation tant que les plafonds de revenus artistiques ne sont pas dépassés -- seuils que Mathieu n'a jamais atteints (tarif pratiqué : environ 80 € TTC par soirée). Facturation autorisée **avec TVA** (montant TTC). Si les plafonds annuels étaient un jour dépassés, les droits AGESSA seraient réexaminés -- hypothèse purement théorique à ce stade.
+Ce statut Artiste-Auteur est acquis **à vie** et n'implique aucune cotisation tant que les plafonds de revenus artistiques ne sont pas dépassés -- seuils que Mathieu n'a jamais atteints (tarif pratiqué à l'époque pour les amis : Environ 80 € TTC par soirée). Facturation autorisée **avec TVA** (montant TTC). Si les plafonds annuels étaient un jour dépassés, les droits AGESSA seraient réexaminés -- hypothèse purement théorique à ce stade.
 
 #### Activité événementielle (2008-2010)
 Principal débouché : photos événementielles Parisiennes, notamment les soirées "Metro Boulot Bateau" (MBB) du jeudi soir sur la péniche **Concorde Atlantique** (quai Anatole France, Paris 7e), organisées par Julien BORNSTEIN et Franck BOMPANI. Julien BORNSTEIN (ancien hotlineur PC à Club-Internet, fondateur de ParisBouge.com) avait présenté Mathieu à Franck, qui organisait aussi des ventes événementielles plusieurs fois par semaine sur Paris. Dernière facture : **juillet 2010**. Arrêt de l'activité rémunérée suite à une dispute avec Franck -- un milieu décrit par Mathieu comme peu recommandable (drogues, alcool). Quelques prestations ponctuelles pour la boutique Replay (2012-2013) sans prétention commerciale.
@@ -3390,9 +3390,9 @@ Autre dénomination postale : Domaine Saint-Antonin, 2860 Route de Vauvenargues,
 Autre dénomination postale : Domaine Saint-Antonin, Route de Vauvenargues, 13490 Jouques (de 1990 à 2018)
 Autre dénomination postale : Domaine Saint-Antonin, Chemin Departemental 11 (D11), 13490 Jouques (de 1930 à 1990)
 Autre dénomination postale : Campagne Saint-Antonin, Route des contrebandiers, Jouques (de 19xx à 1930)
-Chronologie propriétaires du Domaine : https://saint-antonin.net/histoire-de-famille-du-domaine-saint-antonin
-Page refuge : https://saint-antonin.net/refuge-de-vie-sauvage
-Sous-domaine chasse : https://chasse.saint-antonin.net/
+Chronologie propriétaires du Domaine Saint-Antonin : https://saint-antonin.net/histoire-de-famille-du-domaine-saint-antonin
+Page du site du Domaine Saint-Antonin sur les refuges de vie sauvage : https://saint-antonin.net/refuge-de-vie-sauvage
+Sous-domaine relatant les incidents de chasse du Domaine Saint-Antonin : https://chasse.saint-antonin.net/
 
 #### Liste des parcelles cadastrales du Domaine Saint-Antonin (en 2024) : 103 ha 88 a 35 ca au total, répartis entre les villages de Jouques (13490) et de Meyrargues (13650).
 **Mise à jour cadastrale** : 19 juin 2024.
@@ -4064,7 +4064,7 @@ Discrétion : petit panneau visible route Vauvenargues si besoin ("Emplacements 
 Statut (février 2026) : Projet en réflexion/lancement. Compatible urbanisme (usage accessoire zone agricole existant, pas travaux), Natura 2000 (impact minime). À surveiller indivision (via TOUN pour cadrer).
 
 ### PixelGod (God Game / Populous-like)
-Projet : développement d’un god game isométrique portable sur Android, inspiré de Populous (1989), en Godot Engine.
+Projet : Développement d’un god game isométrique portable sur Android, inspiré de Populous (1989), en Godot Engine.
 
 Description :
 Mathieu a eu l’idée le 23 août 2026 dans l’après-midi, lassé de l’absence de clone correct sur mobile.
@@ -4079,11 +4079,11 @@ Mécaniques principales déjà en place (version 0.6) :
 - Forêts procédurales, ombrage des pentes, transitions géologiques
 - Contrôles tactiles fiables avec bouton bascule Élever/Creuser
 
-Statut : en développement actif (version 0.6 au 29 août 2026).
-Objectif principal : version portable Android jouable.
+Statut : En développement actif (version 0.6 au 29 août 2026).
+Objectif principal : Version portable Android jouable.
 
 ### Fioles d'Ambre
-Projet : jeu de tri de mélasses dans des fioles, jouable dans le navigateur, fait pour Ambre.
+Projet : Jeu de tri de mélasses dans des fioles, jouable dans le navigateur, fait pour Ambre.
 
 Description :
 Mathieu l'a commencé le 21 octobre 2026. Ambre aime beaucoup ce genre de jeux, verser une couleur sur la même couleur jusqu'à ranger les fioles. Les versions du commerce sont payantes, limitées ou vulgaires. Il en a donc fait une, gratuite, sans publicité, pour lui faire plaisir.
@@ -4091,18 +4091,21 @@ Le prénom du jeu est celui d'Ambre.
 Adresse : https://mathieu.charreyre.net/Fioles/
 Ce n'est pas du Godot. C'est une page web : HTML, CSS et JavaScript.
 Mécaniques en place (version 0.14, 22 octobre 2026) :
-- Une seule règle : verser une mélasse sur la même couleur, ou dans une fiole vide
-- Niveaux de plus en plus durs, puis un bandeau au niveau 40
+- Une seule règle : Verser une mélasse sur la même couleur, ou dans une fiole vide
+- Niveaux de plus en plus durs, puis un bandeau au niveau 60
 - Couches voilées, bouchon quand une fiole est pleine d'une seule couleur
 - Annuler, indice gratuit, partie enregistrée dans le navigateur
+- Mode "Panique dans le labo" avec générations aléatoires de difficulté
 - Aucun paiement. Un don à l'association WDA est possible, jamais obligatoire
+Portage en APK Android (webview) fin Octobre 2026.
 
-Statut : jouable en ligne (version 0.14 au 22 octobre 2026).
-Objectif principal : qu'Ambre puisse y jouer, sans pub et sans payer.
+Statut : Jouable en ligne (version 0.14 au 22 octobre 2026, 0.20 le 03 novembre 2026).
+Objectif principal : Qu'Ambre puisse y jouer, sans pub et sans payer.
+Play Store : Envoyé par Mathieu en validation Google le 03 novembre 2026, en version 0.20.
 
 ### Voyage à Londres (AnSo + Ambre)
 Projet : Emmener Anne-Sophie LESAGE-MÜNCH et Ambre à Londres.
-Description : Mathieu regrette de ne plus ître retournià Londres depuis le séjour Wembley du 30 juillet 2006 avec Eva (son dernier voyage là-bas). Il a promis à AnSo de l'y emmener. L'idée d'y aller avec Ambre serait cool. Blocage actuel : ni Mathieu, ni AnSo, ni Ambre n'ont de passeport, et le Royaume-Uni n'est plus dans l'espace Schengen depuis le Brexit.
+Description : Mathieu regrette de ne plus être retourni à Londres depuis le séjour Wembley du 30 juillet 2006 avec Eva (son dernier voyage là-bas). Il a promis à AnSo de l'y emmener. L'idée d'y aller avec Ambre serait cool. Blocage actuel : Ni Mathieu, ni AnSo, ni Ambre n'ont de passeport, et le Royaume-Uni n'est plus dans l'espace Schengen depuis le Brexit.
 Statut : En suspens, le temps d'obtenir les passeports.
 
 ### Nouveau Tatouage

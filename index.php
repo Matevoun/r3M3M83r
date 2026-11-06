@@ -132,13 +132,13 @@
                     <p>Parcourir instructions.md par sections et occurrences litterales, sans interpretation LLM.</p>
                     <span class="go">Ouvrir le parcours →</span>
                 </a>
-                <a class="card" href="rebecca/" target="_blank" rel="noopener noreferrer" title="Tchat avec Rebecca — Memoire virtuelle de Mathieu CHARREYRE">
+                <a class="card" href="Rebecca/" target="_blank" rel="noopener noreferrer" title="Tchat avec Rebecca — Memoire virtuelle de Mathieu CHARREYRE">
                     <span class="label">Tchat</span>
                     <h2>Rebecca</h2>
                     <p>Discuter naturellement. Rebecca interroge la memoire quand c'est pertinent, sinon repond en conversation.</p>
                     <span class="go">Ouvrir le tchat →</span>
                 </a>
-                <a class="card" href="reformulator/saisie.php" target="_blank" rel="noopener noreferrer" title="Saisie — Memoire virtuelle de Mathieu CHARREYRE">
+                <a class="card" href="" target="_blank" rel="noopener noreferrer" title="Saisie — Memoire virtuelle de Mathieu CHARREYRE">
                     <span class="label">Saisie</span>
                     <h2>Reformulator</h2>
                     <p>Interroger, reformuler, proposer un emplacement, comparer / fusionner des notes avec le fichier.</p>

@@ -1,0 +1,8 @@
+DirectoryIndex index.php
+Options -Indexes
+
+<FilesMatch "\.(ts|tsx|md)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>
