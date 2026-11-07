@@ -201,6 +201,7 @@
       'Qui est Jean SALOMON',
       'Qui est Julien GAUTIER',
       'Qui est Virginie FLORAND',
+      'Tonin, Indy, Ankou ...',
       'Les soeurs SICARD',
       'La villa Jacquemont',
       'Le Domaine Saint-Antonin',
@@ -224,12 +225,19 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="robots" content="noindex,nofollow">
-  <title>Rebecca - Tchat memoire r3M3M83r</title>
+  <title>Rebecca - Mémoire interactive de Mathieu CHARREYRE</title>
+  <meta name="description" content="Rebecca répond sur Mathieu CHARREYRE à partir de son fichier. Un nom, une date, un lieu. Elle ne complète pas ce qui n'y est pas.">
+  <link rel="canonical" href="https://mathieu.charreyre.net/r3M3M83r/Rebecca/">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Rebecca — mémoire de Mathieu CHARREYRE">
+  <meta property="og:description" content="Un nom, une date, un lieu. Rebecca cherche dans le fichier et ne brode pas.">
+  <meta property="og:url" content="https://mathieu.charreyre.net/r3M3M83r/Rebecca/">
+  <meta property="og:image" content="https://mathieu.charreyre.net/r3M3M83r/Rebecca/Rebecca.webp">
+  <meta name="twitter:card" content="summary">
   <link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fonts.css">
   <style>
     :root { --bg:#16130f; --paper:#f4efe6; --ink:#1c1712; --gold:#c6a15a; --muted:#b7ab9e; }
     * { box-sizing: border-box; }
@@ -310,8 +318,9 @@
     @keyframes sweep { from { transform: translateX(-70%); } to { transform: translateX(220%); } }
     .composer { border-top: 1px solid rgba(244,239,230,.15); padding: 12px 16px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
     .composer form { display: flex; gap: 8px; align-items: flex-end; width: min(42rem, 100%); margin: 0 auto; }
-    textarea { flex: 1; min-height: 44px; max-height: 9rem; resize: none; border-radius: 16px; border: 1px solid rgba(244,239,230,.2); background: transparent; color: var(--paper); padding: 12px 16px; font: inherit; font-size: 16px; }
-    textarea:focus { outline: none; border-color: var(--gold); }
+    textarea { flex: 1; min-height: 44px; max-height: 9rem; resize: none; border-radius: 16px; border: 1px solid rgba(244,239,230,.2); background: transparent; color: var(--paper); padding: 12px 16px; font: inherit; font-size: 16px; transition: border-color .22s ease, background .22s ease, transform .22s ease, box-shadow .22s ease; }
+    textarea:hover,
+    textarea:focus { outline: none; border-color: rgba(198,161,90,.95); background: rgba(198,161,90,.14); box-shadow: 0 8px 24px rgba(0,0,0,.28); transform: translateY(-2px); }
     .composer button[type="submit"] { width: 44px; height: 44px; border: 0; border-radius: 999px; background: var(--gold); color: var(--ink); font-weight: 500; }
     .composer button[type="submit"]:disabled { opacity: .4; }
     aside { display: none; }
@@ -350,7 +359,8 @@
     @media (prefers-reduced-motion: reduce) {
       .bar span { animation: none; width: 100%; opacity: .7; }
       .suggest button, .suggest button::after { transition: none; }
-      .suggest button:hover, .suggest button:focus-visible, .suggest button:active { transform: none; }
+      .suggest button:hover, .suggest button:focus-visible, .suggest button:active,
+      textarea:hover, textarea:focus { transform: none; }
     }
   </style>
 </head>
@@ -359,15 +369,15 @@
   <div class="app">
     <header>
       <button type="button" class="avatar" id="home" aria-label="Retour a l'accueil">
-        <img src="rebecca.jpg" alt="">
+        <img src="Rebecca.webp" alt="Avatar de Rebecca" title="Avatar de Rebecca">
       </button>
       <div class="who">
         <h1>Rebecca</h1>
         <p id="status">Lecture du fichier ...</p>
       </div>
       <div class="nav">
-        <button type="button" class="nav-btn" id="open-journal" aria-expanded="false" aria-controls="panel">Journal</button>
-        <button type="button" class="nav-btn nav-keys" id="open-moteurs" aria-expanded="false" aria-controls="panel">Clefs</button>
+        <button type="button" title="Journal de traitement r3M3M83r" class="nav-btn" id="open-journal" aria-expanded="false" aria-controls="panel">Journal</button>
+        <button type="button" title="Gestion des clefs API des moteurs LLMs" class="nav-btn nav-keys" id="open-moteurs" aria-expanded="false" aria-controls="panel">Clefs</button>
       </div>
     </header>
     <div class="body">
@@ -376,12 +386,15 @@
           <div class="col" id="col">
             <div id="empty">
               <p class="lead">Je connais bien Mathieu ...</p>
-              <p class="sub">Un nom, une date, un lieu. Je cherche l'entree, anecdotes comprises, puis un moteur reformule. S'il n'y a rien, je le dis.</p>
+              <p class="sub">Un nom, une date, un lieu ... Je cherche l'entree, anecdotes comprises, puis un moteur reformule. S'il n'y a rien, je le dis.</p>
               <div class="suggest">
                 <p>Par exemple :</p>
-                <?php foreach ($prompts as $prompt): ?>
-                <button type="button" data-q="<?= htmlspecialchars($prompt, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($prompt, ENT_QUOTES, 'UTF-8') ?></button>
+                <?php foreach ($prompts as $prompt):
+                  $label = htmlspecialchars($prompt, ENT_QUOTES, 'UTF-8');
+                ?>
+                <button type="button" title="<?= $label ?>" aria-label="<?= $label ?>" data-q="<?= $label ?>"><?= $label ?></button>
                 <?php endforeach; ?>
+                <p>Ou :</p>
               </div>
             </div>
           </div>
@@ -390,14 +403,14 @@
           <form id="form">
             <label class="sr" for="draft">Message</label>
             <textarea id="draft" rows="2" placeholder="Un nom, une date, un lieu, ..."></textarea>
-            <button type="submit" id="send" disabled>OK</button>
+            <button type="submit" title="Envoyer la requête" id="send" disabled>OK</button>
           </form>
         </div>
       </section>
       <aside id="panel" hidden>
         <div class="panel-head">
-          <p id="panel-title">Journal</p>
-          <button type="button" id="close-panel">Fermer</button>
+          <p id="panel-title" title="Journal de traitement r3M3M83r">Journal</p>
+          <button type="button" title="Fermer le journal" id="close-panel">Fermer</button>
         </div>
         <div class="panel" id="panel-body"></div>
       </aside>
