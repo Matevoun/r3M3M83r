@@ -231,7 +231,7 @@
   <meta name="robots" content="index,follow">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_FR">
-  <meta property="og:title" content="Rebecca — mémoire de Mathieu CHARREYRE">
+  <meta property="og:title" content="Rebecca - Mémoire interactive de Mathieu CHARREYRE">
   <meta property="og:description" content="Un nom, une date, un lieu. Rebecca cherche dans le fichier et ne brode pas.">
   <meta property="og:url" content="https://mathieu.charreyre.net/r3M3M83r/Rebecca/">
   <meta property="og:image" content="https://mathieu.charreyre.net/r3M3M83r/Rebecca/Rebecca.webp">
