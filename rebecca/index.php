@@ -209,6 +209,8 @@
       'Le GAN, c\'est quoi',
       'Qu\'est-ce que Club-Internet',
       'Qu\'est-ce que PhotoMat',
+      'Mathieu et la Musique ...',
+      'Pourquoi Mathieu ne conduit pas ?',
       'Fioles d\'Ambre',
       'PixelGod',
       'Les vacances à Gigaro',
