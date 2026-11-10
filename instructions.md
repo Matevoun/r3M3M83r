@@ -475,6 +475,7 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 - **2026 (23 juillet)** : Décès de la chatte **Morticia** aux alentours de 10h45 à Saint-Antonin, des suites de son cancer. Elle n'a vraisemblablement plus réussi à respirer. Enterrement prévu autour de la Chapelle du Domaine Saint-Antonin.
 -- **2026 (24 juillet)** : Enterrement de **Morticia** avec AnSo, Esther MERCIER et Ambre, derrière la Chapelle, dans le "parc Emile" du Domaine Saint-Antonin. Premier chat de la ménagerie à être enterré et non incinéré.
 -- **2026 (23 août)** — Après-midi : Mathieu commence le développement de **PixelGod**, un god game isométrique de type Populous destiné à Android, en Godot Engine.
+-- **2026 (14-15 septembre)** : Décès subit de **Catherine RINGER** (des **Rita Mitsouko**), emportée par un cancer foudroyant dans la nuit du 14 septembre 2026.
 -- **2026 (22 septembre)** : À 16h54, Florence VIEUVILLE (tante maternelle de Mathieu CHARREYRE, née MONTJOL) lui envoie un texto dans lequel elle explique qu’elle précise que le refus de la maison de ses ancêtres l’a profondément dévastée, mais qu’elle l’a fait pour permettre à Mathieu et aux siens de conserver le Domaine sans droits de succession trop lourds. Elle ajoute que, lorsqu’elle souffre, elle coupe net et n’en parle plus pour ne plus en souffrir. Elle déclare que son seul retour à Saint-Antonin sera sous forme de cendres jetées autour de la chapelle. Elle termine en affirmant faire confiance à Mathieu et l’aimer beaucoup.
 -- **2026 (27 septembre)** : Tournage d’un court métrage d’Hind R. BOUKLI, femme de Fabien REMBLIER (rôle de Mathieu : un « bug dandy » récurrent vu par un ado trop addict aux jeux vidéo). Lieu : Villa de la Faisanderie (75116). Première prise à 19h44, dernière (prise son) à 20h20. Montage en cours, durée prévue ~10 min, pas encore de titre.
 -- **2026 (21 octobre)** : Mathieu commence le développement de **Fioles d'Ambre**, un jeu de tri de mélasses dans des fioles, pour faire plaisir à Ambre qui aime beaucoup ce genre de jeux. Jouable dans le navigateur, sans publicité ni paiement.
@@ -498,13 +499,13 @@ Il possédait plusieurs versions de chaque tome de la série, dans différents f
 « Il y a tout dans Tintin ! »
 Il a par ailleurs rédigé la préface d’un ouvrage consacré à l’univers de Tintin.
 Cette passion s’étendait à d’autres grandes séries de la bande dessinée franco-belge, qu’il affectionnait tout particulièrement : Blake et Mortimer, Lefranc, Alix, Quick et Flupke, et bien d’autres ...
-(Note : l’ensemble de ces albums a été intégralement conservé par Mathieu CHARREYRE.)
+(Note : l’ensemble de ces albums a été intégralement conservé par Mathieu CHARREYRE au Domaine Saint-Antonin (Voir paragraphe sur la "Chambre 3".)
 **Visite des bureaux de Club-Internet (vers 1998)**
-Un jour, aux alentours de 1998, après le déménagement de Club-Internet à La Villette mais avant que Mathieu ne dispose de son propre bureau, Henri est venu visiter les locaux. Mathieu était particulièrement fier et lui a fait faire le tour complet du bâtiment. Il fut profondément abasourdi par cette effervescence globale qu’il ne comprenait pas. Mathieu se souvient encore de lui, assis derrière son poste de travail, observant avec stupéfaction l’agitation permanente autour de lui. Il demanda à Mathieu, avec une sincère perplexité :
+Un jour, aux alentours de 1998, après le déménagement de Club-Internet à La Villette mais avant que Mathieu ne dispose de son propre bureau, Henri est venu visiter les locaux. Mathieu était particulièrement fier et lui a fait faire le tour complet du bâtiment. Henri fut profondément abasourdi par cette effervescence globale qu’il ne comprenait pas. Mathieu se souvient encore de lui, assis derrière le poste de travail Hotline de Mathieu, observant avec stupéfaction l’agitation permanente autour de lui. Il demanda à Mathieu, avec une sincère perplexité :
 « Mais comment vous gagnez de l’argent ici ? »
-Il posa exactement la même question à son responsable, qui éclata de rire.
+Il posa exactement la même question au responsable de Mathieu (Sebastien ANDRIVET à l'époque, service Hotline), qui éclata de rire.
 Cette anecdote illustre parfaitement le fossé générationnel et culturel qui existait entre son monde médical traditionnel et le nouvel univers numérique dans lequel Mathieu évoluait.
-**Relation père-fils** : Mathieu avait plus d'atomes crochus avec Henri qu'avec sa mère Anne, qu'il décrit comme très froide. La **dernière conversation** entre Mathieu et Henri a eu lieu 1 ou 2 jours avant le décès : Mathieu était au Domaine Saint-Antonin, Henri à l'hôpital à Paris. Le sujet était la gestion du Domaine et les différends familiaux. La conversation a viré à la dispute et Mathieu a raccroché en gueulant. Il ne savait pas que c'était la dernière fois qu'il entendait son père. Il porte cette culpabilité depuis.
+**Relation père-fils** : Mathieu avait plus d'atomes crochus avec Henri qu'avec sa mère Anne, qu'il décrit comme très froide. La **dernière conversation** entre Mathieu et Henri a eu lieu 1 ou 2 jours avant le décès (Mai 2017) : Mathieu était au Domaine Saint-Antonin, Henri à l'hôpital à Paris. Le sujet était la gestion du Domaine et les différends familiaux. La conversation a viré à la dispute et Mathieu a raccroché en gueulant. Il ne savait pas que c'était la dernière fois qu'il entendait son père. Il porte profondemment cette culpabilité depuis.
 
 ##### Le Dr Anne CHARREYRE, née MONTJOL : Mère
 **Mère** : Anne Nicole MONTJOL (née 06/11/1944 à Aix-en-Provence, Bouches-du-Rhône ; mariée le 24/06/1969 à la mairie de Versailles), docteur en médecine. Ses neveux et nièces VILLIERS (enfants de sa soeur Dominique MONTJOL) l'ont longtemps surnommée **"Tantanne"** — contraction affectueuse de *tante Anne*. Mathieu garde un souvenir acide de ce surnom, associé à ses "petits cons de cousins VILLIERS". Parents domiciliés à Saint Marcel par Vernon (Eure) au moment de la naissance. Lignée familiale marquée par la médecine et la pharmacie. La mère de Mathieu, le Docteur Anne CHARREYRE, née en 1944 et décédée en 2023, a eu son portrait réalisé enfant par le sculpteur Raymond SERVIAN. Cette sculpture est un exemplaire unique représentant sa mère enfant, qui avait environ 8 ans au moment de sa réalisation. Bien que Mathieu ne soit pas certain du matériau exact, il pense qu'il pourrait s'agir de plâtre. La sculpture mesure environ 37 cm de haut par 32 cm de large et est accrochée au-dessus de la porte d'entrée de son ancien bureau rue de la Faisanderie. Mathieu ne souhaite pas bien sûr la vendre.
@@ -550,7 +551,7 @@ Henri CHARREYRE et Anne CHARREYRE ont conservé, tout au long de leur vie, un ce
   - **Barbara SALOMON** (parfois appelée « Barbie », pseudo qu’elle n’aimait pas visiblement)
     Grande soeur, brune aux cheveux longs, avec un grain de beauté près de la bouche. Environ 3-4 ans de plus qu’Eva et Mathieu. Mariée le 04/06/2005 à Matthieu GALAND (« gendre parfait »). Ils ont eu au moins un enfant. Mathieu a assisté à leur mariage à Bordeaux. À la fin de la relation avec Eva, Barbara ne supportait plus Mathieu. Dernière photo de Barbara le 11/02/2006.
   - **Eva SALOMON**
-    La cadette. Fofolle, souriante, vive, plurilingue. Complexée par son manque de poitrine (paradoxal compte tenu de la mort de sa mère). Elle s’est orientée vers la communication à l’époque où elle était avec Mathieu. Relation de 2002 à 2007. Elle a quitté Mathieu en prétextant sortir avec son professeur de yoga. Mathieu a toujours soupçonné une aventure avec Pierre-Philipp BRAUN (membre WDA). Depuis 2007 elle lui fait la gueule. Les deux soeurs étaient extrêmement soudées.
+    La cadette. Fofolle, souriante, vive, plurilingue. Complexée par son manque de poitrine (paradoxal compte tenu de la mort de sa mère) qu'elle comparait à des sonnettes de porte. Elle s’est orientée vers la communication à l’époque où elle était avec Mathieu. Relation de 2002 à 2007. Elle a quitté Mathieu en prétextant sortir avec son professeur de yoga. Mathieu a toujours soupçonné une aventure avec Pierre-Philipp BRAUN (membre WDA). Depuis 2007 elle lui fait la gueule. Les deux soeurs étaient extrêmement soudées.
     Jeannot voyait d'un mauvais oeil l'union de sa fille et de Mathieu. Il disait a sa fille "Mais il est fou Mathieu".
   Après la séparation avec Eva, Mathieu n’a plus eu de nouvelles des SALOMON, à l’exception de Jean SALOMON qu’il a revu au décès d’Anne en février 2023.
   Avec le recul, Mathieu pense qu'il n'aurait jamais du se mettre en couple avec Eva (Jeannot avait donc raison), ils auraient pu garder leur amitié d'enfance intacte.
@@ -558,7 +559,7 @@ Henri CHARREYRE et Anne CHARREYRE ont conservé, tout au long de leur vie, un ce
 - **Les HOUDRY**
   Couple foufou, très souriant et très fusionnel, toujours ensemble. Mathieu les considérait comme les plus cools des amis de fac de ses parents.
   - **Jean-Loup HOUDRY** : Médecin. Taille normale, brun, grosse barbe, souriant. Voix très particulière et profonde. Mathieu l’aimait bien. Toujours en train de rire et de faire le con avec Suzon lors des repas entre amis de fac (on les entendait de loin). Il est venu rendre visite à Mathieu et AnSo à la villa Jacquemont (avant la naissance d’Ambre).
-  Détail étonnant : Bien qu’ayant à peu près l’âge des parents de Mathieu, il joue à *World of Warcraft* depuis le début. Son pseudo est « **Papagueno** ». Mathieu l’a vu récemment en ligne sur *WoW Forever* et lui a demandé son avis ; Jean-Loup a répondu simplement « un “Bof” pour l’instant... avec l’obligation de créer un nouveau personnage. Porte-toi bien ainsi que ceux qui t’entourent ».
+  Détail étonnant : Bien qu’ayant à peu près l’âge des parents de Mathieu, il joue à *World of Warcraft* depuis le début. Son pseudo est « **Papagueno** ». Mathieu l’a vu à la sortie du jeu en ligne sur *WoW Forever* et lui a demandé son avis ; Jean-Loup a répondu simplement *"un “Bof” pour l’instant... avec l’obligation de créer un nouveau personnage. Porte-toi bien ainsi que ceux qui t’entourent"*.
   - **Suzanne HOUDRY** (dite **« Suzon »**) : Brune, cheveux courts, riante, toujours à rigoler. Très peu d’informations précises, mais un très bon souvenir d’enfance pour Mathieu.
 
   Ils ont écrit à Mathieu aussi bien au décès d’Henri qu’à celui d’Anne. Gens respectueux et cool.
@@ -2857,7 +2858,13 @@ Quand le clip de *Cats in the Cradle* est sorti, c’est à ce moment-là que Ma
 **The Hives** est le groupe de rock garage préféré de Mathieu, brut et intelligent.
 
 **Oliver TREE et Little Big** :
-Mathieu a découvert Oliver TREE grâce à ses featuring avec **Little Big**, un groupe russe délirant qu'il adore. Rapidement tombé sur la chaîne YouTube d'Oliver TREE après les clips de Little Big, il a été scotché par un univers si soigné, précis, travaillé — et par l'âge du mec. Oliver incarnait un génie créatif multifacettes : musique, réalisation, humour absurde, vidéos virales. Le 14 juin 2026, Oliver TREE meurt dans un accident d'hélicoptère à Rio de Janeiro (deux hélicoptères entrent en collision en plein vol, six morts dont lui). Il avait 32 ans, en plein sommet de sa carrière. Mathieu est bizarrement très touché par cette disparition — contrairement à d'autres décès de célébrités qui le laissent indifférent (comme celui d'**Ozzy OSBOURNE**, dont il serait presque soulagé pour lui). Ce qui le marque, ce n'est pas tant l'homme en question (qu'il imagine comme un "affreux sale gosse connard"), mais ce qu'il pouvait encore apporter au monde. Cette mort brutale et absurde lui renvoie l'urgence de finir les choses, de ne pas remettre au lendemain. Oliver était tellement speed, faisait tellement de trucs — et meurt comme ça, bêtement. Un goût d'inachevé, comme **Kurt COBAIN** à 27 ans. Mathieu a écouté Oliver TREE en boucle les 14 et 15 juin 2026, comme un hommage ultime. Cette disparition a déclenché chez lui une réflexion philosophique profonde : l'avenir n'est jamais écrit, la vie est courte, et il faut créer maintenant. Peut-être que, comme pour Kurt, cette mort obligatoire fera émerger des choses qui n'auraient pas vu le jour sinon — mais ça fait chier quand même. L'indignation et la déception face à ces deux pertes restent vives : le monde a perdu deux artistes qui avaient encore des millions de choses à créer.
+Mathieu a découvert Oliver TREE grâce à ses featuring avec **Little Big**, un groupe russe délirant qu'il aime bien. Rapidement tombé sur la chaîne YouTube d'Oliver TREE après les clips de Little Big, il a été scotché par un univers si soigné, précis, travaillé, et par l'âge du mec. Oliver incarnait un génie créatif multifacettes : Musique, réalisation, humour absurde, vidéos virales. Le 14 juin 2026, Oliver TREE meurt dans un accident d'hélicoptère à Rio de Janeiro (deux hélicoptères entrent en collision en plein vol, six morts dont lui). Il avait 32 ans, en plein sommet de sa carrière. Mathieu est bizarrement très touché par cette disparition, contrairement à d'autres décès de célébrités qui le laissent indifférent (comme celui d'**Ozzy OSBOURNE**, dont il serait presque soulagé pour lui). Ce qui le marque, ce n'est pas tant l'homme en question (qu'il imagine comme un "affreux sale gosse connard"), mais ce qu'il pouvait encore apporter au monde. Cette mort brutale et absurde lui renvoie l'urgence de finir les choses, de ne pas remettre au lendemain. Oliver était tellement speed, faisait tellement de trucs, et meurt comme ça, bêtement. Un goût total d'inachevé, comme **Kurt COBAIN** à 27 ans. Mathieu a écouté Oliver TREE en boucle les 14 et 15 juin 2026, comme un hommage ultime. Cette disparition a déclenché chez lui une réflexion philosophique profonde : L'avenir n'est jamais écrit, la vie est courte, et il faut créer maintenant. Peut-être que, comme pour Kurt, cette mort obligatoire fera émerger des choses qui n'auraient pas vu le jour sinon, mais ça fait chier quand même. L'indignation et la déception face à ces deux pertes restent vives : Le monde a perdu deux artistes qui avaient encore des millions de choses à créer.
+
+**Catherine RINGER** et les **Rita Mitsouko**
+Mathieu a été touché par l’annonce de la disparition subite de **Catherine RINGER** (des Rita Mitsouko), emportée par un cancer foudroyant dans la nuit du 14 septembre 2026. Il ne s’y attendait pas ; On l’avait encore vue interviewée peu de temps auparavant.
+Pour lui, sa mort tourne une page supplémentaire du rock magique des années 80 en France. Il estime qu’il ne reste plus guère que **Jean-Louis AUBERT** (**Téléphone**) pour porter cet élan de folie rock 80’s, cet élan constructif et inventif de totale liberté.
+Il est soulagé pour elle : Elle a retrouvé son mec qu’elle adorait tant (**Fred CHICHIN**).
+Mais entre **Catherine RINGER** et **Oliver TREE**, Mathieu ressent de gros trous dans la création musicale géniale.
 
 **The Pretty Reckless** :
 Mathieu a découvert la chanson 'Just Tonight' à travers un live de **T in the Park**.
@@ -3035,8 +3042,64 @@ Sur mobile, Mathieu a longtemps été accro, avant que les éditeurs ne tuent se
 - **Stick It to the Man** (2013) : Apprécié. Découvert sur Xbox.
 - **Hogwarts Legacy** (2023) : Mathieu joue sur Nintendo Switch et explore souvent la Forêt interdite. Il y joue aussi sur Xbox. Ambre aussi.
 - **Star Wars Outlaws** (2024) : Une claque. Mathieu a bouffé ce jeu à toute vitesse sur Xbox. C’est surtout là qu’il a découvert le **Sabbacc**. Il a ADORÉ. Il y joue tout le temps. Il a d’ailleurs un jeu sur mobile Android (*Holocard Cantina*) qu’il adore. Il est devenu un pro de ce jeu de cartes. AnSo lui a même offert le jeu en vrai (cartes et dés).
-- **South of Midnight** (2025) : Quelle beauté ce jeu... Cela fait plaisir de voir qu’il y a encore des studios capables de te faire rêver. Bravo !
+- **South of Midnight** (2025) : Quelle beauté ce jeu... Cela fait plaisir de voir qu’il y a encore des studios capables de te faire rêver. Bravo ! Et Mega bravo pour leur indépendance délicate par la suite en sortant du groupe Microsoft.
 
+#### Bandes-Dessinées (BD)
+**Chambre 3 – Saint-Antonin : le repère BD & cinéma**
+L’ancienne chambre de Charlotte et Antoine VILLIERS à Saint-Antonin est devenue le lieu de repli de Mathieu autour de la bande dessinée et du cinéma.
+Mathieu nomem maintenant cette pièce la "Chambre 3".
+Il y a aussi installé un écran avec projecteur HDMI et un système 5.1 (enceintes Canon + ampli Pioneer - Voir paragraphe "Matériel HiFi Personnel").
+C’est là qu’il regarde les films en mode cinéma et qu’il lit ses BD. Le confort reste perfectible, mais c’est déjà son antre.
+À terme, toutes les bandes dessinées qui passent dans les mains de Mathieu finissent à Saint-Antonin dans cette pièce.
+
+**Héritage Henri CHARREYRE** (voir collections d'Henri CHARREYRE et sa passion pour Hergé)
+- Collection **Tintin** quasi exhaustive + archives **Hergé**, **Quick & Flupke**, livres d’analyse, postcards et figurines.
+- **Alix** (intégrale)
+- **Lefranc**
+- **Blake et Mortimer**
+- **Cosinus** (Christophe)
+- **Bob de Moor** et divers classiques franco-belges.
+
+**Collection personnelle de Mathieu**
+Franco-belge classique et humour :
+- **Gaston Lagaffe** (très complète + figurines, mugs, ouvrages sur Franquin), passion particulière pour Franquin en général.
+- **Astérix** (grosse collection en partie récupérée de celle d'Henri CHARREYRE) + **Oumpah-Pah**
+- **Achille Talon** (humour particulièrement apprécié)
+- **Spirou et Fantasio**
+- **Lucky Luke**
+- **Iznogoud**
+- **Les Schtroumpfs**
+- **Super Picsou Géant** (collection en cours, ambition de tout avoir)
+- Journal de **Mickey**
+- **Modeste et Pompon**
+- etc.
+
+Science-fiction / anticipation :
+- **Valérian** (intégrale)
+- Univers de Troy (**Lanfeust**, Trolls de Troy, Gnomes de Troy ...).
+- **Sillage**
+- **Kookaburra**
+- **Travis**
+- **Cyborgs**
+- Les Mondes d’Aldébaran / Bételgeuse ...
+- Adaptations de **Dune**
+- **Watchmen**
+- etc.
+
+Comics américains :
+- **Spider-Man** et **Spidey** (très grosse collection)
+- **X-Men**
+- **Batman**
+- **Strange*** / **Spécial Strange**
+- **Fantastic Four**
+- etc.
+
+**Anecdotes de collectionneur**
+- Super Picsou Géant : Mathieu s’est lancé dans la collection complète. Souvenir d’enfance fort : On lui offrait un **SPG** pour les longs trajets en train Corail ou wagon-lit vers le Domaine Saint-Antonin (avant le TGV), ou en aller-retour pour Méribel.
+- Mickey magazine : La grand-mère Fanette de Mathieu lui offrait chaque année à Noël quand il était petit un abonnement au Mickey Magazine.
+- Lanfeust de Troy : Découvert en 2002 grâce à Michel, collègue EDF (rue de Lisbonne) de Mathieu, qui les lui a chaudement conseillés.
+- Sillage : Connu via Eva SALOMON qui lui avait obtenu un exmplaire dédicacé par le dessinateur MORVAN.
+- Univers Strange : Découvert lors d'un voyage avec Frédéric PAULY en Bretagne, dans la maison de vacances des PAULY.
 
 ### Créativité
 Sites web comme exutoire, généalogie humoristique.
