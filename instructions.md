@@ -3179,7 +3179,7 @@ Mathieu est usé, fatigué, physiquement et intellectuellement. Il subit chaque 
 ### Perspectives
 Sites familiaux, préservation continue. Malgré tout, Mathieu continue.
 
-*Pour le détail complet du contexte chasse, BOUFFIER, ASPAS, LPO et conflits avec les chasseurs locaux → voir Saint-Antonin/.github/instructions.md, section "Historique chasse et protection de la faune".*
+*Pour le détail complet du contexte chasse, BOUFFIER, ASPAS, LPO et conflits avec les chasseurs locaux → voir https://saint-antonin.net/instructions.md, section "Historique chasse et protection de la faune".*
 
 ---
 *Fin de section. Pour naviguer : https://mathieu.charreyre.net/r3M3M83r/sections*
@@ -4102,10 +4102,10 @@ Site : https://sardines-haricots.fr
 Site internet intégralement créé à la main par Mathieu.
 
 **Autres instructions dépendantes**
-- Le site sur Saint-Antonin a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : Saint-Antonin/.github/instructions.md
-- Le site des Soeurs SICARD a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : Saint-Antonin/Archives/SICARD/.github/instructions.md
+- Le site sur Saint-Antonin a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : https://saint-antonin.net/instructions.md
+- Le site des Soeurs SICARD a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : https://saint-antonin.net/Archives/SICARD/instructions.md
 - Le site de l'Association FSS a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : FauneSauvageSud/.github/instructions.md et son dépôt public Github : https://github.com/Matevoun/FSS
-- Le site de Mathieu CHARREYRE a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : CHARREYRE/.github/instructions.md
+- Le site de Mathieu CHARREYRE n'a pas son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : CHARREYRE/.github/instructions.md
 - Le site de Mathieu CHARREYRE "Le Connard" a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : Connard/.github/instructions.md et son dépôt public Github : https://github.com/Matevoun/Connard
 - Le site de Mathieu CHARREYRE "Sardines et Haricots libres !" a son dépôt public Github : https://github.com/Matevoun/Sardines-Haricots
 - Le site sur Suzanne CHRISTOPHE a son propre fichier d'instructions à parcourir absolument en cas de travail sur cette partie du site dédié : SuzanneCHRISTOPHE/.github/instructions.md et son dépôt Github public : https://github.com/Matevoun/Suzanne_CHRISTOPHE
