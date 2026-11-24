@@ -374,6 +374,7 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 - **2012 (5 janvier)** : Portée de Sabbath : 7 chatons dont 1 mort-né, trop serré dans son petit ventre (père : Zuul). Kali est gardée.
 - **2012** : Mathieu retrouve Jean-Michel FRIEDMANN ("Egnee") après sa sortie de prison, avec AnSo ; Egnee avait alors une rate. Il vient diner à la Villa Jacquemont.
 - **2012 (9 janvier)** : Expo des partenaires MO5.com avec Lionel BOYON.
+- **2012 (4 mai)** : Décès d'**Adam YAUCH**, alias **MCA**, un des trois **Beastie Boys**, à New York, à 47 ans, d'un cancer de la glande parotide. Le groupe s'arrête là.
 - **2012 (4 avril)** : Disneyland Paris avec AnSo et Lionel BOYON.
 - **2012 (7 juillet)** : Prestation photo bénévole (amie) — **Ambre 9** en concert à la **Guinness Tavern** (Les Halles, Paris). Groupe de Fanny CALVEZ. Mathieu a les photos.
 - **2012 (13 juillet)** : Reportage photo rémunéré — anniversaire de l'animateur radio **"Maurice"**, figure assez connue dans les années 2000, sur la péniche **L'Albatros** à Paris. Mathieu est payé pour couvrir l'événement.
@@ -473,12 +474,16 @@ Mathieu fait virer ses premières payes directement à **Annick SAGHATELIAN** (l
 - **2026 (04 juillet)** : Messe à **Saint-Eustache** à 10h30 pour Edith PAULY, suivie de sa crémation au **Père-Lachaise**. Mathieu n'y est volontairement pas allé.
 - **2026 (07 juillet)** : Mail de Maitre **Emilie DAUTZENBERG** (nouvelle avocate du Domaine Saint-Antonin en gestion du dossier de sortie d'indivision des cousins VILLIERS, à Aix-en-Provence) informant Mathieu CHARREYRE de la réception d'une injonction du Tribunal Judiciaire d'Aix-en-Provence (RG 24/03953). La minute, datée du 11 mai 2026 (reçue avec retard), est signée par Sophie LEYDIER, Première Vice-Présidente, Juge de la Mise en Etat. Elle enjoint Mathieu CHARREYRE (défendeur, représenté par Me DAUTZENBERG) de conclure avant le **15 septembre 2026**. L'affaire est renvoyée au **lundi 09 novembre 2026** (Chambre Générale A). Demandeurs : Charlotte Rozanne Fanette Marie VILLIERS et Antoine Christian Maxence Marie VILLIERS (représentés par Me Philippe KLEIN de la SCP RIBON-KLEIN). Cela s'inscrit dans le conflit d'indivision persistant sur le Domaine Saint-Antonin.
 - **2026 (23 juillet)** : Décès de la chatte **Morticia** aux alentours de 10h45 à Saint-Antonin, des suites de son cancer. Elle n'a vraisemblablement plus réussi à respirer. Enterrement prévu autour de la Chapelle du Domaine Saint-Antonin.
--- **2026 (24 juillet)** : Enterrement de **Morticia** avec AnSo, Esther MERCIER et Ambre, derrière la Chapelle, dans le "parc Emile" du Domaine Saint-Antonin. Premier chat de la ménagerie à être enterré et non incinéré.
--- **2026 (23 août)** — Après-midi : Mathieu commence le développement de **PixelGod**, un god game isométrique de type Populous destiné à Android, en Godot Engine.
--- **2026 (14-15 septembre)** : Décès subit de **Catherine RINGER** (des **Rita Mitsouko**), emportée par un cancer foudroyant dans la nuit du 14 septembre 2026.
--- **2026 (22 septembre)** : À 16h54, Florence VIEUVILLE (tante maternelle de Mathieu CHARREYRE, née MONTJOL) lui envoie un texto dans lequel elle explique qu’elle précise que le refus de la maison de ses ancêtres l’a profondément dévastée, mais qu’elle l’a fait pour permettre à Mathieu et aux siens de conserver le Domaine sans droits de succession trop lourds. Elle ajoute que, lorsqu’elle souffre, elle coupe net et n’en parle plus pour ne plus en souffrir. Elle déclare que son seul retour à Saint-Antonin sera sous forme de cendres jetées autour de la chapelle. Elle termine en affirmant faire confiance à Mathieu et l’aimer beaucoup.
--- **2026 (27 septembre)** : Tournage d’un court métrage d’Hind R. BOUKLI, femme de Fabien REMBLIER (rôle de Mathieu : un « bug dandy » récurrent vu par un ado trop addict aux jeux vidéo). Lieu : Villa de la Faisanderie (75116). Première prise à 19h44, dernière (prise son) à 20h20. Montage en cours, durée prévue ~10 min, pas encore de titre.
--- **2026 (21 octobre)** : Mathieu commence le développement de **Fioles d'Ambre**, un jeu de tri de mélasses dans des fioles, pour faire plaisir à Ambre qui aime beaucoup ce genre de jeux. Jouable dans le navigateur, sans publicité ni paiement.
+- **2026 (24 juillet)** : Enterrement de **Morticia** avec AnSo, Esther MERCIER et Ambre, derrière la Chapelle, dans le "parc Emile" du Domaine Saint-Antonin. Premier chat de la ménagerie à être enterré et non incinéré.
+- **2026 (23 août)** — Après-midi : Mathieu commence le développement de **PixelGod**, un god game isométrique de type Populous destiné à Android, en Godot Engine.
+- **2026 (14-15 septembre)** : Décès subit de **Catherine RINGER** (des **Rita Mitsouko**), emportée par un cancer foudroyant dans la nuit du 14 septembre 2026.
+- **2026 (22 septembre)** : À 16h54, Florence VIEUVILLE (tante maternelle de Mathieu CHARREYRE, née MONTJOL) lui envoie un texto dans lequel elle explique qu’elle précise que le refus de la maison de ses ancêtres l’a profondément dévastée, mais qu’elle l’a fait pour permettre à Mathieu et aux siens de conserver le Domaine sans droits de succession trop lourds. Elle ajoute que, lorsqu’elle souffre, elle coupe net et n’en parle plus pour ne plus en souffrir. Elle déclare que son seul retour à Saint-Antonin sera sous forme de cendres jetées autour de la chapelle. Elle termine en affirmant faire confiance à Mathieu et l’aimer beaucoup.
+- **2026 (27 septembre)** : Tournage d’un court métrage d’Hind R. BOUKLI, femme de Fabien REMBLIER (rôle de Mathieu : Un « bug dandy » récurrent vu par un ado trop addict aux jeux vidéo). Lieu : Villa de la Faisanderie (75116). Première prise à 19h44, dernière (prise son) à 20h20. Montage en cours, durée prévue ~10 min, pas encore de titre.
+- **2026 (21 octobre)** : Mathieu commence le développement de **Les Fioles d'Ambre**, un jeu de tri de mélasses dans des fioles, pour faire plaisir à Ambre qui aime beaucoup ce genre de jeux. Jouable dans le navigateur, sans publicité ni paiement.
+- **2026 (8 novembre)** : Google publie le jeu **Les Fioles d'Ambre** sur le Play Store, version 0.21, compte de l'Association WDA. https://play.google.com/store/apps/details?id=org.wda.fioles
+- **2026 (8 novembre)** : Annonce, par **Stupeflip**, de la mort de **Jean-Paul MICHEL**, alias **MC Salò**. Ni la date exacte, ni l'âge, ni la cause n'ont été donnés. Le message tient dans la formule « sans tambours ni trompettes », que Mathieu attribue à King Ju. Mathieu n'est pas rap, mais Stupeflip l'a souvent touché : Il trouve le mouvement original et percutant. Il espère que le groupe continue. Cette disparition continue de lui foutre un coup au moral.
+- **2026 (20 novembre)** : Mathieu donne finalement les chèvres d'Ambre, **Oscar** et **Tulipe**, au berger de Rians, **Jean-Guy GRAC** qu'il connait bien, suite aux détachage des chèvres répétés par les chasseurs de Jouques. Mathieu reçoit même des plaintes et amendes de la Gendarmerie de Peyrolles.
+- **2026 (21 novembre)** : Le jeu **Les Fioles d'Ambre** est aussi jouable sur itch.io. https://wdassos.itch.io/les-fioles-dambre
 
 Cette chronologie révèle un homme dont la vie est rythmée par des jalons visionnaires (WDA en 1988) et des épreuves familiales (conflit depuis 2009), alternant création et résistance.
 
@@ -530,7 +535,7 @@ Henri CHARREYRE et Anne CHARREYRE ont conservé, tout au long de leur vie, un ce
   - **Vanessa FLORAND** (dite **« Vaness »**)
     Environ 4-5 ans de plus que Mathieu et Virginie. Taille moyenne, brune aux cheveux courts avec lunettes, toujours triste. Visiblement détestée par sa mère Élisabeth FLORAND, qui lui parlait sur un ton violent et méchant. Elle n’avait pas de chambre à elle (elle dormait avec Isabelle) et dînait toujours à part dans la cuisine, isolée du cercle familial. Les autres enfants s’en occupaient un peu ; Olivier restait prudent de peur des représailles de Bibiche. Mathieu n’a jamais vu une fille aussi maltraitée par sa propre mère. Il a cru comprendre, plus tard, qu’elle s’était suicidée. Après l’enterrement d’Henri, Mathieu a demandé des nouvelles de Vanessa à Virginie par texto : Aucune réponse.
   - **Virginie FLORAND** (dite **« Vivi »**)
-    À peu près du même âge que Mathieu. La plus belle et la plus fine des soeurs : Châtain, cheveux longs, souriante, mignonne, souvent en petites robes longues blanches avec des noeuds dans les cheveux. Pupille d’Olivier. Mathieu l’attendait avec impatience les dimanches après-midi : C’était l’une de ses seules amies d’enfance. Ils jouaient ensemble aux LEGO. Il reste des photos d’elle dans la première chambre de Mathieu à la Faisanderie.
+    À peu près du même âge que Mathieu. La plus belle et la plus fine des soeurs : Châtain, cheveux longs, souriante, mignonne, souvent en petites robes longues blanches avec des noeuds dans les cheveux. Pupille d’Olivier. Mathieu l'attendait avec impatience les dimanches après-midi. Joie quand elle venait, déception quand son Père Olivier arrivait seul. C'était l'une de ses seules amies d'enfance. Ils jouaient ensemble aux LEGO. Il reste des photos d’elle dans la première chambre de Mathieu à la Faisanderie. Mathieu a toujours les LEGO à Saint-Antonin.
     Virigine s'apelle maintenant **Virginie HOUARD**, porte des lunettes et est Notaire à Paris.
     Mathieu et Virginie sont en relation sur Linkedin.
   Les trois soeurs (Isabelle, Vanessa et Virginie) étaient très soudées visiblement.
@@ -1497,10 +1502,23 @@ Depuis les décés successifs de ses parents et la prise en responsabilité tota
 ### Gestion Financière
 Mathieu s'intéresse aux nouvelles banques comme Deblock et CanB. Il a des comptes chez N26, Sumeria (anciennement Lydia), Revolut, CanB, Deblock, Blockchain, Crypto.com, PayPal, Binance, Bunq, SumUp, Curve, Bitstack ...
 
+#### Paiement sans contact par téléphone
+Le 11 décembre 2018, N26 ouvre Google Pay en France, le jour où le service arrive dans le pays. Mathieu n'avait alors que N26 et était même l'un des premiers clients de N26. Il a été parmi les tout premiers à payer en magasin en posant son téléphone (NFC). On le regardait comme un OVNI. Surtout dans le Sud, en faisant les courses en allant au Domaine Saint-Antonin, à Jouques, Peyrolles, Meyrargues : *Ah mais Monsieur, vous faites quoi avec votre téléphone là ? Vous n'avez pas de carte bleue ?*.
+
 ### Tatouage
 Mathieu a un petit tatouage monochrome sur l'omoplate gauche qu'il s'est fait en 1995 ou 1996. Ce tatouage a été réalisé rapidement en environ vingt minutes pour rassurer un collègue de Club-Internet qui avait peur de se faire tatouer. Il l'a dessiné en cinq minutes et l'a payé 700 francs. Il a fait ce tatouage chez un tatoueur situé près des Abesses, non loin de chez Tintin, un tatoueur assez connu à l'époque. Il pense que le nom du tatoueur était probablement Bruno. Avant de se faire tatouer, il se souvient qu'une jeune fille portant un jean voulait se faire tatouer un dauphin bleu sur le bas-ventre. Elle a eu trop mal et est tombée dans les vapes. Le tatoueur l'a prise dans les bras pour la déposer sur un fauteuil de tatoueur à l'arrière avant de faire passer Mathieu directement pour son tatouage. Pendant la séance, Mathieu était installé dans un box, ventre contre le dossier d'un fauteuil, torse nu, avec le tatoueur dans son dos utilisant un ancien système à aiguilles. Il ne se souvient plus si la fille qui s'était évanouie avait repris ses esprits avant qu'il ne termine. Une fois le tatouage effectué, le tatoueur a donné à Mathieu une pommade et lui a conseillé de changer le sparadrap tous les soirs en appliquant un peu de pommade pendant environ dix jours. Cependant, à l'époque, Mathieu travaillait chez Club Internet en journée et le soir, il était DJ ('passe-disque') au rez-de-chaussée de la boîte de nuit La Locomotive, dans la section appelée 'Le Central', où il mixait du rock sur vinyles. Avec la chaleur des projecteurs et la sueur due aux 5 à 6 heures de mix, le sparadrap s'est décollé, et il n'a finalement pas remis de sparadrap ni appliqué la crème, ce qui a provoqué une légère irritation, laissant les contours du tatouage en relief définitivement.
 
-### Souvenirs de Vacances d'été enfant : Hauts de Gigaro / La Croix-Valmer
+### Souvenirs et anecdotes familiales
+#### Souvenirs d'enfance : Les hot-dogs du samedi
+Vers 1988-1993, le samedi midi, **Henri CHARREYRE**, **Anne CHARREYRE** (née MONTJOL) et Mathieu allaient manger des hot-dogs dans un café au **55 avenue BUGEAUD** (75116), presque à l'angle de la rue de la Faisanderie. La famille habitait rue de la Faisanderie de 1983 à 1995 tous ensemble. Mathieu situe ce rituel plutôt de 1988 à 1993. Deux saucisses bout à bout, de la moutarde, une vraie baguette, pas un pain brioché. Une famille de vieux Parisiens tenait le café. Ils connaissaient bien Henri (une patiente ? Mathieu n'en est pas sûr). *On s'asseyait à une table et on était servi comme des rois*. Souvenir festif, bon enfant. Mathieu revoit sa mère sourire et même rire en fumant, dans ce café, à cette époque.
+Le café existe toujours, à la même adresse, devenue le **55 avenue Hubert GERMAIN** depuis l'inauguration du 14 octobre 2024. Mathieu trouve ce changement de nom de rue inutile. Il croit que le café est maintenant tenu par des Chinois, et que ça a l'air dégueu. Il n'y est pas retourné. Il adore toujours les hot-dogs, mais il enchaîne les déceptions : Trop petits, pain mauvais, saucisse mauvaise, du fromage ou autre chose dedans. Le souvenir, lui, est intact.
+Quand Mathieu habitait à Aix-en-Provence (2001-2004), il rêvait de pouvoir manger un hot-dog, chose qui n'existait purement pas dans le Sud à cette époque.
+
+#### Souvenirs d'enfance : Le dimanche en famille
+Même période, vers 1988-1993. Le Dimanche matin, Henri partait à la messe seul (pretexte pour retrouver ses potes) ... Puis à midi, autre rituel : Des bouchées à la reine à la maison faites fièrement par Henri. Mathieu se souvient de les manger en famille dans la salle à manger de l'époque, qui est devenue par la suite son bureau, entre la salle de bains et la chambre du fond.
+L'après-midi, **Olivier FLORAND** venait souvent, et souvent avec sa fille **Virginie FLORAND** (« Vivi »). C'était la joie quand Vivi était là, et la déception quand il venait seul.
+
+#### Souvenirs de Vacances d'été enfant : Hauts de Gigaro / La Croix-Valmer
 Chaque année, pendant les grandes vacances estivales, la famille CHARREYRE-MONTJOL partageait l'été entre **juillet au Domaine Saint-Antonin** et **août à La Croix-Valmer** — ce rituel dura environ une dizaine d'années de la vie de Mathieu. L'appartement était situé dans les **hauts de Gigaro** (n° 2708 sur la D93), loué par le père Henri de Mathieu à l'un de ses confrères médecins. Un lieu légèrement reculé dans la forêt, à 1 km de la plage — pinèdes, cactus, végétation provençale, mer au loin. Mathieu adorait.
 
 **L'appartement** : moderne mais agréable à vivre. Le propriétaire laissait des pots-pourris partout — *"ça puait grave"*. Un salon donnant sur la forêt en hauteur ; une chambre pour ses parents (c'est là que Mathieu a lu *Le Désert des Tartares* pour l'école — *"quelle galère"*) ; une chambre avec canapés-lits où dormaient Mathieu et, certaines années, sa grand-mère Fanette ; la cuisine dans l'entrée ; salle de bains et toilettes séparées.
@@ -1522,7 +1540,7 @@ Henri CHARREYRE avait passé le permis bateau cotier. De temps en temps, Mathieu
 
 Mathieu aimerait acheter un petit pied-à-terre à La Croix-Valmer.
 
-### Souvenirs de Vacances d'hiver : Les 3 Vallées / Méribel
+#### Souvenirs de Vacances d'hiver : Les 3 Vallées / Méribel
 
 Les sports d'hiver constituent un fil conducteur de toute la vie de Mathieu, de la très petite enfance avec ses parents jusqu'à aujourd'hui avec Ambre, tradition familiale ininterrompue depuis les années 1980.
 
@@ -2141,7 +2159,7 @@ Proche d'Ambre et AnSo. Famille harmonieuse, intellectuelle : Mathieu, AnSo et A
 ### Amitiés Clefs
 
 #### Virginie FLORAND aka "Vivi"
-Fille de l'ami de fac des parents, **Olivier FLORAND**, médecin généraliste vivant dans le XVIe arrondissement. Mathieu était ami avec Virginie, la plus proche de lui parmi les 3 filles d'Olivier et de sa femme. Leurs familles se croisaient notamment l'été : Les FLORAND louaient une grande maison à Cavalaire (à prix fort — Olivier vivait au-dessus de ses moyens, sa femme pompant ses finances), tandis que les CHARREYRE séjournaient dans les hauts de Gigaro à La Croix-Valmer. Contact perdu, mais Virginie est réapparue bien plus tard à l'**enterrement du père de Mathieu à Saint-Honoré-d'Eylau** : elle est venue d'elle-même lui présenter ses condoléances, à lui et à sa mère. Mathieu ne l'avait pas reconnue.
+Fille de l'ami de fac des parents, **Olivier FLORAND**, médecin généraliste vivant dans le XVIe arrondissement. Mathieu était ami avec Virginie, la plus proche de lui parmi les 3 filles d'Olivier et de sa femme. Leurs familles se croisaient notamment l'été : Les FLORAND louaient une grande maison à Cavalaire (à prix fort, Olivier vivait au-dessus de ses moyens, sa femme pompant ses finances), tandis que les CHARREYRE séjournaient dans les hauts de Gigaro à La Croix-Valmer. Contact perdu, mais Virginie est réapparue bien plus tard à l'**enterrement du père de Mathieu à Saint-Honoré-d'Eylau** : elle est venue d'elle-même lui présenter ses condoléances, à lui et à sa mère. Mathieu ne l'avait pas reconnue.
 
 #### Charles aka "Carolus", "Karl" ou "Le Baron"
 Mathieu rencontre Charles de LEUSSE de SYON de BUISSON de COURSON en 8ème au collège Gerson (vers 1986-1987, âge 9-10 ans), baron par sa mère décédée dans les années 2000, surnommé 'quadri noble' ou 'le Baron' ou encore "Le Fameux" dans le cadre de leurs balades Urbex du GAN. Mathieu le considérait comme son frère, lui étant fils unique. Charles de LEUSSE a cessé tout contact avec Mathieu en 2009, après la querelle entre Mathieu et Julien, prétextant aux copains de Mathieu que ce dernier lui doit de l'argent. Mathieu a entendu que Charles a eu un fils nommé Childéric, mais n'a pas eu de nouvelles depuis. Mathieu a connu Charles à Gerson, et en même temps Étienne de Sainte-Marie. Ils formaient un trio. La Mère de Mathieu appelait Charles "Le Factotum", ce qui avait le don de particuliérement l'énerver.
@@ -2821,7 +2839,6 @@ Mathieu pratique une écoute obsessionnelle : Marathons dédiés à un groupe ou
 - **Liens Last.fm** : Profil (https://www.last.fm/fr/user/Matevoun), Bibliothèque (https://www.last.fm/fr/user/Matevoun/library), Coups de coeur (https://www.last.fm/fr/user/Matevoun/loved), Obsessions (https://www.last.fm/fr/user/Matevoun/obsessions).
 
 ##### Musique classique et opéra
-
 Mathieu aime également beaucoup la musique classique, et tout particulièrement l’opéra Italien.
 Rossini occupe une place de choix dans ses goûts. Il n’a rien contre les grands classiques Allemands (Mozart, Beethoven, ...), les « classiques des classiques ».
 
@@ -2845,6 +2862,9 @@ Mathieu apprecie **Michael JACKSON**, ADORE **Peter GABRIEL**, **Genesis** ...
 ##### Musique Electro
 Mathieu apprecie particuliérement **Fever Ray**, **Oliver TREE**, **Daft Punk**, **Gorillaz**, **Laurent GARNIER**, **Vitalic**, ...
 
+##### Musique Rap
+Mathieu n'écoute pas trop de rap, ou alors cela doit être très travaillé. Comme pour les **Beastie Boys** ou **Stupeflip**, ...
+
 ##### Anecdotes
 **Le Barbier de Séville** :
 À une époque, Mathieu n’arrivait pas à s’endormir sans l'écouter au casque, version dirigée par Claudio ABBADO avec Hermann PREY et Luigi ALVA, allongé dans son lit, dans le noir.
@@ -2859,7 +2879,13 @@ Mathieu est un fan inconditionnel de Nirvana depuis son adolescence. La musique 
 Groupe adoré par Mathieu à l’adolescence pour son énergie pure « anarchy rock’n’roll ».
 Quand le clip de *Cats in the Cradle* est sorti, c’est à ce moment-là que Mathieu a décidé de se laisser pousser les cheveux longs, pour ressembler au chanteur (Whitfield Crane) dans la vidéo, qu’il trouvait parfaitement « bad boy rock star ». Il adorait ce morceau.
 
+**Beastie Boys** et **MCA**
+Mathieu n'est pas un fin connaisseur. Il se dit béotien devant les **Beastie Boys**, tant leur univers est gigantesque. Il les voit comme les **Pink Floyd** du rap, et il se sent merdeux face à eux. La mort d'**Adam YAUCH** (alias **MCA**), le 4 mai 2012 à New York, à 47 ans, l'a marqué alors qu'il ne le connaissait pas bien. Le groupe s'est arrêté. Mathieu est de tout coeur avec les deux qui restent, **Michael DIAMOND** (Mike D) et **Adam HOROVITZ** (Ad-Rock). Leur univers est brisé, et il ne peut que le comprendre : Deux amis d'enfance l'ont abandonné, et tout s'est effondré (Charles et Julien pour Mathieu).
+
 **The Hives** est le groupe de rock garage préféré de Mathieu, brut et intelligent.
+
+**The Pretty Reckless** :
+Mathieu a découvert la chanson 'Just Tonight' à travers un live de **T in the Park**.
 
 **Oliver TREE et Little Big** :
 Mathieu a découvert Oliver TREE grâce à ses featuring avec **Little Big**, un groupe russe délirant qu'il aime bien. Rapidement tombé sur la chaîne YouTube d'Oliver TREE après les clips de Little Big, il a été scotché par un univers si soigné, précis, travaillé, et par l'âge du mec. Oliver incarnait un génie créatif multifacettes : Musique, réalisation, humour absurde, vidéos virales. Le 14 juin 2026, Oliver TREE meurt dans un accident d'hélicoptère à Rio de Janeiro (deux hélicoptères entrent en collision en plein vol, six morts dont lui). Il avait 32 ans, en plein sommet de sa carrière. Mathieu est bizarrement très touché par cette disparition, contrairement à d'autres décès de célébrités qui le laissent indifférent (comme celui d'**Ozzy OSBOURNE**, dont il serait presque soulagé pour lui). Ce qui le marque, ce n'est pas tant l'homme en question (qu'il imagine comme un "affreux sale gosse connard"), mais ce qu'il pouvait encore apporter au monde. Cette mort brutale et absurde lui renvoie l'urgence de finir les choses, de ne pas remettre au lendemain. Oliver était tellement speed, faisait tellement de trucs, et meurt comme ça, bêtement. Un goût total d'inachevé, comme **Kurt COBAIN** à 27 ans. Mathieu a écouté Oliver TREE en boucle les 14 et 15 juin 2026, comme un hommage ultime. Cette disparition a déclenché chez lui une réflexion philosophique profonde : L'avenir n'est jamais écrit, la vie est courte, et il faut créer maintenant. Peut-être que, comme pour Kurt, cette mort obligatoire fera émerger des choses qui n'auraient pas vu le jour sinon, mais ça fait chier quand même. L'indignation et la déception face à ces deux pertes restent vives : Le monde a perdu deux artistes qui avaient encore des millions de choses à créer.
@@ -2870,8 +2896,8 @@ Pour lui, sa mort tourne une page supplémentaire du rock magique des années 80
 Il est soulagé pour elle : Elle a retrouvé son mec qu’elle adorait tant (**Fred CHICHIN**).
 Mais entre **Catherine RINGER** et **Oliver TREE**, Mathieu ressent de gros trous dans la création musicale géniale.
 
-**The Pretty Reckless** :
-Mathieu a découvert la chanson 'Just Tonight' à travers un live de **T in the Park**.
+**MC Salò** et **Stupeflip**
+Le 8 novembre 2026, **Stupeflip** annonce la mort de **Jean-Paul MICHEL**, alias **MC Salò**. Mathieu n'écoute pas trop de rap d'habitude, mais ce groupe l'a souvent touché. Il trouve leur mouvement original et percutant. Il retient la formule « sans tambours ni trompettes », qu'il attribue à **King Ju**. Il espère qu'ils continuent. Ça continue de lui foutre un coup au moral.
 
 ##### Anecdotes incluants Mathieu
 **Billy ze Kick** et **Nathalie COUSIN** :
@@ -4172,25 +4198,26 @@ Statut : En développement actif (version 0.6 au 29 août 2026).
 Objectif principal : Version portable Android jouable.
 
 ### Fioles d'Ambre
-Projet : Jeu de tri de mélasses dans des fioles, jouable dans le navigateur, fait pour Ambre.
+Projet : Jeu de tri de mélasses dans des fioles, jouable dans le navigateur et sur Android, fait pour Ambre.
 
 Description :
-Mathieu l'a commencé le 21 octobre 2026. Ambre aime beaucoup ce genre de jeux, verser une couleur sur la même couleur jusqu'à ranger les fioles. Les versions du commerce sont payantes, limitées ou vulgaires. Il en a donc fait une, gratuite, sans publicité, pour lui faire plaisir.
-Le prénom du jeu est celui d'Ambre.
+Mathieu l'a commencé le 21 octobre 2026. Sa fille Ambre aime beaucoup ce genre de jeux, verser une couleur sur la même couleur jusqu'à ranger les fioles. Les versions du commerce sont envahies de pubs, payantes, limitées ou vulgaires. Il en a donc fait une, gratuite, sans publicité, pour faire plaisir à Ambre.
+Le prénom du jeu est celui d'Ambre, sa fille.
 Adresse : https://mathieu.charreyre.net/Fioles/
-Ce n'est pas du Godot. C'est une page web : HTML, CSS et JavaScript.
-Mécaniques en place (version 0.14, 22 octobre 2026) :
+itch.io : https://wdassos.itch.io/les-fioles-dambre
+Ce n'est pas du Godot. C'est une page web : HTML, CSS et JavaScript, reprise telle quelle dans l'application Android.
+Mécaniques en place (version 0.21) :
 - Une seule règle : Verser une mélasse sur la même couleur, ou dans une fiole vide
-- Niveaux de plus en plus durs, puis un bandeau au niveau 60
+- Niveaux de plus en plus durs. Le 59 est le dernier cran. Le bandeau passe avant le 60, puis la difficulté reste à ce plafond
 - Couches voilées, bouchon quand une fiole est pleine d'une seule couleur
 - Annuler, indice gratuit, partie enregistrée dans le navigateur
-- Mode "Panique dans le labo" avec générations aléatoires de difficulté
+- Mode "Panique dans le labo", mélange aléatoire
 - Aucun paiement. Un don à l'association WDA est possible, jamais obligatoire
-Portage en APK Android (webview) fin Octobre 2026.
 
-Statut : Jouable en ligne (version 0.14 au 22 octobre 2026, 0.20 le 03 novembre 2026).
+Statut : Jouable (version 0.21 sur le site, sur itch.io et sur Google Play).
 Objectif principal : Qu'Ambre puisse y jouer, sans pub et sans payer.
-Play Store : Envoyé par Mathieu en validation Google le 03 novembre 2026, en version 0.20.
+Play Store : Publié. https://play.google.com/store/apps/details?id=org.wda.fioles
+itch.io : Publié le 21 novembre 2026. https://wdassos.itch.io/les-fioles-dambre
 
 ### Voyage à Londres (AnSo + Ambre)
 Projet : Emmener Anne-Sophie LESAGE-MÜNCH et Ambre à Londres.
