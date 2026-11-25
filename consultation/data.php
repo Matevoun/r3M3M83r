@@ -360,7 +360,7 @@ function html_footer(bool $show_back = true): string {
           . ' &bull; '
           . '<a href="../reformulator/saisie.php" style="color:#7cf;" title="Ouvrir le reformulator" target="_blank" rel="noopener noreferrer">Reformulator</a>'
           . ' &bull; '
-          . '<a href="../rebecca/index.php" style="color:#7cf;" title="Ouvrir Rebecca (tchat)" target="_blank" rel="noopener noreferrer">Rebecca (tchat)</a>'
+          . '<a href="Rebecca/index.php" style="color:#7cf;" title="Ouvrir Rebecca (tchat)" target="_blank" rel="noopener noreferrer">Rebecca (tchat)</a>'
           . '</p>';
     $foot_text = '<div style="margin-top:1.5rem;background:#111;color:#bbb;font-size:.86rem;line-height:1.5;">'
                . '<p style="margin:.2rem 0;">Fichier brut accessible en <a href="' . $local_md . '" style="color:#7cf;" target="_blank">local</a> (<span style="color:#999;">' . $local_md . '</span>) et sur <a href="' . $github_raw . '" style="color:#7cf;" target="_blank">GitHub</a> (<span style="color:#999;">' . $github_raw . '</span>)</p><br>'
