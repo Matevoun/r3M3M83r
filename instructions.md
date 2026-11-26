@@ -2477,30 +2477,36 @@ Lors d'une sortie MTB en forêt de Fontainebleau (vers 1999-2000), Mathieu rate 
 
 Séquelle permanente depuis lors : **le balancement naturel du bras droit à la marche n'est plus régulier**. Il lui arrive de marcher des centaines de mètres sans que le bras droit ne se balance du tout, sans s'en rendre compte. Jamais pris en charge médicalement après l'accident.
 
+#### Vue
+- Le 07/04/2025, examen au Centre international d'ophtalmologie Flandrin (Dre Inna MAY, 22 boulevard Flandrin, Paris 16e). Motif : excavation papillaire des deux yeux. Avec correction, acuité 10/10 à droite et à gauche, 12/10 en binoculaire, Parinaud 2. Addition +1,75 des deux côtés. Pachymétrie : 628 µm à droite, 621 µm à gauche. Tension à air corrigée : 17 mm Hg à droite, 18 à gauche. Excavation 0,4 à droite et 0,5 à gauche. Anneau neuro-rétinien homogène, papille de taille normale. OCT maculaire normal, cellules ganglionnaires sans altération, fibres optiques satisfaisantes. Conclusion du centre : à confronter au contexte clinique, contrôle à 6 mois, champ visuel Humphrey 24-2 préconisé.
+Correction de près, même date. oeil droit : (80° -0,50) +2,50. oeil gauche : +2,00.
+Progressifs, même date. oeil droit : (80° -0,50) +0,75, addition +1,75. oeil gauche : +0,25, addition +1,75.
+Ordonnance du même jour : Systane Ultra, les deux yeux, 2 à 4 fois par jour, pour 12 mois.
+- Le 21/11/2026, dans l'après-midi, Mathieu a récupéré chez Optical Center Étoile, 5 avenue de la Grande Armée, Paris 16e, des verres progressifs taillés pour ses Ray-Ban Meta Wayfarer de 2e génération. Prise en charge intégrale par la CSS. La correction est celle de l'ordonnance du 07/04/2025.
+
+#### Rachis lombaire
+- Le 16/02/2023, une séance de chiropratique chez Sacha ALEKSIC (36 rue Pergolèse, Paris 16e). Relevé d'honoraires de 70 euros, une séance, signé, sans tampon.
+- Le 30/10/2026, consultation de la Dre Isabelle FRENOY (Mon Urgence Santé, 148 avenue Victor Hugo, Paris 16e) pour lombalgie. Le compte rendu retient une lombalgie chronique depuis environ 6 ans, après le port d'une charge lourde. Douleurs lombaires quotidiennes, aggravation progressive, irradiation récente de type sciatique. Paresthésies des membres inférieurs à l'immobilité prolongée. La marche et le mouvement soulagent. L'examen trouve une douleur basse du rachis. Lasègue négatif des deux côtés. Le même courrier indique une IRM lombaire de juillet 2025 revenue normale, et une biologie avec glycémie normale et légère carence en vitamine D. Ce dosage n'est pas celui du 21/01/2025. Poids ce jour-là : 75 kg. Taille : 185 cm. IMC : 21,91. Fréquence cardiaque : 81. La tension est notée 184/25 mm Hg. La diastolique à 25 n'est pas crédible. Traitement de fond inchangé : irbésartan 300 mg et amlodipine 5 mg. Le courrier note aussi des migraines ophtalmiques dans l'enfance, et l'arythmie de 2025 déjà couverte par le pacemaker.
+Ordonnance du même jour, signée via Doctolib par Asmae KHAOUA. Thiocolchicoside 4 mg (Miorel), 2 gélules matin et soir, 7 jours. Izalgi (poudre d'opium 25 mg et paracétamol 500 mg), 1 à 2 gélules 3 fois par jour, 7 jours. Doliprane 500 mg, 1 à 2 comprimés matin, midi et soir, 7 jours, sans dépasser 1 g de paracétamol par prise. L'imagerie demandée est une IRM lombaire pour douleur lombaire avec sciatalgie, ou un scanner si le pacemaker est incompatible avec l'IRM.
+- Scanner du rachis lombaire le 26/11/2026, sans injection, au centre Henry-Dunant (Imagerie Paris 16, 95 rue Michel-Ange). Indication portée : Lombosciatalgie gauche. Compte rendu du Dr Sébastien MALAN, validé par le Dr Cyrille DELIN. Courbure sagittale normale, canal osseux de calibre normal, corps vertébraux de hauteur normale, isthmes et sacro-iliaques sans anomalie. Discopathies dégénératives de L1 à S1, plus marquées en L3-L4 et L4-L5. Arthrose des articulaires postérieures de L4 à S1, surtout L4-L5. En L4-L5, protrusion postérieure et foraminale, rétrécissement acquis d'environ 50 % du sac dural, conflit net avec les deux racines L5, et conflit avec les racines L4 dans les foramens, plus marqué à droite. En L3-L4, protrusion plus modérée, rétrécissement d'environ 40 %, conflit possible avec les deux racines L4. En L2-L3, discret débord sans conflit. En L5-S1, protrusion minime sans conflit. En L1-L2, pincement, petites hernies intraspongieuses, pas de débord postérieur significatif. Dossier patient 99151-337474 sur imagerieparis16.com.
+
 ### Activité Physique
-Mathieu a une moyenne quotidienne de 12 770 pas. Sa moyenne hebdomadaire est de 86 197 pas. Mathieu a un poids moyen de 74,2 kg, un IMC de 21,7, un pourcentage de masse grasse de 17,0 %, et une masse musculaire squelettique de 31,1 kg, entre le 28 août et le 24 septembre. Son objectif de poids est de 75,0 kg. Mathieu possède une montre Garmin Instinct 2 Tactical Solar.
+Mathieu a une moyenne quotidienne de 12.770 pas. Sa moyenne hebdomadaire est de 86.197 pas. Mathieu a un poids moyen de 74,2 kg, un IMC de 21,7, un pourcentage de masse grasse de 17,0 %, et une masse musculaire squelettique de 31,1 kg, entre le 28 août et le 24 septembre. Son objectif de poids est de 75,0 kg. Mathieu possède une montre Garmin Instinct 2 Tactical Solar.
 
 ### Santé Mentale
-Conflit d'indivision usant : violence permanente, injustice. Tient debout par rigueur et humour autodérisoire, mais l'épuisement est réel et profond. Mathieu subit chaque journée. Il est usé, fatigué, physiquement et intellectuellement. Il n'a aucun support, aucune aide véritable. Ses journées sont semblables et solitaires : il se lève seul, fait des choses seul, mange seul, se couche seul. Avec les problèmes de pacemaker, il a désormais conscience d'être à la fin de son temps. Il porte le sentiment amer de n'avoir rien construit, de n'avoir fait aucun bon choix, et que rien ne restera dans les mémoires de son passage sur Terre à part *"c'est dommage, il avait tout pour faire des choses intéressantes..."*
+Conflit d'indivision usant : Violence permanente, injustice. Tient debout par rigueur et humour autodérisoire, mais l'épuisement est réel et profond. Mathieu subit chaque journée. Il est usé, fatigué, physiquement et intellectuellement. Il n'a aucun support, aucune aide véritable. Ses journées sont semblables et solitaires : il se lève seul, fait des choses seul, mange seul, se couche seul. Avec les problèmes de pacemaker, il a désormais conscience d'être à la fin de son temps. Il porte le sentiment amer de n'avoir rien construit, de n'avoir fait aucun bon choix, et que rien ne restera dans les mémoires de son passage sur Terre à part *"c'est dommage, il avait tout pour faire des choses intéressantes..."*
 
 #### Profil Neurologique : TDAH (non diagnostiqué officiellement, auto-identifié)
-
 Mathieu présente un profil fortement évocateur de TDAH (Trouble du Déficit de l'Attention avec Hyperactivité), non diagnostiqué officiellement à ce jour mais clairement auto-identifié et assumé.
 
 ##### Manifestations principales observées
-
 - **Altération de la perception du temps** : Une heure peut sembler 5 minutes lorsqu'une activité est prenante et absorbante (hyperfocus). Inversement, les tâches rébarbatives semblent interminables. Aucune notion de durée fiable sans repère extérieur.
-
 - **Hyperfocus** : Capacité à se plonger avec une intensité extrême dans une tâche intéressante (code, photo, recherche, jeux), au point d'en oublier l'heure, les repas, les autres engagements. Corrélaire direct de la perte de notion du temps.
-
 - **Multitasking permanent** : Fait systématiquement 300 choses en parallèle. Nombreux projets ouverts simultanément, difficulté à en terminer un avant d'en commencer un autre.
-
 - **Oublis fréquents** : Oublie des informations, des tâches, des rendez-vous, des étapes en cours. Non par négligence, mais par saturation ou décrochage attentionnel.
-
 - **Désorganisation temporelle** : Difficulté à estimer le temps nécessaire pour une tâche, à planifier une séquence d'actions, à respecter des délais sans contrainte externe.
 
 ##### Ce que cela implique pour les IAs
-
 - **Structurer les réponses** : Préférer les étapes claires et numérotées plutôt que de longs blocs de texte. Ne pas noyer l'information principale.
 - **Ne pas surcharger** : Donner une chose à la fois si possible. Si plusieurs points sont nécessaires, les hiérarchiser explicitement.
 - **Rappels utiles** : Si une tâche est en cours sur plusieurs échanges, rappeler brièvement où on en est ("on était en train de ...").
@@ -2511,7 +2517,7 @@ Mathieu présente un profil fortement évocateur de TDAH (Trouble du Déficit de
 Famille de pharmaciens/médecins. Lui soigne la mémoire et le patrimoine.
 
 ### Bilans de Santé
-Première prise de sang en janvier 2025 (prélèvement 21/01/25 à 11h45, laboratoire LBM Victor Hugo, Paris 16e, prescrit par Dr Cohen Carole). Résultats complets dans les normes : numération globulaire (hématies 5,28 Tera/L, hémoglobine 14,1 g/dL, leucocytes 6,55 Giga/L, plaquettes 295 Giga/L), formule leucocytaire (neutrophiles 53,2%, lymphocytes 37,5%), vitesse de sédimentation 2 mm, CRP <1 mg/L, sodium 138 mmol/L, potassium 4,5 mmol/L, acide urique 294 pmol/L (49 mg/L), DFG 101 ml/min/1.73m2, transaminases (ASAT 24 u, ALAT 24 u, GGT 22 u), glycémie 4,83 mmol/L, cholestérol total 4,30 mmol/L (LDL 2,82 mmol/L, HDL 1,17 mmol/L, triglycérides 0,69 mmol/L), ferritine 87 ug/L, TSH 1,718 mUI/L, PSA total 1,13 ug/L (libre 0,39 ug/L, rapport 34,5%), vitamine B12 398 pmol/L, folates 17,7 nmol/L, vitamine D 1,25 45,5 pg/ml (109 pmol/l).
+Première prise de sang en janvier 2025 (prélèvement 21/01/25 à 11h45, laboratoire LBM Victor Hugo, Paris 16e, prescrit par Dr Cohen Carole). Résultats complets dans les normes : numération globulaire (hématies 5,28 Tera/L, hémoglobine 14,1 g/dL, leucocytes 6,55 Giga/L, plaquettes 295 Giga/L), formule leucocytaire (neutrophiles 53,2%, lymphocytes 37,5%), vitesse de sédimentation 2 mm, CRP <1 mg/L, sodium 138 mmol/L, potassium 4,5 mmol/L, acide urique 294 µmol/L (49 mg/L), DFG 101 ml/min/1.73m2, transaminases (ASAT 24 u, ALAT 24 u, GGT 22 u), glycémie 4,83 mmol/L, cholestérol total 4,30 mmol/L (LDL 2,82 mmol/L, HDL 1,17 mmol/L, triglycérides 0,69 mmol/L), ferritine 87 ug/L, TSH 1,718 mUI/L, PSA total 1,13 ug/L (libre 0,39 ug/L, rapport 34,5%), vitamine B12 398 pmol/L, folates 17,7 nmol/L, vitamine D 1,25 45,5 pg/ml (109 pmol/l).
 
 ### Profil Génétique et ADN
 Cette section intègre les résultats du séquençage ADN effectué via MyHeritage entre 2022 et 2023, basé sur ~609k SNPs (build37). Elle couvre les traits physiques, métaboliques et génétiques clefs, en concordance avec les observations personnelles. Chip GSA : couverture bonne sur ABCC11, AR région, mais faible sur certains loci chronotype/EDAR. Les inférences sont basées sur GWAS et littérature scientifique, avec focus sur la concordance européenne occidentale.
